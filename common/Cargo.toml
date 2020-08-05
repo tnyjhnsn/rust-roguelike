@@ -1,0 +1,9 @@
+[package]
+name = "roguelike_common"
+version = "0.1.0"
+authors = ["Tony Johnson <tony@tosp.net.au>"]
+edition = "2018"
+
+[dependencies]
+serde = "1.0"
+serde_repr = "0.1"
