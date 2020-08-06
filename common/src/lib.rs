@@ -1,5 +1,13 @@
-//use std::cmp::{min, max};
+use specs::prelude::*;
+use specs_derive::*;
+use serde::{Serialize, Deserialize};
 use serde_repr::*;
+
+#[derive(Component, Debug, Serialize, Deserialize)]
+pub struct Position {
+    pub x: i32,
+    pub y: i32,
+}
 
 #[derive(Debug, PartialEq, Copy, Clone, Serialize_repr, Deserialize_repr)]
 #[repr(u8)]

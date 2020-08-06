@@ -44,12 +44,6 @@ fn get_position_from_value(v: Value) -> Position {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Position {
-    pub x: i32,
-    pub y: i32,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
 struct Game {
     width: i32,
     height: i32,

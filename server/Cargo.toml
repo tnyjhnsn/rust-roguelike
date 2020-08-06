@@ -16,4 +16,5 @@ rltk = "0.8"
 serde = "1.0"
 serde_json = "1.0"
 serde_repr = "0.1"
+roguelike_common = { path = "../common" }
 
