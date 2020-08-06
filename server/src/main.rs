@@ -15,12 +15,6 @@ pub use map::*;
 mod player;
 pub use player::*;
 
-#[derive(Debug, Serialize)]
-struct Action {
-    msg: String,
-    data: Value,
-}
-
 struct GameSocket {
     ecs: World
 }

@@ -1,6 +1,5 @@
 use roguelike_common::*;
 use serde::{Serialize, Deserialize};
-use super::{Action};
 
 #[derive(Serialize)]
 struct Map {
@@ -37,12 +36,12 @@ pub fn new_map() -> Vec<TileType> {
 
 pub fn get_position(x: i32, y: i32) -> String {
     let p = Position { x, y };
-    let action = Action {
+    let gm = GameMsg {
         msg: String::from("POSITION"),
         data: serde_json::to_value(p).unwrap(),
     };
     println!("getting position");
-    serde_json::to_string(&action).unwrap()
+    serde_json::to_string(&gm).unwrap()
 }
 
 pub fn draw_map(tiles: Vec<TileType>) -> String {
@@ -51,9 +50,9 @@ pub fn draw_map(tiles: Vec<TileType>) -> String {
         height: 20,
         tiles,
     };
-    let action = Action {
+    let gm = GameMsg {
         msg: String::from("GAME"),
         data: serde_json::to_value(map).unwrap(),
     };
-    serde_json::to_string(&action).unwrap()
+    serde_json::to_string(&gm).unwrap()
 }

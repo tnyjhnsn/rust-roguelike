@@ -1,6 +1,7 @@
 use specs::prelude::*;
 use specs_derive::*;
 use serde::{Serialize, Deserialize};
+use serde_json::Value;
 use serde_repr::*;
 
 #[derive(Component, Debug, Serialize, Deserialize)]
@@ -14,6 +15,12 @@ pub struct Position {
 pub enum TileType {
     Wall = 0,
     Floor = 1,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GameMsg {
+    pub msg: String,
+    pub data: Value,
 }
 
 pub fn xy_idx(x: i32, y: i32) -> usize {

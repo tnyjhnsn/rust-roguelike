@@ -29,12 +29,6 @@ struct WsRequest {
     value: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-struct GameMsg {
-    msg: String,
-    data: Value,
-}
-
 fn get_gamemsg_from_value(v: Value) -> GameMsg {
     serde_json::from_value(v).unwrap()
 }
