@@ -12,7 +12,7 @@ pub struct Model {
     ws: Option<WebSocketTask>,
     link: ComponentLink<Model>,
     key_listener: KeyListenerHandle,
-    game: Game,
+    map: Map,
 }
 
 pub enum Msg {
@@ -37,14 +37,7 @@ fn get_position_from_value(v: Value) -> Position {
     serde_json::from_value(v).unwrap()
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-struct Game {
-    width: i32,
-    height: i32,
-    tiles: Vec<TileType>,
-}
-
-fn get_game_from_value(v: Value) -> Game {
+fn get_map_from_value(v: Value) -> Map {
     serde_json::from_value(v).unwrap()
 }
 
@@ -60,7 +53,7 @@ impl Component for Model {
     		ws: None,
     		link: link,
             key_listener,
-            game: Game { width: 0, height: 0, tiles: vec!() }
+            map: Map { width: 0, height: 0, tiles: vec!() }
     	}
     }
 
@@ -109,8 +102,8 @@ impl Component for Model {
                         true
                     }
                     _ => {
-                        self.game = get_game_from_value(gm.data);
-                        //ConsoleService::info(&format!("{:?}", self.game));
+                        self.map = get_map_from_value(gm.data);
+                        //ConsoleService::info(&format!("{:?}", self.map));
                         true
                     }
                 }
@@ -148,7 +141,7 @@ impl Component for Model {
                     <p><button onclick=self.link.callback(|_| Msg::GetMap)>{ "Get Map" }</button></p>
                 <div class="dungeon">
                     <div class="level">
-                        { for self.game.tiles.iter().map(display_tile) }
+                        { for self.map.tiles.iter().map(display_tile) }
                     </div>
                 </div>
             </>
