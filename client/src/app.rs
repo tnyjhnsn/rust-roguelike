@@ -2,16 +2,15 @@ use anyhow::Error;
 use yew::prelude::*;
 use yew::format::Json;
 use yew::services::websocket::{WebSocketService, WebSocketStatus, WebSocketTask};
-use yew::services::keyboard::{KeyboardService, KeyListenerHandle};
+use yew::services::keyboard::{KeyboardService};
 use yew::services::ConsoleService;
-use serde::{Deserialize, Serialize};
+use serde::{Serialize};
 use serde_json::Value;
 use roguelike_common::*;
 
 pub struct Model {
     ws: Option<WebSocketTask>,
     link: ComponentLink<Model>,
-    key_listener: KeyListenerHandle,
     map: Map,
 }
 
@@ -47,12 +46,11 @@ impl Component for Model {
 
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
         let window = &web_sys::window().unwrap();
-        let key_listener = KeyboardService::register_key_down(&window,
+        KeyboardService::register_key_down(&window,
             (&link).callback(|e: KeyboardEvent| {e.prevent_default(); Msg::Pressed(e)}));
     	Model {
     		ws: None,
     		link: link,
-            key_listener,
             map: Map { width: 0, height: 0, tiles: vec!() }
     	}
     }
