@@ -2,9 +2,6 @@ use actix::{Actor, StreamHandler};
 use actix_web::{web, App, Error, HttpRequest, HttpResponse, HttpServer};
 use actix_web_actors::ws;
 
-use serde::{Serialize};
-use serde_json::Value;
-
 use specs::prelude::*;
 use roguelike_common::*;
 

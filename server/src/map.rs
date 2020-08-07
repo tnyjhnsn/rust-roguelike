@@ -1,5 +1,4 @@
 use roguelike_common::*;
-use serde::{Serialize, Deserialize};
 
 pub fn new_map() -> Vec<TileType> {
     let mut map = vec![TileType::Floor; 60*20];

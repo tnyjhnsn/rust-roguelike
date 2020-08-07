@@ -3,6 +3,10 @@
 use wasm_bindgen::prelude::*;
 
 mod app;
+mod dungeon;
+pub use dungeon::*;
+mod level;
+pub use level::*;
 
 #[cfg(feature = "wee_alloc")]
 #[global_allocator]

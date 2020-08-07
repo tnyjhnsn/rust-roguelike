@@ -23,7 +23,7 @@ pub struct GameMsg {
     pub data: Value,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Map {
     pub width: i32,
     pub height: i32,

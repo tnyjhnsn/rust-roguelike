@@ -8,6 +8,8 @@ use serde::{Serialize};
 use serde_json::Value;
 use roguelike_common::*;
 
+use super::dungeon::*;
+
 pub struct Model {
     ws: Option<WebSocketTask>,
     link: ComponentLink<Model>,
@@ -72,11 +74,11 @@ impl Component for Model {
                                                          cbout, cbnot.into());
     				self.ws = Some(task.unwrap());
     			}
-    			true
+    			false
     		}
     		Msg::Disconnected => {
     			self.ws = None;
-    			true
+    			false
     		}
     		Msg::Ignore => {
     			false
@@ -85,7 +87,7 @@ impl Component for Model {
     			match self.ws {
     				Some(ref mut task) => {
     					task.send(Ok("/map".to_string()));
-    					true
+    					false
     				}
     				None => {
     					false
@@ -101,7 +103,6 @@ impl Component for Model {
                     }
                     _ => {
                         self.map = get_map_from_value(gm.data);
-                        //ConsoleService::info(&format!("{:?}", self.map));
                         true
                     }
                 }
@@ -126,7 +127,6 @@ impl Component for Model {
     }
 
     fn change(&mut self, _: Self::Properties) -> ShouldRender {
-        ConsoleService::info("Change called");
         true
     }
 
@@ -134,25 +134,12 @@ impl Component for Model {
     	html! {
             <>
                 <h1 class="title">{ "Rogue" }</h1>
-                    <button onclick=self.link.callback(|_| Msg::Connect)>{ "Connect" }</button><br/>
-                    { "Connected: " } { !self.ws.is_none() }
-                    <p><button onclick=self.link.callback(|_| Msg::GetMap)>{ "Get Map" }</button></p>
-                <div class="dungeon">
-                    <div class="level">
-                        { for self.map.tiles.iter().map(display_tile) }
-                    </div>
-                </div>
+                <button onclick=self.link.callback(|_| Msg::Connect)>{ "Connect" }</button><br/>
+                { "Connected: " } { !self.ws.is_none() }
+                <p><button onclick=self.link.callback(|_| Msg::GetMap)>{ "Get Map" }</button></p>
+                <Dungeon map=&self.map />
             </>
     	}
-    }
-}
-
-fn display_tile(tile: &TileType) -> Html {
-    let tile_status = if *tile == TileType::Wall { "wall" } else { "floor" };
-    html! {
-        <div class=("tile", tile_status)>
-            <div class="tile dagger"></div>
-        </div>
     }
 }
 
