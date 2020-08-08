@@ -10,6 +10,8 @@ pub struct Position {
     pub y: i32,
 }
 
+pub type EntityPositions = Vec<(usize, char)>;
+
 #[derive(Debug, PartialEq, Copy, Clone, Serialize_repr, Deserialize_repr)]
 #[repr(u8)]
 pub enum TileType {
@@ -27,7 +29,8 @@ pub struct GameMsg {
 pub struct Map {
     pub width: i32,
     pub height: i32,
-    pub tiles: Vec<TileType>
+    pub tiles: Vec<TileType>,
+    pub entities: EntityPositions,
 }
 
 pub fn xy_idx(x: i32, y: i32) -> usize {

@@ -2,7 +2,7 @@ use anyhow::Error;
 use yew::prelude::*;
 use yew::format::Json;
 use yew::services::websocket::{WebSocketService, WebSocketStatus, WebSocketTask};
-use yew::services::keyboard::{KeyboardService};
+use yew::services::keyboard::{KeyboardService, KeyListenerHandle};
 use yew::services::ConsoleService;
 use serde::{Serialize};
 use serde_json::Value;
@@ -13,6 +13,7 @@ use super::dungeon::*;
 pub struct Model {
     ws: Option<WebSocketTask>,
     link: ComponentLink<Model>,
+    key_listener: KeyListenerHandle,
     map: Map,
 }
 
@@ -34,7 +35,7 @@ fn get_gamemsg_from_value(v: Value) -> GameMsg {
     serde_json::from_value(v).unwrap()
 }
 
-fn get_position_from_value(v: Value) -> Position {
+fn get_position_from_value(v: Value) -> EntityPositions {
     serde_json::from_value(v).unwrap()
 }
 
@@ -48,12 +49,18 @@ impl Component for Model {
 
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
         let window = &web_sys::window().unwrap();
-        KeyboardService::register_key_down(&window,
+        let key_listener = KeyboardService::register_key_down(&window,
             (&link).callback(|e: KeyboardEvent| {e.prevent_default(); Msg::Pressed(e)}));
     	Model {
     		ws: None,
     		link: link,
-            map: Map { width: 0, height: 0, tiles: vec!() }
+            key_listener,
+            map: Map {
+                width: 0,
+                height: 0,
+                tiles: vec!(),
+                entities: vec!(),
+            }
     	}
     }
 
@@ -98,10 +105,11 @@ impl Component for Model {
                 let gm: GameMsg = get_gamemsg_from_value(v);
                 match gm.msg.trim() {
                     "POSITION" => {
-                        ConsoleService::info(&format!("{:?}", get_position_from_value(gm.data)));
+                        self.map.entities = get_position_from_value(gm.data);
                         true
                     }
                     _ => {
+                        ConsoleService::info(&format!("{:?}", gm.data));
                         self.map = get_map_from_value(gm.data);
                         true
                     }

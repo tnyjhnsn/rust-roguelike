@@ -7,6 +7,8 @@ mod dungeon;
 pub use dungeon::*;
 mod level;
 pub use level::*;
+mod entities;
+pub use entities::*;
 
 #[cfg(feature = "wee_alloc")]
 #[global_allocator]

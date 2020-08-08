@@ -26,14 +26,14 @@ pub fn new_map() -> Vec<TileType> {
     map
 }
 
-pub fn get_position(x: i32, y: i32) -> String {
-    let p = Position { x, y };
+pub fn get_position(e: EntityPositions) -> String {
     let gm = GameMsg {
         msg: String::from("POSITION"),
-        data: serde_json::to_value(p).unwrap(),
+        data: serde_json::to_value(e).unwrap(),
     };
-    println!("getting position");
-    serde_json::to_string(&gm).unwrap()
+    let s = serde_json::to_string(&gm).unwrap();
+    println!("{}", s);
+    s
 }
 
 pub fn draw_map(tiles: Vec<TileType>) -> String {
@@ -41,6 +41,7 @@ pub fn draw_map(tiles: Vec<TileType>) -> String {
         width: 60,
         height: 20,
         tiles,
+        entities: vec!(),
     };
     let gm = GameMsg {
         msg: String::from("GAME"),

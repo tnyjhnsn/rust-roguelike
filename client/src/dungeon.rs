@@ -3,6 +3,7 @@ use yew::services::ConsoleService;
 use roguelike_common::*;
 
 use super::level::*;
+use super::entities::*;
 
 pub struct Dungeon {
     props: Props,
@@ -42,6 +43,7 @@ impl Component for Dungeon {
         html! { 
             <div class="dungeon">
                 <Level tiles=&self.props.map.tiles />
+                <Entities entities=&self.props.map.entities />
             </div>
         }
     }

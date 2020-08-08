@@ -22,12 +22,15 @@ body {
   width: 100%;
   display: grid;
   justify-content: center;
+  position: relative;
 }
 
+.entities,
 .level {
   display: grid;
   grid-template-columns: repeat(60, 1fr);
   grid-template-rows: repeat(20, 1fr);
+  position: absolute;
 }
 
 .tile {

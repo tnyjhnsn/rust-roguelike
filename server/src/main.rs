@@ -26,10 +26,14 @@ impl GameSocket {
         let positions = self.ecs.read_storage::<Position>();
         let renderables = self.ecs.read_storage::<Renderable>();
 
-        for (pos, _render) in (&positions, &renderables).join() {
-            //println!("{} {} {}", pos.x, pos.y, render.glyph);
-            ctx.text(get_position(pos.x, pos.y));
+        let mut p: EntityPositions = vec!();
+
+        for (pos, render) in (&positions, &renderables).join() {
+            p.push((xy_idx(pos.x, pos.y), render.glyph));
         }
+
+        println!("{:?}", p);
+        ctx.text(get_position(p));
 
         println!("...Tock");
     }
