@@ -1,9 +1,9 @@
 use yew::prelude::*;
 use yew::services::ConsoleService;
-use roguelike_common::*;
 
-use super::level::*;
-use super::entities::*;
+use super::tile_map::*;
+use super::entity_map::*;
+use super::status_map::*;
 
 pub struct Dungeon {
     props: Props,
@@ -11,7 +11,7 @@ pub struct Dungeon {
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
-    pub map: Map,
+    pub map: roguelike_common::Map,
 }
 
 impl Component for Dungeon {
@@ -42,8 +42,9 @@ impl Component for Dungeon {
         ConsoleService::info("RENDER DUNGEON");
         html! { 
             <div class="dungeon">
-                <Level tiles=&self.props.map.tiles />
-                <Entities entities=&self.props.map.entities />
+                <TileMap tiles=&self.props.map.tiles />
+                <EntityMap entities=&self.props.map.entities />
+                <StatusMap status=&self.props.map.status />
             </div>
         }
     }

@@ -11,6 +11,8 @@ mod map;
 pub use map::*;
 mod player;
 pub use player::*;
+mod visibility_system;
+pub use visibility_system::*;
 
 struct GameSocket {
     ecs: World
@@ -23,22 +25,29 @@ impl GameSocket {
         player_input(txt, &mut self.ecs);
         self.run_systems();
 
-        let positions = self.ecs.read_storage::<Position>();
-        let renderables = self.ecs.read_storage::<Renderable>();
+        let fovs = self.ecs.read_storage::<FieldOfView>();
+        let player = self.ecs.read_storage::<Player>();
+        let position = self.ecs.read_storage::<Position>();
+        let renderable = self.ecs.read_storage::<Renderable>();
+        let map = self.ecs.fetch::<Vec<TileType>>();
 
-        let mut p: EntityPositions = vec!();
+        let mut f: Fov = vec!();
 
-        for (pos, render) in (&positions, &renderables).join() {
-            p.push((xy_idx(pos.x, pos.y), render.glyph));
+        for (_p, pos, fov, render) in (&player, &position, &fovs, &renderable).join() {
+            for t in &fov.visible_tiles {
+                let idx = xy_idx(t.x, t.y);
+                let s = if (pos.x, pos.y) == (t.x, t.y) { (render.glyph).to_string() } else { String::new() };
+                f.push((idx, map[idx], vec![s]));
+            }
         }
 
-        println!("{:?}", p);
-        ctx.text(get_position(p));
-
+        ctx.text(draw_fov(f));
         println!("...Tock");
     }
 
     fn run_systems(&mut self) {
+        let mut vis = VisibilitySystem{};
+        vis.run_now(&self.ecs);
         self.ecs.maintain();
     }
 
@@ -85,14 +94,16 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
     gs.ecs.register::<Position>(); 
     gs.ecs.register::<Renderable>(); 
     gs.ecs.register::<Player>(); 
+    gs.ecs.register::<FieldOfView>(); 
 
     gs.ecs.insert(new_map());
 
     gs.ecs
         .create_entity()
         .with(Position { x: 20, y: 10 })
-        .with(Renderable { glyph: '@' })
+        .with(Renderable { glyph: String::from("player-m") })
         .with(Player{})
+        .with(FieldOfView { visible_tiles: Vec::new(), range: 5 })
         .build();
 
     

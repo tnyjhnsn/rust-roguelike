@@ -25,8 +25,9 @@ body {
   position: relative;
 }
 
+.status,
 .entities,
-.level {
+.tiles {
   display: grid;
   grid-template-columns: repeat(60, 1fr);
   grid-template-rows: repeat(20, 1fr);
@@ -38,6 +39,16 @@ body {
   height: 42;
 }
 
+.seen {
+  background-color: #1e1e1e;
+  opacity: 0;
+}
+
+.not-seen {
+  background-color: #1e1e1e;
+  opacity: 1;
+}
+
 .wall {
   background-color: #1e1e1e;
 }
@@ -45,10 +56,6 @@ body {
 .floor {
   background: $floor64;
   background-size: 100%;
-}
-
-.seen {
-  opacity: 0.25;
 }
 
 // player

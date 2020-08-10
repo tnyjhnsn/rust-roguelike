@@ -1,8 +1,9 @@
 use yew::prelude::*;
 use yew::services::ConsoleService;
 use roguelike_common::*;
+use super::tile::*;
 
-pub struct Level {
+pub struct TileMap {
     props: Props,
 }
 
@@ -11,41 +12,39 @@ pub struct Props {
     pub tiles: Vec<TileType>,
 }
 
-impl Component for Level {
+impl Component for TileMap {
     type Message = ();
     type Properties = Props;
 
     fn create(props: Self::Properties, _: ComponentLink<Self>) -> Self {
-        Level { props }
+        TileMap { props }
     }
 
     fn change(&mut self, props: Self::Properties) -> bool {
         if self.props != props {
-            ConsoleService::info("LEVEL CHANGE True");
+            ConsoleService::info("TILEMAP CHANGE True");
             self.props = props;
             true
         } else {
-            ConsoleService::info("LEVEL CHANGE False");
+            ConsoleService::info("TILEMAP CHANGE False");
             false
         }
     }
 
     fn update(&mut self, _: Self::Message) -> ShouldRender {
-        ConsoleService::info("LEVEL UPDATE");
+        ConsoleService::info("TILEMAP UPDATE");
         false
     }
 
     fn view(&self) -> Html {
-        ConsoleService::info("RENDER LEVEL");
+        ConsoleService::info("RENDER TILEMAP");
         let render_tile = |tile: &TileType| {
-            let tile_status = if *tile == TileType::Wall { "wall" } else { "floor" };
             html! {
-                <div class=("tile", tile_status)></div>
+                <Tile tile=*tile />
             }
-
         };
         html! {
-            <div class="level">
+            <div class="tiles">
                 { for self.props.tiles.iter().map(render_tile) }
             </div>
         }

@@ -30,8 +30,11 @@ pub struct Map {
     pub width: i32,
     pub height: i32,
     pub tiles: Vec<TileType>,
-    pub entities: EntityPositions,
+    pub entities: Vec<String>,
+    pub status: Vec<String>,
 }
+
+pub type Fov = Vec<(usize, TileType, Vec<String>)>;
 
 pub fn xy_idx(x: i32, y: i32) -> usize {
     (y as usize * 60) + x as usize

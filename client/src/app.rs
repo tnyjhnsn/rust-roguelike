@@ -35,7 +35,7 @@ fn get_gamemsg_from_value(v: Value) -> GameMsg {
     serde_json::from_value(v).unwrap()
 }
 
-fn get_position_from_value(v: Value) -> EntityPositions {
+fn get_fov_from_value(v: Value) -> Fov {
     serde_json::from_value(v).unwrap()
 }
 
@@ -60,7 +60,8 @@ impl Component for Model {
                 height: 0,
                 tiles: vec!(),
                 entities: vec!(),
-            }
+                status: vec!(),
+            },
     	}
     }
 
@@ -104,13 +105,22 @@ impl Component for Model {
     		Msg::Received(Ok(v)) => {
                 let gm: GameMsg = get_gamemsg_from_value(v);
                 match gm.msg.trim() {
-                    "POSITION" => {
-                        self.map.entities = get_position_from_value(gm.data);
+                    "FOV" => {
+                        let fov = get_fov_from_value(gm.data);
+                        self.map.entities = vec![String::new();1200];
+                        for (idx, t, e) in fov.iter() {
+                            self.map.tiles[*idx] = *t;
+                            self.map.entities[*idx] = (*e[0]).to_string();
+                            self.map.status[*idx] = String::from("seen");
+                        }
                         true
                     }
                     _ => {
-                        ConsoleService::info(&format!("{:?}", gm.data));
-                        self.map = get_map_from_value(gm.data);
+                        //ConsoleService::info(&format!("{:?}", gm.data));
+                        //self.map = get_map_from_value(gm.data);
+                        self.map.tiles = vec![TileType::Floor;1200];
+                        self.map.status = vec![String::from("not-seen");1200];
+                        //ConsoleService::info(&format!("{:?}", self.map));
                         true
                     }
                 }

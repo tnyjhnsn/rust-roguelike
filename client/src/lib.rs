@@ -5,10 +5,18 @@ use wasm_bindgen::prelude::*;
 mod app;
 mod dungeon;
 pub use dungeon::*;
-mod level;
-pub use level::*;
-mod entities;
-pub use entities::*;
+mod tile_map;
+pub use tile_map::*;
+mod entity_map;
+pub use entity_map::*;
+mod status_map;
+pub use status_map::*;
+mod tile;
+pub use tile::*;
+mod entity;
+pub use entity::*;
+mod status;
+pub use status::*;
 
 #[cfg(feature = "wee_alloc")]
 #[global_allocator]

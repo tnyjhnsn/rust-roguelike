@@ -42,10 +42,21 @@ pub fn draw_map(tiles: Vec<TileType>) -> String {
         height: 20,
         tiles,
         entities: vec!(),
+        status: vec!(),
     };
     let gm = GameMsg {
         msg: String::from("GAME"),
         data: serde_json::to_value(map).unwrap(),
     };
     serde_json::to_string(&gm).unwrap()
+}
+
+pub fn draw_fov(fov: Fov) -> String {
+    let gm = GameMsg {
+        msg: String::from("FOV"),
+        data: serde_json::to_value(fov).unwrap(),
+    };
+    let s = serde_json::to_string(&gm).unwrap();
+    println!("{}", s);
+    s
 }
