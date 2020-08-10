@@ -25,15 +25,6 @@ pub struct GameMsg {
     pub data: Value,
 }
 
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-pub struct Map {
-    pub width: i32,
-    pub height: i32,
-    pub tiles: Vec<TileType>,
-    pub entities: Vec<String>,
-    pub status: Vec<String>,
-}
-
 pub type Fov = Vec<(usize, TileType, Vec<String>)>;
 
 pub fn xy_idx(x: i32, y: i32) -> usize {

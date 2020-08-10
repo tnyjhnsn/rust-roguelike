@@ -1,6 +1,7 @@
 use yew::prelude::*;
 use yew::services::ConsoleService;
 
+use super::app::*;
 use super::tile_map::*;
 use super::entity_map::*;
 use super::status_map::*;
@@ -11,7 +12,7 @@ pub struct Dungeon {
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
-    pub map: roguelike_common::Map,
+    pub map: Map,
 }
 
 impl Component for Dungeon {

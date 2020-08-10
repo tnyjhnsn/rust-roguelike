@@ -16,4 +16,5 @@ pub struct Player {}
 pub struct FieldOfView {
     pub visible_tiles: Vec<Position>,
     pub range: i32,
+    pub dirty: bool,
 }

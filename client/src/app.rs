@@ -4,11 +4,21 @@ use yew::format::Json;
 use yew::services::websocket::{WebSocketService, WebSocketStatus, WebSocketTask};
 use yew::services::keyboard::{KeyboardService, KeyListenerHandle};
 use yew::services::ConsoleService;
-use serde::{Serialize};
+use serde::{Serialize, Deserialize};
 use serde_json::Value;
 use roguelike_common::*;
 
 use super::dungeon::*;
+
+#[derive(Debug, PartialEq, Clone, Deserialize)]
+pub struct Map {
+    pub width: i32,
+    pub height: i32,
+    pub tiles: Vec<TileType>,
+    pub entities: Vec<String>,
+    pub status: Vec<String>,
+}
+
 
 pub struct Model {
     ws: Option<WebSocketTask>,
@@ -36,10 +46,6 @@ fn get_gamemsg_from_value(v: Value) -> GameMsg {
 }
 
 fn get_fov_from_value(v: Value) -> Fov {
-    serde_json::from_value(v).unwrap()
-}
-
-fn get_map_from_value(v: Value) -> Map {
     serde_json::from_value(v).unwrap()
 }
 

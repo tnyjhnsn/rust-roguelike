@@ -3,6 +3,7 @@
 use wasm_bindgen::prelude::*;
 
 mod app;
+pub use app::*;
 mod dungeon;
 pub use dungeon::*;
 mod tile_map;

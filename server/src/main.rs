@@ -29,7 +29,7 @@ impl GameSocket {
         let player = self.ecs.read_storage::<Player>();
         let position = self.ecs.read_storage::<Position>();
         let renderable = self.ecs.read_storage::<Renderable>();
-        let map = self.ecs.fetch::<Vec<TileType>>();
+        let map = self.ecs.fetch::<Map>();
 
         let mut f: Fov = vec!();
 
@@ -37,7 +37,7 @@ impl GameSocket {
             for t in &fov.visible_tiles {
                 let idx = xy_idx(t.x, t.y);
                 let s = if (pos.x, pos.y) == (t.x, t.y) { (render.glyph).to_string() } else { String::new() };
-                f.push((idx, map[idx], vec![s]));
+                f.push((idx, map.tiles[idx], vec![s]));
             }
         }
 
@@ -69,8 +69,8 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for GameSocket {
             Ok(ws::Message::Text(txt)) => {
                 match txt.trim() {
                     "/map" => {
-                        let tiles = self.ecs.fetch::<Vec<TileType>>();
-                        ctx.text(draw_map((&tiles).to_vec()));
+                        let map = self.ecs.fetch::<Map>();
+                        ctx.text(map.draw_map());
                     }
                     _ => {
                         self.tick(txt, ctx);
@@ -96,14 +96,18 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
     gs.ecs.register::<Player>(); 
     gs.ecs.register::<FieldOfView>(); 
 
-    gs.ecs.insert(new_map());
+    gs.ecs.insert(Map::new_map());
 
     gs.ecs
         .create_entity()
         .with(Position { x: 20, y: 10 })
         .with(Renderable { glyph: String::from("player-m") })
         .with(Player{})
-        .with(FieldOfView { visible_tiles: Vec::new(), range: 5 })
+        .with(FieldOfView {
+            visible_tiles: Vec::new(),
+            range: 5,
+            dirty: true,
+        })
         .build();
 
     
