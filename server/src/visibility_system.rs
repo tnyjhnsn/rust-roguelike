@@ -1,18 +1,21 @@
 use specs::prelude::*;
 use roguelike_common::*;
 use super::components::*;
+use super::map::*;
 //use num_integer::Roots;
 
 pub struct VisibilitySystem {}
 
 impl<'a> System<'a> for VisibilitySystem {
-    type SystemData = ( WriteStorage<'a, FieldOfView>, 
+    type SystemData = ( ReadExpect<'a, Map>,
+                        WriteStorage<'a, FieldOfView>, 
                         ReadStorage<'a, Position>);
 
-    fn run(&mut self, (mut fov, pos): Self::SystemData) {
+    fn run(&mut self, (map, mut fov, pos): Self::SystemData) {
         for (fov, pos) in (&mut fov, &pos).join() {
             fov.visible_tiles.clear();
             fov.visible_tiles = get_fov(pos.x, pos.y, fov.range);
+            fov.visible_tiles.retain(|p| p.x >= 0 && p.x < map.width && p.y >= 0 && p.y < map.height);
         }
     }
 }

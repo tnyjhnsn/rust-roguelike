@@ -4,6 +4,10 @@ use serde::{Serialize, Deserialize};
 use serde_json::Value;
 use serde_repr::*;
 
+// consts for binary operations
+pub const SEEN: i32 = 1;
+pub const VISIBLE: i32 = 2;
+
 #[derive(Component, Debug, Serialize, Deserialize)]
 pub struct Position {
     pub x: i32,
@@ -27,6 +31,3 @@ pub struct GameMsg {
 
 pub type Fov = Vec<(usize, TileType, Vec<String>)>;
 
-pub fn xy_idx(x: i32, y: i32) -> usize {
-    (y as usize * 60) + x as usize
-}

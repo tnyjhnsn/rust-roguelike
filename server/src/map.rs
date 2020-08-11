@@ -4,38 +4,49 @@ pub struct Map {
     pub width: i32,
     pub height: i32,
     pub tiles: Vec<TileType>,
+    pub status: Vec<i32>,
 }
 
 impl Map {
 
     pub fn new_map() -> Self {
-        let mut tiles = vec![TileType::Floor; 60*20];
-        let width = 60;
-        let height = 20;
+        let width: i32 = 60;
+        let height: i32 = 20;
+        let dim = (width * height) as usize;
+        let tiles = vec![TileType::Floor; dim];
+        let status = vec![0; dim];
 
-        for x in 0..width {
-            tiles[xy_idx(x, 0)] = TileType::Wall;
-            tiles[xy_idx(x, height-1)] = TileType::Wall;
-        }
-        for y in 0..height {
-            tiles[xy_idx(0, y)] = TileType::Wall;
-            tiles[xy_idx(width-1, y)] = TileType::Wall;
-        }
-
-        let mut rng = rltk::RandomNumberGenerator::new();
-
-        for _i in 0..200 {
-            let x = rng.roll_dice(1, 59);
-            let y = rng.roll_dice(1, 19);
-            let idx = xy_idx(x, y);
-            if idx != xy_idx(20, 10) {
-                tiles[idx] = TileType::Wall;
-            }
-        }
         Map {
             width,
             height,
             tiles,
+            status,
+        }
+    }
+
+    pub fn create_temp_walls(&mut self) {
+        let mut rng = rltk::RandomNumberGenerator::new();
+
+        for x in 0..self.width {
+            let mut idx = self.xy_idx(x, 0);
+            self.tiles[idx] = TileType::Wall;
+            idx = self.xy_idx(x, self.height-1);
+            self.tiles[idx] = TileType::Wall;
+        }
+        for y in 0..self.height {
+            let mut idx = self.xy_idx(0, y);
+            self.tiles[idx] = TileType::Wall;
+            idx = self.xy_idx(self.width-1, y);
+            self.tiles[idx] = TileType::Wall;
+        }
+
+        for _i in 0..200 {
+            let x = rng.roll_dice(1, self.width-1);
+            let y = rng.roll_dice(1, self.height-1);
+            let idx = self.xy_idx(x, y);
+            if idx != self.xy_idx(20, 10) {
+                self.tiles[idx] = TileType::Wall;
+            }
         }
     }
 
@@ -48,6 +59,10 @@ impl Map {
         let s = serde_json::to_string(&gm).unwrap();
             println!("{}", s);
         s
+    }
+
+    pub fn xy_idx(&self, x: i32, y: i32) -> usize {
+        (y as usize * self.width as usize) + x as usize
     }
 }
 

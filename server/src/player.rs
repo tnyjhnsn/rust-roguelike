@@ -13,10 +13,10 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
     let map = ecs.fetch::<Map>();
 
     for (_player, pos, fov) in (&mut players, &mut positions, &mut fovs).join() {
-        let dest_idx = xy_idx(pos.x + delta_x, pos.y + delta_y);
+        let dest_idx = map.xy_idx(pos.x + delta_x, pos.y + delta_y);
         if map.tiles[dest_idx] != TileType::Wall {
-            pos.x = min(59 , max(0, pos.x + delta_x));
-            pos.y = min(19, max(0, pos.y + delta_y));
+            pos.x = min(map.width-1 , max(0, pos.x + delta_x));
+            pos.y = min(map.height-1, max(0, pos.y + delta_y));
             fov.dirty = true;
         }
     }

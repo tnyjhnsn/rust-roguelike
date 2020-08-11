@@ -35,7 +35,7 @@ impl GameSocket {
 
         for (_p, pos, fov, render) in (&player, &position, &fovs, &renderable).join() {
             for t in &fov.visible_tiles {
-                let idx = xy_idx(t.x, t.y);
+                let idx = map.xy_idx(t.x, t.y);
                 let s = if (pos.x, pos.y) == (t.x, t.y) { (render.glyph).to_string() } else { String::new() };
                 f.push((idx, map.tiles[idx], vec![s]));
             }
@@ -96,7 +96,9 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
     gs.ecs.register::<Player>(); 
     gs.ecs.register::<FieldOfView>(); 
 
-    gs.ecs.insert(Map::new_map());
+    let mut map = Map::new_map();
+    map.create_temp_walls();
+    gs.ecs.insert(map);
 
     gs.ecs
         .create_entity()
