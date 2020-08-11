@@ -59,8 +59,8 @@ impl Component for Model {
         let key_listener = KeyboardService::register_key_down(&window,
             (&link).callback(|e: KeyboardEvent| {e.prevent_default(); Msg::Pressed(e)}));
     	Model {
-    		ws: None,
-    		link: link,
+            ws: None,
+            link: link,
             key_listener,
             map: Map {
                 width: 0,
@@ -134,23 +134,21 @@ impl Component for Model {
                     }
                 }
     		}
-    		Msg::Received(Err(s)) => {
-    			let msg = format!("Error when reading data from server: {}\n", &s.to_string());
+            Msg::Received(Err(s)) => {
+                let msg = format!("Error when reading data from server: {}\n", &s.to_string());
                 ConsoleService::info(&format!("{}", msg));
-    			false
-    		}
-            Msg::Pressed(e) => {
-    			match self.ws {
-    				Some(ref mut task) => {
-    					task.send(Ok(e.key()));
-                        false
-    				}
-    				None => {
-    					false
-    				}
-    			}
+                false
             }
-    	}
+            Msg::Pressed(e) => {
+                match self.ws {
+                    Some(ref mut task) => {
+                        task.send(Ok(e.key()));
+                        false
+                    }
+                    None => false
+                }
+            }
+        }
     }
 
     fn change(&mut self, _: Self::Properties) -> ShouldRender {
