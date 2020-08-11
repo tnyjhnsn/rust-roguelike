@@ -13,6 +13,8 @@ mod player;
 pub use player::*;
 mod visibility_system;
 pub use visibility_system::*;
+mod monster_ai_system;
+pub use monster_ai_system::*;
 
 struct GameSocket {
     ecs: World
@@ -59,6 +61,8 @@ impl GameSocket {
     fn run_systems(&mut self) {
         let mut vis = VisibilitySystem{};
         vis.run_now(&self.ecs);
+        let mut mob = MonsterAISystem{};
+        mob.run_now(&self.ecs);
         self.ecs.maintain();
     }
 
@@ -106,13 +110,16 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
     gs.ecs.register::<Renderable>(); 
     gs.ecs.register::<Player>(); 
     gs.ecs.register::<FieldOfView>(); 
+    gs.ecs.register::<Monster>(); 
 
     let mut map = Map::new_map();
     map.create_temp_walls();
+    let px = 20;
+    let py = 10;
 
     gs.ecs
         .create_entity()
-        .with(Position { x: 20, y: 10 })
+        .with(Position { x: px, y: py })
         .with(Renderable { glyph: String::from("player-m") })
         .with(Player{})
         .with(FieldOfView {
@@ -138,6 +145,7 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
             .create_entity()
             .with(Position { x, y })
             .with(Renderable { glyph })
+            .with(Monster{})
             .with(FieldOfView {
                 visible_tiles: Vec::new(),
                 range: 5,
@@ -146,6 +154,7 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
             .build();
     }
 
+    gs.ecs.insert(Point::new(px, py));
     gs.ecs.insert(map);
     
     let res = ws::start(gs, &req, stream);

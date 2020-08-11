@@ -23,7 +23,7 @@ impl<'a> System<'a> for VisibilitySystem {
     }
 }
 
-fn get_fov(x: i32, y: i32, r: i32) -> Vec<Position> {
+fn get_fov(x: i32, y: i32, r: i32) -> Vec<Point> {
     let mut v = vec!();
     for i in r*-1..r+1 {
         let mut n = (((r*r - i*i) as f64).sqrt()) as i32;
@@ -33,7 +33,7 @@ fn get_fov(x: i32, y: i32, r: i32) -> Vec<Position> {
         };
         n = if n == 0 { 1 } else { n };
         for j in n*-1..n+1 {
-            v.push(Position { x: x+i, y: y+j })
+            v.push(Point { x: x+i, y: y+j })
         }
     }
     v

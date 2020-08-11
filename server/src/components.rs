@@ -13,8 +13,11 @@ pub struct Renderable {
 pub struct Player {}
 
 #[derive(Component, Debug)]
+pub struct Monster {}
+
+#[derive(Component, Debug)]
 pub struct FieldOfView {
-    pub visible_tiles: Vec<Position>,
+    pub visible_tiles: Vec<Point>,
     pub range: i32,
     pub dirty: bool,
 }
