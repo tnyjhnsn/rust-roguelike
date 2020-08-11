@@ -61,6 +61,18 @@ impl Map {
     pub fn xy_idx(&self, x: i32, y: i32) -> usize {
         (y as usize * self.width as usize) + x as usize
     }
+
+    pub fn get_random_space(&self) -> (i32, i32) {
+        let mut rng = rltk::RandomNumberGenerator::new();
+        loop {
+            let x = rng.roll_dice(1, self.width-1);
+            let y = rng.roll_dice(1, self.height-1);
+            let idx = self.xy_idx(x, y);
+            if self.tiles[idx] == TileType::Floor {
+                break (x, y)
+            }
+        }
+    }
 }
 
 pub fn draw_fov(fov: Fov) -> String {

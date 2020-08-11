@@ -109,7 +109,6 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
 
     let mut map = Map::new_map();
     map.create_temp_walls();
-    gs.ecs.insert(map);
 
     gs.ecs
         .create_entity()
@@ -123,17 +122,31 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
         })
         .build();
 
-    gs.ecs
-        .create_entity()
-        .with(Position { x: 21, y: 11 })
-        .with(Renderable { glyph: String::from("white-centipede") })
-        .with(FieldOfView {
-            visible_tiles: Vec::new(),
-            range: 5,
-            dirty: true,
-        })
-        .build();
+    let mut rng = rltk::RandomNumberGenerator::new();
 
+    for _ in 1..20 {
+        let (x, y) = map.get_random_space();
+        let glyph;
+        let roll = rng.roll_dice(1, 5);
+        match roll {
+            1 => glyph = String:: from("white-centipede"),
+            2 => glyph = String:: from("red-ant"),
+            3 => glyph = String:: from("ghost"),
+            _ => glyph = String:: from("grey-mould"),
+        }
+        gs.ecs
+            .create_entity()
+            .with(Position { x, y })
+            .with(Renderable { glyph })
+            .with(FieldOfView {
+                visible_tiles: Vec::new(),
+                range: 5,
+                dirty: true,
+            })
+            .build();
+    }
+
+    gs.ecs.insert(map);
     
     let res = ws::start(gs, &req, stream);
     println!("{:?}", res);
