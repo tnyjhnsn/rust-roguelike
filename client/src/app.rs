@@ -50,6 +50,10 @@ fn get_fov_from_value(v: Value) -> Fov {
     serde_json::from_value(v).unwrap()
 }
 
+fn get_entities_from_value(v: Value) -> Entities {
+    serde_json::from_value(v).unwrap()
+}
+
 impl Component for Model {
     type Message = Msg;
     type Properties = ();
@@ -120,11 +124,18 @@ impl Component for Model {
                         }
                         self.map.current_fov.clear();
                         let fov = get_fov_from_value(gm.data);
-                        for (idx, tile, entities) in fov.iter() {
+                        for (idx, tile) in fov.iter() {
                             self.map.tiles[*idx] = *tile;
-                            self.map.entities[*idx] = (*entities[0]).to_string();
                             self.map.status[*idx] |= VISIBLE;
                             self.map.current_fov.push(*idx);
+                        }
+                        true
+                    }
+                    "ENTITIES" => {
+                        self.map.entities = vec![String::new(); 1200];
+                        let entities = get_entities_from_value(gm.data);
+                        for (idx, entity) in entities.iter() {
+                            self.map.entities[*idx] = (*entity[0]).to_string();
                         }
                         true
                     }

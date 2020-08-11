@@ -4,7 +4,7 @@ use roguelike_common::*;
 
 // struct Position moved to common
 
-#[derive(Component)]
+#[derive(Component, Debug)]
 pub struct Renderable {
     pub glyph: String,
 }

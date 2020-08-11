@@ -72,3 +72,13 @@ pub fn draw_fov(fov: Fov) -> String {
     println!("{}", s);
     s
 }
+
+pub fn draw_entities(e: Entities) -> String {
+    let gm = GameMsg {
+        msg: String::from("ENTITIES"),
+        data: serde_json::to_value(e).unwrap(),
+    };
+    let s = serde_json::to_string(&gm).unwrap();
+    println!("{}", s);
+    s
+}

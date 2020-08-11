@@ -14,8 +14,6 @@ pub struct Position {
     pub y: i32,
 }
 
-pub type EntityPositions = Vec<(usize, char)>;
-
 #[derive(Debug, PartialEq, Copy, Clone, Serialize_repr, Deserialize_repr)]
 #[repr(u8)]
 pub enum TileType {
@@ -29,5 +27,6 @@ pub struct GameMsg {
     pub data: Value,
 }
 
-pub type Fov = Vec<(usize, TileType, Vec<String>)>;
+pub type Fov = Vec<(usize, TileType)>;
+pub type Entities = Vec<(usize, Vec<String>)>;
 

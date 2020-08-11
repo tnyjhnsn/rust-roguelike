@@ -32,16 +32,27 @@ impl GameSocket {
         let map = self.ecs.fetch::<Map>();
 
         let mut f: Fov = vec!();
+        let mut player_fov = vec!();
 
-        for (_p, pos, fov, render) in (&player, &position, &fovs, &renderable).join() {
+        for (_p, fov) in (&player, &fovs).join() {
             for t in &fov.visible_tiles {
                 let idx = map.xy_idx(t.x, t.y);
-                let s = if (pos.x, pos.y) == (t.x, t.y) { (render.glyph).to_string() } else { String::new() };
-                f.push((idx, map.tiles[idx], vec![s]));
+                f.push((idx, map.tiles[idx]));
+                player_fov.push(idx);
             }
         }
-
         ctx.text(draw_fov(f));
+
+        let mut e: roguelike_common::Entities = vec!();
+
+        for (pos, render) in (&position, &renderable).join() {
+            let idx = map.xy_idx(pos.x, pos.y);
+            if player_fov.contains(&idx) {
+                e.push((idx, vec![(render.glyph).to_string()]));
+            }
+        };
+        ctx.text(draw_entities(e));
+
         println!("...Tock");
     }
 
@@ -105,6 +116,17 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
         .with(Position { x: 20, y: 10 })
         .with(Renderable { glyph: String::from("player-m") })
         .with(Player{})
+        .with(FieldOfView {
+            visible_tiles: Vec::new(),
+            range: 5,
+            dirty: true,
+        })
+        .build();
+
+    gs.ecs
+        .create_entity()
+        .with(Position { x: 21, y: 11 })
+        .with(Renderable { glyph: String::from("white-centipede") })
         .with(FieldOfView {
             visible_tiles: Vec::new(),
             range: 5,
