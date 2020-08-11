@@ -1,5 +1,4 @@
 use yew::prelude::*;
-use yew::services::ConsoleService;
 
 use super::app::*;
 use super::tile_map::*;
@@ -25,22 +24,18 @@ impl Component for Dungeon {
 
     fn change(&mut self, props: Self::Properties) -> bool {
         if self.props != props {
-            ConsoleService::info("DUNGEON CHANGE True");
             self.props = props;
             true
         } else {
-            ConsoleService::info("DUNGEON CHANGE False");
             false
         }
     }
 
     fn update(&mut self, _: Self::Message) -> ShouldRender {
-        ConsoleService::info("DUNGEON UPDATE");
         false
     }
 
     fn view(&self) -> Html {
-        ConsoleService::info("RENDER DUNGEON");
         html! { 
             <div class="dungeon">
                 <TileMap tiles=&self.props.map.tiles />

@@ -1,5 +1,4 @@
 use yew::prelude::*;
-use yew::services::ConsoleService;
 use super::status::*;
 
 pub struct StatusMap {
@@ -21,22 +20,18 @@ impl Component for StatusMap {
 
     fn change(&mut self, props: Self::Properties) -> bool {
         if self.props != props {
-            ConsoleService::info("STATUSMAP CHANGE True");
             self.props = props;
             true
         } else {
-            ConsoleService::info("STATUSMAP CHANGE False");
             false
         }
     }
 
     fn update(&mut self, _: Self::Message) -> ShouldRender {
-        ConsoleService::info("STATUSMAP UPDATE");
         false
     }
 
     fn view(&self) -> Html {
-        ConsoleService::info("RENDER STATUSMAP");
         let render_tile = |status: &i32| {
             html! {
                 <Status status=status />

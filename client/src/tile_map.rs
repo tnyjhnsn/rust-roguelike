@@ -1,5 +1,4 @@
 use yew::prelude::*;
-use yew::services::ConsoleService;
 use roguelike_common::*;
 use super::tile::*;
 
@@ -22,22 +21,18 @@ impl Component for TileMap {
 
     fn change(&mut self, props: Self::Properties) -> bool {
         if self.props != props {
-            ConsoleService::info("TILEMAP CHANGE True");
             self.props = props;
             true
         } else {
-            ConsoleService::info("TILEMAP CHANGE False");
             false
         }
     }
 
     fn update(&mut self, _: Self::Message) -> ShouldRender {
-        ConsoleService::info("TILEMAP UPDATE");
         false
     }
 
     fn view(&self) -> Html {
-        ConsoleService::info("RENDER TILEMAP");
         let render_tile = |tile: &TileType| {
             html! {
                 <Tile tile=*tile />
