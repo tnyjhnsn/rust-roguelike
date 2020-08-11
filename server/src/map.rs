@@ -4,7 +4,6 @@ pub struct Map {
     pub width: i32,
     pub height: i32,
     pub tiles: Vec<TileType>,
-    pub status: Vec<i32>,
 }
 
 impl Map {
@@ -14,13 +13,11 @@ impl Map {
         let height: i32 = 20;
         let dim = (width * height) as usize;
         let tiles = vec![TileType::Floor; dim];
-        let status = vec![0; dim];
 
         Map {
             width,
             height,
             tiles,
-            status,
         }
     }
 
@@ -72,6 +69,6 @@ pub fn draw_fov(fov: Fov) -> String {
         data: serde_json::to_value(fov).unwrap(),
     };
     let s = serde_json::to_string(&gm).unwrap();
-    //println!("{}", s);
+    println!("{}", s);
     s
 }

@@ -39,9 +39,13 @@ body {
   height: 24;
 }
 
+.visible {
+  opacity: 0;
+}
+
 .seen {
   background-color: #1e1e1e;
-  opacity: 0.9;
+  opacity: 0.8;
 }
 
 .not-seen {

@@ -16,7 +16,8 @@ pub struct Map {
     pub height: i32,
     pub tiles: Vec<TileType>,
     pub entities: Vec<String>,
-    pub status: Vec<String>,
+    pub status: Vec<i32>,
+    pub current_fov: Vec<usize>,
 }
 
 
@@ -64,9 +65,10 @@ impl Component for Model {
             map: Map {
                 width: 0,
                 height: 0,
-                tiles: vec!(),
-                entities: vec!(),
-                status: vec!(),
+                tiles: vec![TileType::Floor; 1200],
+                entities: vec![String::new(); 1200],
+                status: vec![0; 1200],
+                current_fov: vec!(),
             },
     	}
     }
@@ -112,22 +114,23 @@ impl Component for Model {
                 let gm: GameMsg = get_gamemsg_from_value(v);
                 match gm.msg.trim() {
                     "FOV" => {
+                        for c in &self.map.current_fov {
+                            self.map.status[*c] &= !VISIBLE;
+                            self.map.status[*c] |= SEEN;
+                        }
+                        self.map.current_fov.clear();
                         let fov = get_fov_from_value(gm.data);
-                        self.map.entities = vec![String::new();1200];
-                        for (idx, t, e) in fov.iter() {
-                            self.map.tiles[*idx] = *t;
-                            self.map.entities[*idx] = (*e[0]).to_string();
-                            self.map.status[*idx] = String::from("seen");
+                        for (idx, tile, entities) in fov.iter() {
+                            self.map.tiles[*idx] = *tile;
+                            self.map.entities[*idx] = (*entities[0]).to_string();
+                            self.map.status[*idx] |= VISIBLE;
+                            self.map.current_fov.push(*idx);
                         }
                         true
                     }
                     _ => {
                         //ConsoleService::info(&format!("{:?}", gm.data));
-                        //self.map = get_map_from_value(gm.data);
-                        self.map.tiles = vec![TileType::Floor;1200];
-                        self.map.status = vec![String::from("not-seen");1200];
-                        //ConsoleService::info(&format!("{:?}", self.map));
-                        true
+                        false
                     }
                 }
     		}

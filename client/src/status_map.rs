@@ -8,7 +8,7 @@ pub struct StatusMap {
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
-    pub status: Vec<String>,
+    pub status: Vec<i32>,
 }
 
 impl Component for StatusMap {
@@ -37,7 +37,7 @@ impl Component for StatusMap {
 
     fn view(&self) -> Html {
         ConsoleService::info("RENDER STATUSMAP");
-        let render_tile = |status: &String| {
+        let render_tile = |status: &i32| {
             html! {
                 <Status status=status />
             }

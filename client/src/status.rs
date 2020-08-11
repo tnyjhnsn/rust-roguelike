@@ -1,5 +1,6 @@
 use yew::prelude::*;
 use yew::services::ConsoleService;
+use roguelike_common::*;
 
 pub struct Status {
     props: Props,
@@ -7,7 +8,7 @@ pub struct Status {
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
-    pub status: String
+    pub status: i32
 }
 
 impl Component for Status {
@@ -36,8 +37,12 @@ impl Component for Status {
 
     fn view(&self) -> Html {
         //ConsoleService::info("RENDER TILE");
+        let mut style = String::from("not-seen");
+        if self.props.status & SEEN != 0 { style = String::from("seen") };
+        if self.props.status & VISIBLE != 0 { style = String::from("visible") };
+
         html! {
-            <div class=("tile", &self.props.status)></div>
+            <div class=("tile", style)></div>
         }
 
     }

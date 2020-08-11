@@ -13,9 +13,12 @@ impl<'a> System<'a> for VisibilitySystem {
 
     fn run(&mut self, (map, mut fov, pos): Self::SystemData) {
         for (fov, pos) in (&mut fov, &pos).join() {
-            fov.visible_tiles.clear();
-            fov.visible_tiles = get_fov(pos.x, pos.y, fov.range);
-            fov.visible_tiles.retain(|p| p.x >= 0 && p.x < map.width && p.y >= 0 && p.y < map.height);
+            if fov.dirty {
+                fov.dirty = false;
+                fov.visible_tiles.clear();
+                fov.visible_tiles = get_fov(pos.x, pos.y, fov.range);
+                fov.visible_tiles.retain(|p| p.x >= 0 && p.x < map.width && p.y >= 0 && p.y < map.height);
+            }
         }
     }
 }
