@@ -37,11 +37,18 @@ impl GameSocket {
         let mut player_fov = Vec::new();
 
         for (_p, fov) in (&player, &fovs).join() {
+            let mut wall: Vec<usize> = Vec::new();
+            let mut floor: Vec<usize> = Vec::new();
             for t in &fov.visible_tiles {
                 let idx = map.xy_idx(t.x, t.y);
-                f.push((idx, map.tiles[idx]));
+                match map.tiles[idx] {
+                    TileType::Floor => floor.push(idx),
+                    TileType::Wall => wall.push(idx),
+                }
                 player_fov.push(idx);
             }
+            f.push((TileType::Wall, wall));
+            f.push((TileType::Floor, floor));
         }
         ctx.text(draw_fov(f));
 

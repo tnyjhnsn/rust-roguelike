@@ -124,10 +124,12 @@ impl Component for Model {
                         }
                         self.map.current_fov.clear();
                         let fov = get_fov_from_value(gm.data);
-                        for (idx, tile) in fov.iter() {
-                            self.map.tiles[*idx] = *tile;
-                            self.map.status[*idx] |= VISIBLE;
-                            self.map.current_fov.push(*idx);
+                        for (tile, indexes) in fov.iter() {
+                            for idx in indexes.iter() {
+                                self.map.tiles[*idx] = *tile;
+                                self.map.status[*idx] |= VISIBLE;
+                                self.map.current_fov.push(*idx);
+                            }
                         }
                         true
                     }
