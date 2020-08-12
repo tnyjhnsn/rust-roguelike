@@ -33,8 +33,8 @@ impl GameSocket {
         let renderable = self.ecs.read_storage::<Renderable>();
         let map = self.ecs.fetch::<Map>();
 
-        let mut f: Fov = vec!();
-        let mut player_fov = vec!();
+        let mut f: Fov = Vec::new();
+        let mut player_fov = Vec::new();
 
         for (_p, fov) in (&player, &fovs).join() {
             for t in &fov.visible_tiles {
@@ -45,7 +45,7 @@ impl GameSocket {
         }
         ctx.text(draw_fov(f));
 
-        let mut e: roguelike_common::Entities = vec!();
+        let mut e: roguelike_common::Entities = Vec::new();
 
         for (pos, render) in (&position, &renderable).join() {
             let idx = map.xy_idx(pos.x, pos.y);

@@ -24,7 +24,7 @@ impl<'a> System<'a> for VisibilitySystem {
 }
 
 fn get_fov(x: i32, y: i32, r: i32) -> Vec<Point> {
-    let mut v = vec!();
+    let mut v = Vec::new();
     for i in r*-1..r+1 {
         let mut n = (((r*r - i*i) as f64).sqrt()) as i32;
         n = match i {

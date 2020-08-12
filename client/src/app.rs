@@ -72,7 +72,7 @@ impl Component for Model {
                 tiles: vec![TileType::Floor; 1200],
                 entities: vec![String::new(); 1200],
                 status: vec![0; 1200],
-                current_fov: vec!(),
+                current_fov: Vec::new(),
             },
     	}
     }
