@@ -21,3 +21,9 @@ pub struct FieldOfView {
     pub range: i32,
     pub dirty: bool,
 }
+
+#[derive(Component, Debug)]
+pub struct Name {
+    pub name: String,
+}
+

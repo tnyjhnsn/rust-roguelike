@@ -111,6 +111,7 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
     gs.ecs.register::<Player>(); 
     gs.ecs.register::<FieldOfView>(); 
     gs.ecs.register::<Monster>(); 
+    gs.ecs.register::<Name>(); 
 
     let mut map = Map::new_map();
     map.create_temp_walls();
@@ -122,6 +123,7 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
         .with(Position { x: px, y: py })
         .with(Renderable { glyph: String::from("player-m") })
         .with(Player{})
+        .with(Name { name: "The Hero".to_string() })
         .with(FieldOfView {
             visible_tiles: Vec::new(),
             range: 5,
@@ -131,21 +133,23 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
 
     let mut rng = rltk::RandomNumberGenerator::new();
 
-    for _ in 1..20 {
+    for i in 1..20 {
         let (x, y) = map.get_random_space();
         let glyph;
+        let name;
         let roll = rng.roll_dice(1, 5);
         match roll {
-            1 => glyph = String:: from("white-centipede"),
-            2 => glyph = String:: from("red-ant"),
-            3 => glyph = String:: from("ghost"),
-            _ => glyph = String:: from("grey-mould"),
+            1 => { glyph = String:: from("white-centipede"); name = "Carnivorous White Centipede".to_string(); }
+            2 => { glyph = String:: from("red-ant"); name = "Huge Red Ant".to_string(); }
+            3 => { glyph = String:: from("ghost"); name = "Scary Ghost".to_string(); }
+            _ => { glyph = String:: from("grey-mould"); name = "Grey Mould".to_string(); }
         }
         gs.ecs
             .create_entity()
             .with(Position { x, y })
             .with(Renderable { glyph })
             .with(Monster{})
+            .with(Name { name: format!("{} #{}", &name, i) })
             .with(FieldOfView {
                 visible_tiles: Vec::new(),
                 range: 5,
