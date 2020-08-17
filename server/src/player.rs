@@ -54,18 +54,14 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
 
 pub fn player_input( txt: String, ecs: &mut World) {
     match txt.trim() {
-        "ArrowLeft" => {
-            try_move_player(-1, 0, ecs);
-        }
-        "ArrowRight" => {
-            try_move_player(1, 0, ecs);
-        }
-        "ArrowUp" => {
-            try_move_player(0, -1, ecs);
-        }
-        "ArrowDown" => {
-            try_move_player(0, 1, ecs);
-        }
+        "ArrowLeft" => try_move_player(-1, 0, ecs),
+        "ArrowRight" => try_move_player(1, 0, ecs),
+        "ArrowUp" => try_move_player(0, -1, ecs),
+        "ArrowDown" => try_move_player(0, 1, ecs),
+        "Y"|"y" => try_move_player(-1, -1, ecs),
+        "U"|"u" => try_move_player(1, -1, ecs),
+        "N"|"n" => try_move_player(1, 1, ecs),
+        "B"|"b" => try_move_player(-1, 1, ecs),
         _ => ()
     }
 }

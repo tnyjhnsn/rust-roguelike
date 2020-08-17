@@ -153,13 +153,15 @@ impl Component for Model {
                 false
             }
             Msg::Pressed(e) => {
-                match self.ws {
-                    Some(ref mut task) => {
-                        task.send(Ok(e.key()));
-                        false
+                if e.key_code() >= 37 && e.key_code() <= 90 {
+                    match self.ws {
+                        Some(ref mut task) => {
+                            task.send(Ok(e.key()));
+                            false
+                        }
+                        None => false
                     }
-                    None => false
-                }
+                } else { false }
             }
         }
     }
