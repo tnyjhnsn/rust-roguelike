@@ -22,7 +22,7 @@ struct GameSocket {
 
 impl GameSocket {
     fn tick(&mut self,  txt: String, ctx: &mut ws::WebsocketContext<Self>) {
-        println!("Tick...");
+        //println!("Tick...");
 
         player_input(txt, &mut self.ecs);
         self.run_systems();
@@ -62,7 +62,7 @@ impl GameSocket {
         };
         ctx.text(draw_entities(e));
 
-        println!("...Tock");
+        //println!("...Tock");
     }
 
     fn run_systems(&mut self) {
@@ -85,7 +85,7 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for GameSocket {
         msg: Result<ws::Message, ws::ProtocolError>,
         ctx: &mut Self::Context,
     ) {
-        println!("MSG {:?}", msg);
+        //println!("MSG {:?}", msg);
         match msg {
             Ok(ws::Message::Ping(m)) => ctx.pong(&m),
             Ok(ws::Message::Text(txt)) => {
@@ -134,20 +134,19 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
         .with(FieldOfView {
             visible_tiles: Vec::new(),
             range: 5,
-            dirty: true,
         })
         .build();
 
     let mut rng = rltk::RandomNumberGenerator::new();
 
-    for i in 1..20 {
+    for i in 1..10 {
         let (x, y) = map.get_random_space();
         let glyph;
         let name;
         let roll = rng.roll_dice(1, 5);
         match roll {
             1 => { glyph = String:: from("white-centipede"); name = "Carnivorous White Centipede".to_string(); }
-            2 => { glyph = String:: from("red-ant"); name = "Huge Red Ant".to_string(); }
+            2 => { glyph = String:: from("red-ant"); name = "Giant Red Ant".to_string(); }
             3 => { glyph = String:: from("ghost"); name = "Scary Ghost".to_string(); }
             _ => { glyph = String:: from("grey-mould"); name = "Grey Mould".to_string(); }
         }
@@ -160,12 +159,15 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
             .with(FieldOfView {
                 visible_tiles: Vec::new(),
                 range: 5,
-                dirty: true,
             })
             .build();
     }
 
-    gs.ecs.insert(Point::new(px, py));
+    gs.ecs.insert(
+        PlayerPosition {
+            position: Point::new(px, py),
+            dijkstra_map: Vec::new(),
+        });
     gs.ecs.insert(map);
     
     let res = ws::start(gs, &req, stream);

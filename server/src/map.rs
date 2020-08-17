@@ -1,5 +1,6 @@
 use roguelike_common::*;
 
+#[derive(Debug)]
 pub struct Map {
     pub width: i32,
     pub height: i32,
@@ -27,19 +28,19 @@ impl Map {
         for x in 0..self.width {
             let mut idx = self.xy_idx(x, 0);
             self.tiles[idx] = TileType::Wall;
-            idx = self.xy_idx(x, self.height-1);
+            idx = self.xy_idx(x, self.height - 1);
             self.tiles[idx] = TileType::Wall;
         }
         for y in 0..self.height {
             let mut idx = self.xy_idx(0, y);
             self.tiles[idx] = TileType::Wall;
-            idx = self.xy_idx(self.width-1, y);
+            idx = self.xy_idx(self.width - 1, y);
             self.tiles[idx] = TileType::Wall;
         }
 
         for _i in 0..200 {
-            let x = rng.roll_dice(1, self.width-1);
-            let y = rng.roll_dice(1, self.height-1);
+            let x = rng.roll_dice(1, self.width - 1);
+            let y = rng.roll_dice(1, self.height - 1);
             let idx = self.xy_idx(x, y);
             if idx != self.xy_idx(20, 10) {
                 self.tiles[idx] = TileType::Wall;
@@ -54,7 +55,7 @@ impl Map {
             data: serde_json::to_value(map).unwrap(),
         };
         let s = serde_json::to_string(&gm).unwrap();
-            println!("{}", s);
+        //println!("{}", s);
         s
     }
 
@@ -65,8 +66,8 @@ impl Map {
     pub fn get_random_space(&self) -> (i32, i32) {
         let mut rng = rltk::RandomNumberGenerator::new();
         loop {
-            let x = rng.roll_dice(1, self.width-1);
-            let y = rng.roll_dice(1, self.height-1);
+            let x = rng.roll_dice(1, self.width - 1);
+            let y = rng.roll_dice(1, self.height - 1);
             let idx = self.xy_idx(x, y);
             if self.tiles[idx] == TileType::Floor {
                 break (x, y)
@@ -81,7 +82,7 @@ pub fn draw_fov(fov: Fov) -> String {
         data: serde_json::to_value(fov).unwrap(),
     };
     let s = serde_json::to_string(&gm).unwrap();
-    println!("{}", s);
+    //println!("{}", s);
     s
 }
 
@@ -91,6 +92,6 @@ pub fn draw_entities(e: Entities) -> String {
         data: serde_json::to_value(e).unwrap(),
     };
     let s = serde_json::to_string(&gm).unwrap();
-    println!("{}", s);
+    //println!("{}", s);
     s
 }

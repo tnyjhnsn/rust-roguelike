@@ -2,8 +2,6 @@ use specs::prelude::*;
 use specs_derive::*;
 use roguelike_common::*;
 
-// struct Position moved to common
-
 #[derive(Component, Debug)]
 pub struct Renderable {
     pub glyph: String,
@@ -19,7 +17,6 @@ pub struct Monster {}
 pub struct FieldOfView {
     pub visible_tiles: Vec<Point>,
     pub range: i32,
-    pub dirty: bool,
 }
 
 #[derive(Component, Debug)]

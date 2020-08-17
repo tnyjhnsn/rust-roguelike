@@ -8,7 +8,7 @@ use serde_repr::*;
 pub const SEEN: i32 = 1;
 pub const VISIBLE: i32 = 2;
 
-#[derive(Component, Debug, Serialize, Deserialize)]
+#[derive(Component, Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct Position {
     pub x: i32,
     pub y: i32,
