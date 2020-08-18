@@ -8,7 +8,7 @@ pub struct Map {
     pub tiles: Vec<TileType>,
     pub entities: Vec<String>,
     pub status: Vec<i32>,
-    pub current_fov: Vec<usize>,
+    pub fov: Vec<usize>,
     pub viewport: Vec<i32>,
 }
 
@@ -23,7 +23,7 @@ impl Map {
             tiles: Vec::new(),
             entities: Vec::new(),
             status: Vec::new(),
-            current_fov: Vec::new(),
+            fov: Vec::new(),
             viewport: Vec::new(),
         }
     }
@@ -42,11 +42,11 @@ impl Map {
     }
 
     pub fn set_fov(&mut self, data: Value) {
-        for c in &self.current_fov {
+        for c in &self.fov {
             self.status[*c] &= !VISIBLE;
             self.status[*c] |= SEEN;
         }
-        self.current_fov.clear();
+        self.fov.clear();
         let fov: Fov = serde_json::from_value(data[0].clone()).unwrap();
         let entities: Entities = serde_json::from_value(data[1].clone()).unwrap();
         let ppos = entities[0].0;
@@ -55,7 +55,7 @@ impl Map {
             for idx in indexes.iter() {
                 self.tiles[*idx] = *tile;
                 self.status[*idx] |= VISIBLE;
-                self.current_fov.push(*idx);
+                self.fov.push(*idx);
             }
         }
         self.entities = vec![String::new(); self.get_dim()];
