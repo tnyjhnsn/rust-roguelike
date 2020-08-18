@@ -32,22 +32,6 @@ struct WsRequest {
     value: String,
 }
 
-fn get_gamemsg_from_value(v: Value) -> GameMsg {
-    serde_json::from_value(v).unwrap()
-}
-
-fn get_game_from_value(v: Value) -> (i32, i32) {
-    serde_json::from_value(v).unwrap()
-}
-
-fn get_fov_from_value(v: Value) -> Fov {
-    serde_json::from_value(v).unwrap()
-}
-
-fn get_entities_from_value(v: Value) -> Entities {
-    serde_json::from_value(v).unwrap()
-}
-
 impl Component for Model {
     type Message = Msg;
     type Properties = ();
@@ -102,49 +86,14 @@ impl Component for Model {
     			}
     		}
     		Msg::Received(Ok(v)) => {
-                let gm: GameMsg = get_gamemsg_from_value(v);
+                let gm: GameMsg = serde_json::from_value(v).unwrap();
                 match gm.msg.trim() {
                     "GAME" => {
-                        let game = get_game_from_value(gm.data);
-                        let width = game.0;
-                        let height = game.1;
-                        let dim = (width * height) as usize;
-                        self.map = Map {
-                            width,
-                            height,
-                            tiles: vec![TileType::Floor; dim],
-                            entities: vec![String::new(); dim],
-                            status: vec![0; dim],
-                            current_fov: Vec::new(),
-                            viewport: Vec::new(),
-                        };
+                        self.map.set_map(gm.data);
                         true
                     }
                     "FOV" => {
-                        for c in &self.map.current_fov {
-                            self.map.status[*c] &= !VISIBLE;
-                            self.map.status[*c] |= SEEN;
-                        }
-                        self.map.current_fov.clear();
-                        let data = &gm.data;
-                        let fov = get_fov_from_value(data[0].clone());
-                        let entities = get_entities_from_value(data[1].clone());
-                        let ppos = entities[0].0;
-                        self.map.set_viewport(ppos as i32);
-                        for (tile, indexes) in fov.iter() {
-                            for idx in indexes.iter() {
-                                self.map.tiles[*idx] = *tile;
-                                self.map.status[*idx] |= VISIBLE;
-                                self.map.current_fov.push(*idx);
-                            }
-                        }
-                        let w = self.map.width;
-                        let h = self.map.height;
-                        let dim = (w * h) as usize;
-                        self.map.entities = vec![String::new(); dim];
-                        for (idx, entity) in entities.iter() {
-                            self.map.entities[*idx] = (*entity[0]).to_string();
-                        }
+                        self.map.set_fov(gm.data);
                         true
                     }
                     _ => {

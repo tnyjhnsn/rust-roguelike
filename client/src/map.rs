@@ -1,3 +1,4 @@
+use serde_json::Value;
 use roguelike_common::*;
 
 #[derive(Debug, PartialEq, Clone)]
@@ -24,6 +25,40 @@ impl Map {
             status: Vec::new(),
             current_fov: Vec::new(),
             viewport: Vec::new(),
+        }
+    }
+
+    pub fn set_map(&mut self, data: Value) {
+        let game: (i32, i32) = serde_json::from_value(data).unwrap();
+        self.width = game.0;
+        self.height = game.1;
+        let dim = (self.width * self.height) as usize;
+        self.tiles = vec![TileType::Floor; dim];
+        self.entities = vec![String::new(); dim];
+        self.status = vec![0; dim];
+    }
+
+    pub fn set_fov(&mut self, data: Value) {
+        for c in &self.current_fov {
+            self.status[*c] &= !VISIBLE;
+            self.status[*c] |= SEEN;
+        }
+        self.current_fov.clear();
+        let fov: Fov = serde_json::from_value(data[0].clone()).unwrap();
+        let entities: Entities = serde_json::from_value(data[1].clone()).unwrap();
+        let ppos = entities[0].0;
+        self.set_viewport(ppos as i32);
+        for (tile, indexes) in fov.iter() {
+            for idx in indexes.iter() {
+                self.tiles[*idx] = *tile;
+                self.status[*idx] |= VISIBLE;
+                self.current_fov.push(*idx);
+            }
+        }
+        let dim = (self.width * self.height) as usize;
+        self.entities = vec![String::new(); dim];
+        for (idx, entity) in entities.iter() {
+            self.entities[*idx] = (*entity[0]).to_string();
         }
     }
 
@@ -57,3 +92,4 @@ impl Map {
         self.viewport = v;
     }
 }
+
