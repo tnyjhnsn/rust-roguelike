@@ -4,13 +4,14 @@ use yew::format::Json;
 use yew::services::websocket::{WebSocketService, WebSocketStatus, WebSocketTask};
 use yew::services::keyboard::{KeyboardService, KeyListenerHandle};
 use yew::services::ConsoleService;
-use serde::{Serialize, Deserialize};
+use serde::{Serialize};
 use serde_json::Value;
 use roguelike_common::*;
 
 use super::dungeon::*;
+use super::viewport::*;
 
-#[derive(Debug, PartialEq, Clone, Deserialize)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Map {
     pub width: i32,
     pub height: i32,
@@ -18,6 +19,7 @@ pub struct Map {
     pub entities: Vec<String>,
     pub status: Vec<i32>,
     pub current_fov: Vec<usize>,
+    pub viewport: Viewport,
 }
 
 
@@ -32,7 +34,7 @@ pub enum Msg {
     Connect,
     Disconnected,
     Ignore,
-    GetMap,
+    GetGame,
     Received(Result<Value, Error>),
     Pressed(KeyboardEvent),
 }
@@ -43,6 +45,10 @@ struct WsRequest {
 }
 
 fn get_gamemsg_from_value(v: Value) -> GameMsg {
+    serde_json::from_value(v).unwrap()
+}
+
+fn get_game_from_value(v: Value) -> (i32, i32) {
     serde_json::from_value(v).unwrap()
 }
 
@@ -69,10 +75,11 @@ impl Component for Model {
             map: Map {
                 width: 0,
                 height: 0,
-                tiles: vec![TileType::Floor; 1200],
-                entities: vec![String::new(); 1200],
-                status: vec![0; 1200],
+                tiles: Vec::new(),
+                entities: Vec::new(),
+                status: Vec::new(),
                 current_fov: Vec::new(),
+                viewport: Viewport::new(0),
             },
     	}
     }
@@ -103,10 +110,10 @@ impl Component for Model {
     		Msg::Ignore => {
     			false
     		}
-    		Msg::GetMap => {
+    		Msg::GetGame => {
     			match self.ws {
     				Some(ref mut task) => {
-    					task.send(Ok("/map".to_string()));
+    					task.send(Ok("/game".to_string()));
     					false
     				}
     				None => {
@@ -117,13 +124,33 @@ impl Component for Model {
     		Msg::Received(Ok(v)) => {
                 let gm: GameMsg = get_gamemsg_from_value(v);
                 match gm.msg.trim() {
+                    "GAME" => {
+                        let game = get_game_from_value(gm.data);
+                        let width = game.0;
+                        let height = game.1;
+                        let dim = (width * height) as usize;
+                        self.map = Map {
+                            width,
+                            height,
+                            tiles: vec![TileType::Floor; dim],
+                            entities: vec![String::new(); dim],
+                            status: vec![0; dim],
+                            current_fov: Vec::new(),
+                            viewport:Viewport::new(width),
+                        };
+                        true
+                    }
                     "FOV" => {
                         for c in &self.map.current_fov {
                             self.map.status[*c] &= !VISIBLE;
                             self.map.status[*c] |= SEEN;
                         }
                         self.map.current_fov.clear();
-                        let fov = get_fov_from_value(gm.data);
+                        let data = &gm.data;
+                        let fov = get_fov_from_value(data[0].clone());
+                        let entities = get_entities_from_value(data[1].clone());
+                        let ppos = entities[0].0;
+                        self.map.viewport.set_indexes(ppos as i32);
                         for (tile, indexes) in fov.iter() {
                             for idx in indexes.iter() {
                                 self.map.tiles[*idx] = *tile;
@@ -131,11 +158,10 @@ impl Component for Model {
                                 self.map.current_fov.push(*idx);
                             }
                         }
-                        true
-                    }
-                    "ENTITIES" => {
-                        self.map.entities = vec![String::new(); 1200];
-                        let entities = get_entities_from_value(gm.data);
+                        let w = self.map.width;
+                        let h = self.map.height;
+                        let dim = (w * h) as usize;
+                        self.map.entities = vec![String::new(); dim];
                         for (idx, entity) in entities.iter() {
                             self.map.entities[*idx] = (*entity[0]).to_string();
                         }
@@ -176,7 +202,7 @@ impl Component for Model {
                 <h1 class="title">{ "Rogue" }</h1>
                 <button onclick=self.link.callback(|_| Msg::Connect)>{ "Connect" }</button><br/>
                 { "Connected: " } { !self.ws.is_none() }
-                <p><button onclick=self.link.callback(|_| Msg::GetMap)>{ "Get Map" }</button></p>
+                <p><button onclick=self.link.callback(|_| Msg::GetGame)>{ "Get Game Dimensions" }</button></p>
                 <Dungeon map=&self.map />
             </>
     	}

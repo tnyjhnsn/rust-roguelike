@@ -50,7 +50,6 @@ impl GameSocket {
             f.push((TileType::Wall, wall));
             f.push((TileType::Floor, floor));
         }
-        ctx.text(draw_fov(f));
 
         let mut e: roguelike_common::Entities = Vec::new();
 
@@ -60,7 +59,8 @@ impl GameSocket {
                 e.push((idx, vec![(render.glyph).to_string()]));
             }
         };
-        ctx.text(draw_entities(e));
+
+        ctx.text(draw_fov(f, e));
 
         //println!("...Tock");
     }
@@ -90,9 +90,9 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for GameSocket {
             Ok(ws::Message::Ping(m)) => ctx.pong(&m),
             Ok(ws::Message::Text(txt)) => {
                 match txt.trim() {
-                    "/map" => {
+                    "/game" => {
                         let map = self.ecs.fetch::<Map>();
-                        ctx.text(map.draw_map());
+                        ctx.text(map.draw_game());
                     }
                     _ => {
                         self.tick(txt, ctx);
@@ -123,7 +123,7 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
     let mut map = Map::new_map();
     map.create_temp_walls();
     let px = 20;
-    let py = 10;
+    let py = 20;
 
     gs.ecs
         .create_entity()
@@ -139,7 +139,7 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
 
     let mut rng = rltk::RandomNumberGenerator::new();
 
-    for i in 1..10 {
+    for i in 1..8 {
         let (x, y) = map.get_random_space();
         let glyph;
         let name;

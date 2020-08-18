@@ -1,4 +1,5 @@
 use roguelike_common::*;
+use serde_json::json;
 
 #[derive(Debug)]
 pub struct Map {
@@ -10,8 +11,8 @@ pub struct Map {
 impl Map {
 
     pub fn new_map() -> Self {
-        let width: i32 = 60;
-        let height: i32 = 20;
+        let width: i32 = 40;
+        let height: i32 = 40;
         let dim = (width * height) as usize;
         let tiles = vec![TileType::Floor; dim];
 
@@ -48,7 +49,7 @@ impl Map {
         }
     }
 
-    pub fn draw_map(&self) -> String {
+    pub fn draw_game(&self) -> String {
         let map = (self.width, self.height);
         let gm = GameMsg {
             msg: String::from("GAME"),
@@ -76,22 +77,18 @@ impl Map {
     }
 }
 
-pub fn draw_fov(fov: Fov) -> String {
+pub fn draw_fov(fov: Fov, ent: Entities) -> String {
+    let mut d = Vec::new();
+    let f = serde_json::to_value(fov).unwrap();
+    let e = serde_json::to_value(ent).unwrap();
+    d.push(f);
+    d.push(e);
     let gm = GameMsg {
         msg: String::from("FOV"),
-        data: serde_json::to_value(fov).unwrap(),
+        data: json!(d),
     };
     let s = serde_json::to_string(&gm).unwrap();
     //println!("{}", s);
     s
 }
 
-pub fn draw_entities(e: Entities) -> String {
-    let gm = GameMsg {
-        msg: String::from("ENTITIES"),
-        data: serde_json::to_value(e).unwrap(),
-    };
-    let s = serde_json::to_string(&gm).unwrap();
-    //println!("{}", s);
-    s
-}

@@ -1,5 +1,6 @@
 use yew::prelude::*;
 use super::entity::*;
+use super::viewport::*;
 
 pub struct EntityMap {
     props: Props,
@@ -8,6 +9,7 @@ pub struct EntityMap {
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
     pub entities: Vec<String>,
+    pub viewport: Viewport,
 }
 
 impl Component for EntityMap {
@@ -39,7 +41,9 @@ impl Component for EntityMap {
         };
         html! {
             <div class="entities">
-                { for self.props.entities.iter().map(render_tile) }
+                { for self.props.viewport.indexes
+                    .iter()
+                    .map(|i| render_tile(&self.props.entities[*i as usize])) }
             </div>
         }
     }

@@ -1,6 +1,7 @@
 use yew::prelude::*;
 use roguelike_common::*;
 use super::tile::*;
+use super::viewport::*;
 
 pub struct TileMap {
     props: Props,
@@ -9,6 +10,7 @@ pub struct TileMap {
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
     pub tiles: Vec<TileType>,
+    pub viewport: Viewport,
 }
 
 impl Component for TileMap {
@@ -40,7 +42,9 @@ impl Component for TileMap {
         };
         html! {
             <div class="tiles">
-                { for self.props.tiles.iter().map(render_tile) }
+                { for self.props.viewport.indexes
+                    .iter()
+                    .map(|i| render_tile(&self.props.tiles[*i as usize])) }
             </div>
         }
     }

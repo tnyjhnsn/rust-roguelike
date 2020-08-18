@@ -1,5 +1,6 @@
 use yew::prelude::*;
 use super::status::*;
+use super::viewport::*;
 
 pub struct StatusMap {
     props: Props,
@@ -8,6 +9,7 @@ pub struct StatusMap {
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
     pub status: Vec<i32>,
+    pub viewport: Viewport,
 }
 
 impl Component for StatusMap {
@@ -39,7 +41,9 @@ impl Component for StatusMap {
         };
         html! {
             <div class="status">
-                { for self.props.status.iter().map(render_tile) }
+                { for self.props.viewport.indexes
+                    .iter()
+                    .map(|i| render_tile(&self.props.status[*i as usize])) }
             </div>
         }
     }

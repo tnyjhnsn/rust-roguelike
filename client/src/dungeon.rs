@@ -38,9 +38,9 @@ impl Component for Dungeon {
     fn view(&self) -> Html {
         html! { 
             <div class="dungeon">
-                <TileMap tiles=&self.props.map.tiles />
-                <EntityMap entities=&self.props.map.entities />
-                <StatusMap status=&self.props.map.status />
+                <TileMap tiles=&self.props.map.tiles viewport=&self.props.map.viewport />
+                <EntityMap entities=&self.props.map.entities viewport=&self.props.map.viewport />
+                <StatusMap status=&self.props.map.status viewport=&self.props.map.viewport />
             </div>
         }
     }

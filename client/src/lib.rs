@@ -18,6 +18,8 @@ mod entity;
 pub use entity::*;
 mod status;
 pub use status::*;
+mod viewport;
+pub use viewport::*;
 
 #[cfg(feature = "wee_alloc")]
 #[global_allocator]
