@@ -28,14 +28,17 @@ impl Map {
         }
     }
 
+    fn get_dim(&self) -> usize {
+        (self.width * self.height) as usize
+    }
+
     pub fn set_map(&mut self, data: Value) {
         let game: (i32, i32) = serde_json::from_value(data).unwrap();
         self.width = game.0;
         self.height = game.1;
-        let dim = (self.width * self.height) as usize;
-        self.tiles = vec![TileType::Floor; dim];
-        self.entities = vec![String::new(); dim];
-        self.status = vec![0; dim];
+        self.tiles = vec![TileType::Floor; self.get_dim()];
+        self.entities = vec![String::new(); self.get_dim()];
+        self.status = vec![0; self.get_dim()];
     }
 
     pub fn set_fov(&mut self, data: Value) {
@@ -55,8 +58,7 @@ impl Map {
                 self.current_fov.push(*idx);
             }
         }
-        let dim = (self.width * self.height) as usize;
-        self.entities = vec![String::new(); dim];
+        self.entities = vec![String::new(); self.get_dim()];
         for (idx, entity) in entities.iter() {
             self.entities[*idx] = (*entity[0]).to_string();
         }
