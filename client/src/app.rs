@@ -8,20 +8,8 @@ use serde::{Serialize};
 use serde_json::Value;
 use roguelike_common::*;
 
+use super::map::*;
 use super::dungeon::*;
-use super::viewport::*;
-
-#[derive(Debug, PartialEq, Clone)]
-pub struct Map {
-    pub width: i32,
-    pub height: i32,
-    pub tiles: Vec<TileType>,
-    pub entities: Vec<String>,
-    pub status: Vec<i32>,
-    pub current_fov: Vec<usize>,
-    pub viewport: Viewport,
-}
-
 
 pub struct Model {
     ws: Option<WebSocketTask>,
@@ -72,15 +60,7 @@ impl Component for Model {
             ws: None,
             link: link,
             key_listener,
-            map: Map {
-                width: 0,
-                height: 0,
-                tiles: Vec::new(),
-                entities: Vec::new(),
-                status: Vec::new(),
-                current_fov: Vec::new(),
-                viewport: Viewport::new(0),
-            },
+            map: Map::new(),
     	}
     }
 
@@ -136,7 +116,7 @@ impl Component for Model {
                             entities: vec![String::new(); dim],
                             status: vec![0; dim],
                             current_fov: Vec::new(),
-                            viewport:Viewport::new(width),
+                            viewport: Vec::new(),
                         };
                         true
                     }
@@ -150,7 +130,7 @@ impl Component for Model {
                         let fov = get_fov_from_value(data[0].clone());
                         let entities = get_entities_from_value(data[1].clone());
                         let ppos = entities[0].0;
-                        self.map.viewport.set_indexes(ppos as i32);
+                        self.map.set_viewport(ppos as i32);
                         for (tile, indexes) in fov.iter() {
                             for idx in indexes.iter() {
                                 self.map.tiles[*idx] = *tile;

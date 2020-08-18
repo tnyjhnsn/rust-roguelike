@@ -30,7 +30,7 @@ body {
 .tiles {
   display: grid;
   grid-template-columns: repeat(20, 1fr);
-  grid-template-rows: repeat(14, 1fr);
+  grid-template-rows: repeat(16, 1fr);
   position: absolute;
 }
 

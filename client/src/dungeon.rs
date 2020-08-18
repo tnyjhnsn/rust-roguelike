@@ -1,6 +1,6 @@
 use yew::prelude::*;
 
-use super::app::*;
+use super::map::*;
 use super::tile_map::*;
 use super::entity_map::*;
 use super::status_map::*;

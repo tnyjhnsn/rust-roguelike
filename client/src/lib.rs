@@ -4,6 +4,8 @@ use wasm_bindgen::prelude::*;
 
 mod app;
 pub use app::*;
+mod map;
+pub use map::*;
 mod dungeon;
 pub use dungeon::*;
 mod tile_map;
@@ -18,8 +20,6 @@ mod entity;
 pub use entity::*;
 mod status;
 pub use status::*;
-mod viewport;
-pub use viewport::*;
 
 #[cfg(feature = "wee_alloc")]
 #[global_allocator]
