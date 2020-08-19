@@ -2,10 +2,12 @@
 
 use wasm_bindgen::prelude::*;
 
+mod model;
+
 mod app;
 pub use app::*;
-mod map;
-pub use map::*;
+mod game;
+pub use game::*;
 mod dungeon;
 pub use dungeon::*;
 mod tile_map;

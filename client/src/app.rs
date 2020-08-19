@@ -8,14 +8,14 @@ use serde::{Serialize};
 use serde_json::Value;
 use roguelike_common::*;
 
-use super::map::*;
-use super::dungeon::*;
+use super::model::game::*;
 
 pub struct Model {
     ws: Option<WebSocketTask>,
     link: ComponentLink<Model>,
+    #[allow(dead_code)]
     key_listener: KeyListenerHandle,
-    map: Map,
+    game: Game,
 }
 
 pub enum Msg {
@@ -44,7 +44,7 @@ impl Component for Model {
             ws: None,
             link: link,
             key_listener,
-            map: Map::new(),
+            game: Game::new(),
     	}
     }
 
@@ -89,11 +89,11 @@ impl Component for Model {
                 let gm: GameMsg = serde_json::from_value(v).unwrap();
                 match gm.msg.trim() {
                     "GAME" => {
-                        self.map.set_map(gm.data);
+                        self.game.map.set_map(gm.data);
                         true
                     }
                     "FOV" => {
-                        self.map.set_fov(gm.data);
+                        self.game.map.set_fov(gm.data);
                         true
                     }
                     _ => {
@@ -128,11 +128,10 @@ impl Component for Model {
     fn view(&self) -> Html {
     	html! {
             <>
-                <h1 class="title">{ "Rogue" }</h1>
-                <button onclick=self.link.callback(|_| Msg::Connect)>{ "Connect" }</button><br/>
-                { "Connected: " } { !self.ws.is_none() }
-                <p><button onclick=self.link.callback(|_| Msg::GetGame)>{ "Get Game Dimensions" }</button></p>
-                <Dungeon map=&self.map />
+                <button onclick=self.link.callback(|_| Msg::Connect)>{ "Connect" }</button>
+                <span style="color: white">{ "Connected: " } { !self.ws.is_none() }</span>
+                <button onclick=self.link.callback(|_| Msg::GetGame)>{ "Get Game Dimensions" }</button>
+                <super::game::Game game=&self.game />
             </>
     	}
     }

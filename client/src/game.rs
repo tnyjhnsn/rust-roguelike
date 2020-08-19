@@ -1,26 +1,23 @@
 use yew::prelude::*;
 
-use super::model::map::*;
+use super::model::*;
+use super::dungeon::*;
 
-use super::tile_map::*;
-use super::entity_map::*;
-use super::status_map::*;
-
-pub struct Dungeon {
+pub struct Game {
     props: Props,
 }
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
-    pub map: Map,
+    pub game: game::Game,
 }
 
-impl Component for Dungeon {
+impl Component for Game {
     type Message = ();
     type Properties = Props;
 
     fn create(props: Self::Properties, _: ComponentLink<Self>) -> Self {
-        Dungeon { props }
+        Game { props }
     }
 
     fn change(&mut self, props: Self::Properties) -> bool {
@@ -38,10 +35,14 @@ impl Component for Dungeon {
 
     fn view(&self) -> Html {
         html! { 
-            <div>
-                <TileMap tiles=&self.props.map.tiles viewport=&self.props.map.viewport />
-                <EntityMap entities=&self.props.map.entities viewport=&self.props.map.viewport />
-                <StatusMap status=&self.props.map.status viewport=&self.props.map.viewport />
+            <div class="game">
+                <div class="holding left-panel">{ "Left Panel" }</div>
+                <div class="holding right-panel">{ "Right Panel" }</div>
+                <div class="holding top-panel">
+                    <h1 class="title">{ &self.props.game.title }</h1>
+                </div>
+                <div class="holding bottom-panel">{ "Bottom Panel" }</div>
+                <Dungeon map=&self.props.game.map />
             </div>
         }
     }

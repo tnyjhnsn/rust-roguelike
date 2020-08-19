@@ -72,11 +72,11 @@ impl Map {
         let w = (VP_W as f64 / 2.0).floor() as i32;
         let mut d = 0;
         let mut e = 0;
-        if y < h || y >= self.height - h {
+        if y < h {
             d = (y - h).abs();
         }
         if y >= self.height - h {
-            d = self.height - y - h;
+            d = self.height - y - h - 1;
         }
         if x < w {
             e = w - x;
