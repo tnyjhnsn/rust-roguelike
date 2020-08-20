@@ -15,6 +15,8 @@ mod visibility_system;
 pub use visibility_system::*;
 mod monster_ai_system;
 pub use monster_ai_system::*;
+mod gamelog;
+pub use gamelog::*;
 
 struct GameSocket {
     ecs: World
@@ -61,6 +63,9 @@ impl GameSocket {
         };
 
         ctx.text(draw_fov(f, e));
+
+        let log = self.ecs.fetch::<GameLog>();
+        ctx.text(log.draw_gamelog());
 
         //println!("...Tock");
     }
@@ -169,6 +174,8 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
             dijkstra_map: Vec::new(),
         });
     gs.ecs.insert(map);
+
+    gs.ecs.insert(GameLog::new());
     
     let res = ws::start(gs, &req, stream);
     println!("{:?}", res);

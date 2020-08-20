@@ -8,14 +8,15 @@ use serde::{Serialize};
 use serde_json::Value;
 use roguelike_common::*;
 
-use super::model::game::*;
+use super::model::game_model::*;
+use super::game::*;
 
 pub struct Model {
     ws: Option<WebSocketTask>,
     link: ComponentLink<Model>,
     #[allow(dead_code)]
     key_listener: KeyListenerHandle,
-    game: Game,
+    game: MGame,
 }
 
 pub enum Msg {
@@ -44,7 +45,7 @@ impl Component for Model {
             ws: None,
             link: link,
             key_listener,
-            game: Game::new(),
+            game: MGame::new(),
     	}
     }
 
@@ -96,6 +97,10 @@ impl Component for Model {
                         self.game.map.set_fov(gm.data);
                         true
                     }
+                    "LOG" => {
+                        self.game.log.set_logs(gm.data);
+                        true
+                    }
                     _ => {
                         //ConsoleService::info(&format!("{:?}", gm.data));
                         false
@@ -131,7 +136,7 @@ impl Component for Model {
                 <button onclick=self.link.callback(|_| Msg::Connect)>{ "Connect" }</button>
                 <span style="color: white">{ "Connected: " } { !self.ws.is_none() }</span>
                 <button onclick=self.link.callback(|_| Msg::GetGame)>{ "Get Game Dimensions" }</button>
-                <super::game::Game game=&self.game />
+                <Game game=&self.game />
             </>
     	}
     }

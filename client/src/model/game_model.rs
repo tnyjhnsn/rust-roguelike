@@ -1,26 +1,27 @@
-use super::map::*;
+use super::map_model::*;
+use super::log_model::*;
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct Game {
+pub struct MGame {
     pub title: String,
     pub stats: String,
     pub body: String,
     pub inventory: String,
     pub minimap: String,
-    pub log: String,
-    pub map: Map,
+    pub log: MLog,
+    pub map: MMap,
 }
 
-impl Game {
+impl MGame {
     pub fn new() -> Self {
-        Game {
+        Self {
             title: String::from("Rogue"),
             stats: String::from("Stats"),
             body: String::from("Body"),
             inventory: String::from("Inventory"),
             minimap: String::from("Mini Map"),
-            log: String::from("Log"),
-            map: Map::new(),
+            log: MLog::new(),
+            map: MMap::new(),
         }
     }
 }

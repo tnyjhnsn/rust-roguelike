@@ -1,6 +1,6 @@
 use yew::prelude::*;
 
-use super::model::*;
+use super::model::game_model::*;
 use super::map::*;
 
 pub struct Game {
@@ -9,7 +9,7 @@ pub struct Game {
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
-    pub game: game::Game,
+    pub game: MGame,
 }
 
 impl Component for Game {
@@ -37,7 +37,9 @@ impl Component for Game {
         html! { 
             <div class="game">
                 <div class="holding left-panel">{ "Left Panel" }</div>
-                <div class="holding right-panel">{ "Right Panel" }</div>
+                <div class="holding right-panel">
+                    <div class="log">{ "Log goes here" }</div>
+                </div>
                 <div class="holding top-panel">
                     <h1 class="title">{ &self.props.game.title }</h1>
                 </div>

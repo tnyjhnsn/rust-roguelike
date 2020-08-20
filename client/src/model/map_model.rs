@@ -2,7 +2,7 @@ use serde_json::Value;
 use roguelike_common::*;
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct Map {
+pub struct MMap {
     pub width: i32,
     pub height: i32,
     pub tiles: Vec<TileType>,
@@ -15,9 +15,9 @@ pub struct Map {
 pub const VP_W: i32 = 20;
 pub const VP_H: i32 = 16;
 
-impl Map {
+impl MMap {
     pub fn new() -> Self {
-         Map {
+         Self {
             width: 0,
             height: 0,
             tiles: Vec::new(),

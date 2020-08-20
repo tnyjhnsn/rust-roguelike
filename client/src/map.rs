@@ -1,6 +1,6 @@
 use yew::prelude::*;
 
-use super::model::*;
+use super::model::map_model::*;
 
 use super::tile_map::*;
 use super::entity_map::*;
@@ -12,7 +12,7 @@ pub struct Map {
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
-    pub map: map::Map,
+    pub map: MMap,
 }
 
 impl Component for Map {
