@@ -64,8 +64,11 @@ impl GameSocket {
 
         ctx.text(draw_fov(f, e));
 
-        let log = self.ecs.fetch::<GameLog>();
-        ctx.text(log.draw_gamelog());
+        let mut gl = self.ecs.write_resource::<GameLog>();
+        match gl.draw_gamelog() {
+            Some(log) => ctx.text(log),
+            _ => (),
+        }
 
         //println!("...Tock");
     }

@@ -2,6 +2,7 @@ use yew::prelude::*;
 
 use super::model::game_model::*;
 use super::map::*;
+use super::logs::*;
 
 pub struct Game {
     props: Props,
@@ -38,7 +39,7 @@ impl Component for Game {
             <div class="game">
                 <div class="holding left-panel">{ "Left Panel" }</div>
                 <div class="holding right-panel">
-                    <div class="log">{ "Log goes here" }</div>
+                    <Logs logs=&self.props.game.log />
                 </div>
                 <div class="holding top-panel">
                     <h1 class="title">{ &self.props.game.title }</h1>

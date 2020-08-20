@@ -1,6 +1,7 @@
 use specs::prelude::*;
 use roguelike_common::*;
 use super::player::*;
+use super::gamelog::*;
 use super::components::*;
 use super::map::*;
 
@@ -12,14 +13,16 @@ impl<'a> System<'a> for MonsterAISystem {
                         ReadExpect<'a, Map>, 
                         ReadStorage<'a, Monster>,
                         WriteStorage<'a, Position>,
+                        WriteExpect<'a, GameLog>,
                         ReadStorage<'a, Name>);
 
     fn run(&mut self, data: Self::SystemData) {
-        let (mut ppos, fov, map, monster, mut mpos, name) = data;
+        let (mut ppos, fov, map, monster, mut mpos, mut log, name) = data;
 
         for (fov, _monster, mpos, name) in (&fov, &monster, &mut mpos, &name).join() {
             if fov.visible_tiles.contains(&ppos.position) {
                 println!("{} at {},{} shouts insults!", name.name, mpos.x, mpos.y);
+                log.add_log((1, format!("{} shouts insults", name.name)));
                 if ppos.dijkstra_map.is_empty() {
                     let mut dmap = DijkstraMap::new();
                     ppos.dijkstra_map = dmap.create(ppos.position.x, ppos.position.y, &map);

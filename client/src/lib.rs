@@ -22,6 +22,10 @@ mod entity;
 pub use entity::*;
 mod status;
 pub use status::*;
+mod logs;
+pub use logs::*;
+mod log;
+pub use log::*;
 
 #[cfg(feature = "wee_alloc")]
 #[global_allocator]
