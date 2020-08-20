@@ -33,6 +33,14 @@ pub enum TileType {
     Floor = 1,
 }
 
+#[derive(Debug, PartialEq, Copy, Clone, Serialize_repr, Deserialize_repr)]
+#[repr(u8)]
+pub enum LogType {
+    General = 0,
+    Player = 1,
+    Monster = 2,
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GameMsg {
     pub msg: String,
@@ -41,5 +49,5 @@ pub struct GameMsg {
 
 pub type Fov = Vec<(TileType, Vec<usize>)>;
 pub type Entities = Vec<(usize, Vec<String>)>;
-pub type Logs = Vec<(u8, String)>;
+pub type Logs = Vec<(LogType, String)>;
 

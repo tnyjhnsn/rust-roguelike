@@ -1,4 +1,6 @@
+use roguelike_common::*;
 use yew::prelude::*;
+use chrono::prelude::*;
 use super::log::*;
 use super::model::log_model::*;
 
@@ -33,7 +35,7 @@ impl Component for Logs {
     }
 
     fn view(&self) -> Html {
-        let render_log = |log: &(u8, String)| {
+        let render_log = |log: &(DateTime<Local>, Vec<(LogType, String)>)| {
             html! {
                 <Log log=log />
             }

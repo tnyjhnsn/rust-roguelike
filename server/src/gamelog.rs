@@ -8,12 +8,12 @@ pub struct GameLog {
 impl GameLog {
     pub fn new() -> Self {
         Self {
-            logs: vec![(0, String::from("Hello Rogue!"))],
+            logs: vec![(LogType::General, String::from("Hello Rogue!"))],
             has_log: true,
         }
     }
 
-    pub fn add_log(&mut self, log: (u8, String)) {
+    pub fn add_log(&mut self, log: (LogType, String)) {
         self.logs.push(log);
         self.has_log = true;
     }

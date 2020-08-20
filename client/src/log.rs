@@ -1,4 +1,6 @@
 use yew::prelude::*;
+use chrono::prelude::*;
+use roguelike_common::*;
 
 pub struct Log {
     props: Props,
@@ -6,7 +8,7 @@ pub struct Log {
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
-    pub log: (u8, String),
+    pub log: (DateTime<Local>, Vec<(LogType, String)>),
 }
 
 impl Component for Log {
@@ -32,7 +34,7 @@ impl Component for Log {
 
     fn view(&self) -> Html {
         html! {
-            <div>{ format!("{} {}", &self.props.log.0, &self.props.log.1) }</div>
+            <div>{ format!("{:?} {:?}", &self.props.log.0, &self.props.log.1) }</div>
         }
     }
 }

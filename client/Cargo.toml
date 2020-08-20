@@ -19,8 +19,9 @@ serde_repr = "0.1"
 wasm-bindgen = "0.2.58"
 wasm-logger = "0.2"
 wee_alloc = { version = "0.4.4", optional = true }
-yew = { version = "0.17", features =["toml", "services"] }
+yew = { version = "0.17", features = ["toml", "services"] }
 failure = "0.1.8"
+chrono = { version = "0.4", features = ["wasmbind"] }
 roguelike_common = { path = "../common" }
 
 [dev-dependencies]
