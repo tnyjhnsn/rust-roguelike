@@ -1,7 +1,7 @@
 use yew::prelude::*;
 
 use super::model::*;
-use super::dungeon::*;
+use super::map::*;
 
 pub struct Game {
     props: Props,
@@ -42,7 +42,7 @@ impl Component for Game {
                     <h1 class="title">{ &self.props.game.title }</h1>
                 </div>
                 <div class="holding bottom-panel">{ "Bottom Panel" }</div>
-                <Dungeon map=&self.props.game.map />
+                <Map map=&self.props.game.map />
             </div>
         }
     }

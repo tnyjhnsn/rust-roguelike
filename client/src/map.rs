@@ -1,26 +1,26 @@
 use yew::prelude::*;
 
-use super::model::map::*;
+use super::model::*;
 
 use super::tile_map::*;
 use super::entity_map::*;
 use super::status_map::*;
 
-pub struct Dungeon {
+pub struct Map {
     props: Props,
 }
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
-    pub map: Map,
+    pub map: map::Map,
 }
 
-impl Component for Dungeon {
+impl Component for Map {
     type Message = ();
     type Properties = Props;
 
     fn create(props: Self::Properties, _: ComponentLink<Self>) -> Self {
-        Dungeon { props }
+        Map { props }
     }
 
     fn change(&mut self, props: Self::Properties) -> bool {
