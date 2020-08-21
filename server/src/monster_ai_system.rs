@@ -20,9 +20,12 @@ impl<'a> System<'a> for MonsterAISystem {
         let (mut ppos, fov, map, monster, mut mpos, mut log, name) = data;
 
         for (fov, _monster, mpos, name) in (&fov, &monster, &mut mpos, &name).join() {
-            if fov.visible_tiles.contains(&ppos.position) {
-                println!("{} at {},{} shouts insults!", name.name, mpos.x, mpos.y);
+            let distance = ppos.position.distance(Point::new(mpos.x, mpos.y));
+            if distance < 1.5 {
+                println!("{} at {} shouts insults!", name.name, distance);
                 log.add_log((LogType::Monster, format!("{} shouts insults", name.name)));
+                return;
+            } else if fov.visible_tiles.contains(&ppos.position) {
                 if ppos.dijkstra_map.is_empty() {
                     let mut dmap = DijkstraMap::new();
                     ppos.dijkstra_map = dmap.create(ppos.position.x, ppos.position.y, &map);
@@ -91,7 +94,7 @@ impl DijkstraMap {
                 let neighbours: Vec<Position> = self.neighbours[i]
                     .clone()
                     .into_iter()
-                    .filter(|n| map.tiles[map.xy_idx(n.x, n.y)] != TileType::Wall)
+                    .filter(|n| map.blocked[map.xy_idx(n.x, n.y)] == false)
                     .collect();
                 for n in neighbours.iter() {
                     neighbour_dvs.push(self.get_dijkstra_value(&n));

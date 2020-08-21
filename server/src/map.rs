@@ -6,6 +6,7 @@ pub struct Map {
     pub width: i32,
     pub height: i32,
     pub tiles: Vec<TileType>,
+    pub blocked: Vec<bool>,
 }
 
 impl Map {
@@ -15,11 +16,19 @@ impl Map {
         let height: i32 = 40;
         let dim = (width * height) as usize;
         let tiles = vec![TileType::Floor; dim];
+        let blocked = vec![false; dim];
 
         Map {
             width,
             height,
             tiles,
+            blocked,
+        }
+    }
+
+    pub fn populate_blocked(&mut self) {
+        for (i, tile) in self.tiles.iter_mut().enumerate() {
+            self.blocked[i] = *tile == TileType::Wall;
         }
     }
 

@@ -17,6 +17,8 @@ mod monster_ai_system;
 pub use monster_ai_system::*;
 mod gamelog;
 pub use gamelog::*;
+mod map_indexing_system;
+pub use map_indexing_system::*;
 
 struct GameSocket {
     ecs: World
@@ -78,6 +80,8 @@ impl GameSocket {
         vis.run_now(&self.ecs);
         let mut mob = MonsterAISystem{};
         mob.run_now(&self.ecs);
+        let mut mapindex = MapIndexingSystem{};
+        mapindex.run_now(&self.ecs);
         self.ecs.maintain();
     }
 
@@ -127,6 +131,7 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
     gs.ecs.register::<FieldOfView>(); 
     gs.ecs.register::<Monster>(); 
     gs.ecs.register::<Name>(); 
+    gs.ecs.register::<BlocksTile>(); 
 
     let mut map = Map::new_map();
     map.create_temp_walls();
@@ -168,6 +173,7 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
                 visible_tiles: Vec::new(),
                 range: 5,
             })
+            .with(BlocksTile{})
             .build();
     }
 

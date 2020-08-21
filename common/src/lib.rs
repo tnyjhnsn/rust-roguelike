@@ -24,6 +24,11 @@ impl Point {
     pub fn new(x: i32, y: i32) -> Self {
         Point { x, y }
     }
+
+    pub fn distance(&self, other: Point) -> f64 {
+        let d = ((other.x - self.x).pow(2) + (other.y - self.y).pow(2)) as f64;
+        d.sqrt()
+    }
 }
 
 #[derive(Debug, PartialEq, Copy, Clone, Serialize_repr, Deserialize_repr)]
