@@ -1,5 +1,6 @@
 use roguelike_common::*;
 use serde_json::json;
+use rand::Rng;
 
 const DIJKSTRA_MAX: i32 = 1000;
 const WIDTH: i32 = 40;
@@ -57,13 +58,20 @@ impl Map {
 
         let idx = self.xy_idx(x, y);
         let dv = self.dijkstra_values[idx];
+        let mut v = Vec::new();
+        let mut rng = rand::thread_rng();
         for n in self.neighbours[idx].iter() {
             if self.blocked[*n] == false {
                 if self.dijkstra_values[*n] < dv {
-                    return Position { x: *n as i32 % WIDTH, y: *n as i32 / WIDTH };
+                    v.push(n);
                 }
             };
         };
+
+        if v.len() > 0 {
+            let n = rng.gen_range(0, v.len());
+            return Position { x: *v[n] as i32 % WIDTH, y: *v[n] as i32 / WIDTH };
+        }
 
         Position { x, y }
     }
@@ -93,7 +101,7 @@ impl Map {
     }
 
     pub fn create_temp_walls(&mut self) {
-        let mut rng = rltk::RandomNumberGenerator::new();
+        let mut rng = rand::thread_rng();
 
         for x in 0..self.width {
             let mut idx = self.xy_idx(x, 0);
@@ -109,8 +117,8 @@ impl Map {
         }
 
         for _i in 0..200 {
-            let x = rng.roll_dice(1, self.width - 1);
-            let y = rng.roll_dice(1, self.height - 1);
+            let x = rng.gen_range(1, self.width - 1);
+            let y = rng.gen_range(1, self.height - 1);
             let idx = self.xy_idx(x, y);
             if idx != self.xy_idx(20, 10) {
                 self.tiles[idx] = TileType::Wall;
@@ -134,10 +142,10 @@ impl Map {
     }
 
     pub fn get_random_space(&self) -> (i32, i32) {
-        let mut rng = rltk::RandomNumberGenerator::new();
+        let mut rng = rand::thread_rng();
         loop {
-            let x = rng.roll_dice(1, self.width - 1);
-            let y = rng.roll_dice(1, self.height - 1);
+            let x = rng.gen_range(1, self.width - 1);
+            let y = rng.gen_range(1, self.height - 1);
             let idx = self.xy_idx(x, y);
             if self.tiles[idx] == TileType::Floor {
                 break (x, y)

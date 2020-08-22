@@ -1,6 +1,7 @@
 use actix::{Actor, StreamHandler};
 use actix_web::{web, App, Error, HttpRequest, HttpResponse, HttpServer};
 use actix_web_actors::ws;
+use rand::Rng;
 
 use specs::prelude::*;
 use roguelike_common::*;
@@ -150,13 +151,13 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
         })
         .build();
 
-    let mut rng = rltk::RandomNumberGenerator::new();
+    let mut rng = rand::thread_rng();
 
     for i in 1..8 {
         let (x, y) = map.get_random_space();
         let glyph;
         let name;
-        let roll = rng.roll_dice(1, 5);
+        let roll = rng.gen_range(1, 5);
         match roll {
             1 => { glyph = String:: from("white-centipede"); name = "Carnivorous White Centipede".to_string(); }
             2 => { glyph = String:: from("red-ant"); name = "Giant Red Ant".to_string(); }
