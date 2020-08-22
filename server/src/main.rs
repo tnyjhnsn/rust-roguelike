@@ -133,7 +133,7 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
     gs.ecs.register::<Name>(); 
     gs.ecs.register::<BlocksTile>(); 
 
-    let mut map = Map::new_map();
+    let mut map = Map::new();
     map.create_temp_walls();
     let px = 20;
     let py = 20;
@@ -180,7 +180,6 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
     gs.ecs.insert(
         PlayerPosition {
             position: Point::new(px, py),
-            dijkstra_map: Vec::new(),
         });
     gs.ecs.insert(map);
 

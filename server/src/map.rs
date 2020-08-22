@@ -1,28 +1,88 @@
 use roguelike_common::*;
 use serde_json::json;
 
+const DIJKSTRA_MAX: i32 = 1000;
+const WIDTH: i32 = 40;
+const HEIGHT: i32 = 40;
+
 #[derive(Debug)]
 pub struct Map {
     pub width: i32,
     pub height: i32,
     pub tiles: Vec<TileType>,
     pub blocked: Vec<bool>,
+    pub neighbours: Vec<Vec<usize>>,
+    pub dijkstra_values: Vec<i32>,
 }
 
 impl Map {
 
-    pub fn new_map() -> Self {
-        let width: i32 = 40;
-        let height: i32 = 40;
+    pub fn new() -> Self {
+        let width = WIDTH;
+        let height = HEIGHT;
         let dim = (width * height) as usize;
         let tiles = vec![TileType::Floor; dim];
         let blocked = vec![false; dim];
+        let neighbours = vec![Vec::new(); dim];
+        let dijkstra_values = Vec::new();
 
-        Map {
+        let mut map = Map {
             width,
             height,
             tiles,
             blocked,
+            neighbours,
+            dijkstra_values,
+        };
+
+        map.populate_neighbours();
+        map
+    }
+
+    fn get_dim(&self) -> usize {
+        (self.width * self.height) as usize
+    }
+
+    pub fn populate_dijkstra_values(&mut self, dijkstra_map: &[usize], x: i32, y: i32) -> Position {
+        self.dijkstra_values = vec![DIJKSTRA_MAX; self.get_dim()];
+        self.dijkstra_values[dijkstra_map[0]] = 0;
+        for i in dijkstra_map.iter() {
+            let dv = self.dijkstra_values[*i]; 
+            for n in self.neighbours[*i].iter() {
+                if self.blocked[*n] == false && self.dijkstra_values[*n] == DIJKSTRA_MAX {
+                    self.dijkstra_values[*n] = dv + 1;
+                };
+            };
+        };
+
+        let idx = self.xy_idx(x, y);
+        let dv = self.dijkstra_values[idx];
+        for n in self.neighbours[idx].iter() {
+            if self.blocked[*n] == false {
+                if self.dijkstra_values[*n] < dv {
+                    return Position { x: *n as i32 % WIDTH, y: *n as i32 / WIDTH };
+                }
+            };
+        };
+
+        Position { x, y }
+    }
+
+    fn populate_neighbours(&mut self) {
+        for i in 0..self.get_dim() - 1 {
+            let row = i as i32 % self.width;
+            let col = i as i32 / self.width;
+            let mut neighbours = Vec::new();
+            for r in [-1, 0, 1].iter().cloned() {
+                let rr = row + r;
+                if rr < 0 || rr >= self.height { continue; }
+                for c in [-1, 0, 1].iter().cloned() {
+                    let cc = col + c;
+                    if (r == 0 && c == 0) || cc < 0 || cc >= self.width { continue; }
+                    neighbours.push(self.xy_idx(rr, cc));
+                }
+            };
+            self.neighbours[i] = neighbours;
         }
     }
 
