@@ -26,7 +26,7 @@ mod damage_system;
 pub use damage_system::*;
 
 struct GameSocket {
-    ecs: World
+    ecs: World,
 }
 
 impl GameSocket {
