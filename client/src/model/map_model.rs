@@ -48,8 +48,8 @@ impl MMap {
         }
         self.fov.clear();
         let fov: Fov = serde_json::from_value(data[0].clone()).unwrap();
-        let entities: Entities = serde_json::from_value(data[1].clone()).unwrap();
-        let ppos = entities[0].0;
+        let contents: Contents = serde_json::from_value(data[1].clone()).unwrap();
+        let ppos = contents[0].0;
         self.set_viewport(ppos as i32);
         for (tile, indexes) in fov.iter() {
             for idx in indexes.iter() {
@@ -59,7 +59,7 @@ impl MMap {
             }
         }
         self.entities = vec![String::new(); self.get_dim()];
-        for (idx, entity) in entities.iter() {
+        for (idx, entity) in contents.iter() {
             self.entities[*idx] = (*entity[0]).to_string();
         }
     }

@@ -53,6 +53,6 @@ pub struct GameMsg {
 }
 
 pub type Fov = Vec<(TileType, Vec<usize>)>;
-pub type Entities = Vec<(usize, Vec<String>)>;
+pub type Contents = Vec<(usize, Vec<String>)>;
 pub type Logs = Vec<(LogType, String)>;
 

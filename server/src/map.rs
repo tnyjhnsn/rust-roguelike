@@ -1,3 +1,4 @@
+use specs::prelude::*;
 use roguelike_common::*;
 use serde_json::json;
 use rand::Rng;
@@ -14,6 +15,7 @@ pub struct Map {
     pub blocked: Vec<bool>,
     pub neighbours: Vec<Vec<usize>>,
     pub dijkstra_values: Vec<i32>,
+    pub contents: Vec<Vec<Entity>>,
 }
 
 impl Map {
@@ -26,6 +28,7 @@ impl Map {
         let blocked = vec![false; dim];
         let neighbours = vec![Vec::new(); dim];
         let dijkstra_values = Vec::new();
+        let contents = vec![Vec::new(); dim];
 
         let mut map = Map {
             width,
@@ -34,6 +37,7 @@ impl Map {
             blocked,
             neighbours,
             dijkstra_values,
+            contents,
         };
 
         map.populate_neighbours();
@@ -42,6 +46,12 @@ impl Map {
 
     fn get_dim(&self) -> usize {
         (self.width * self.height) as usize
+    }
+
+    pub fn clear_contents(&mut self) {
+        for content in self.contents.iter_mut() {
+            content.clear();
+        }
     }
 
     pub fn populate_dijkstra_values(&mut self, dijkstra_map: &[usize], x: i32, y: i32) -> Position {
@@ -71,7 +81,7 @@ impl Map {
         if v.len() > 0 {
             let n = rng.gen_range(0, v.len());
             return Position { x: *v[n] as i32 % WIDTH, y: *v[n] as i32 / WIDTH };
-        }
+        }; 
 
         Position { x, y }
     }
@@ -154,10 +164,10 @@ impl Map {
     }
 }
 
-pub fn draw_fov(fov: Fov, ent: Entities) -> String {
+pub fn draw_fov(fov: Fov, contents: Contents) -> String {
     let mut d = Vec::new();
     let f = serde_json::to_value(fov).unwrap();
-    let e = serde_json::to_value(ent).unwrap();
+    let e = serde_json::to_value(contents).unwrap();
     d.push(f);
     d.push(e);
     let gm = GameMsg {

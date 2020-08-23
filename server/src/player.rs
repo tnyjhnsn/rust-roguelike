@@ -1,5 +1,5 @@
 use specs::prelude::*;
-use super::{Player};
+use super::{Player, CombatStats, WantsToMelee};
 use std::cmp::{min, max};
 use roguelike_common::*;
 
@@ -10,36 +10,30 @@ pub struct PlayerPosition {
     pub position: Point,
 }
 
-//impl PlayerPosition {
-    //pub fn get_next_position(&self, x: i32, y: i32) -> Position {
-        //let current_pos = self.idx_pos(Position { x, y });
-        //let current_dv = self.dijkstra_map[current_pos].1;
-        //for n in self.dijkstra_map[current_pos].2.iter() {
-            //let idx = self.idx_pos(*n);
-            //let dv = self.dijkstra_map[idx].1;
-            //if dv < current_dv {
-                //return *n;
-            //}
-        //};
-        //Position { x, y }
-    //}
-//
-    //fn idx_pos(&self, p: Position) -> usize {
-        //let idx = self.dijkstra_map.iter().position(|m| m.0.x == p.x && m.0.y == p.y);
-        //match idx {
-            //Some(i) => i,
-            //None => 0,
-        //}
-    //}
-//}
-
 pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
     let mut positions = ecs.write_storage::<Position>();
     let mut players = ecs.write_storage::<Player>();
+    let combat_stats = ecs.read_storage::<CombatStats>();
     let map = ecs.fetch::<Map>();
+    let entities = ecs.entities();
+    let mut wants_to_melee = ecs.write_storage::<WantsToMelee>();
 
-    for (_player, pos) in (&mut players, &mut positions).join() {
+    for (entity, _player, pos) in (&entities, &mut players, &mut positions).join() {
+        if pos.x + delta_x < 1 || pos.x + delta_x > map.width-1
+            || pos.y + delta_y < 1 || pos.y + delta_y > map.height-1 { return; }
         let dest_idx = map.xy_idx(pos.x + delta_x, pos.y + delta_y);
+
+        for potential_target in map.contents[dest_idx].iter() {
+            let t = combat_stats.get(*potential_target);
+            match t {
+                Some(_t) => {
+                    wants_to_melee.insert(entity, WantsToMelee{ target: *potential_target }).expect("Add target failed");
+                    return;
+                }
+                None => {}
+            }
+        }
+
         if !map.blocked[dest_idx] {
             pos.x = min(map.width - 1 , max(0, pos.x + delta_x));
             pos.y = min(map.height - 1, max(0, pos.y + delta_y));

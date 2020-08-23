@@ -20,6 +20,10 @@ mod gamelog;
 pub use gamelog::*;
 mod map_indexing_system;
 pub use map_indexing_system::*;
+mod melee_combat_system;
+pub use melee_combat_system::*;
+mod damage_system;
+pub use damage_system::*;
 
 struct GameSocket {
     ecs: World
@@ -31,6 +35,7 @@ impl GameSocket {
 
         player_input(txt, &mut self.ecs);
         self.run_systems();
+        delete_the_dead(&mut self.ecs);
 
         let fovs = self.ecs.read_storage::<FieldOfView>();
         let player = self.ecs.read_storage::<Player>();
@@ -56,7 +61,7 @@ impl GameSocket {
             f.push((TileType::Floor, floor));
         }
 
-        let mut e: roguelike_common::Entities = Vec::new();
+        let mut e = Vec::new();
 
         for (pos, render) in (&position, &renderable).join() {
             let idx = map.xy_idx(pos.x, pos.y);
@@ -83,6 +88,10 @@ impl GameSocket {
         mob.run_now(&self.ecs);
         let mut mapindex = MapIndexingSystem{};
         mapindex.run_now(&self.ecs);
+        let mut melee = MeleeCombatSystem{};
+        melee.run_now(&self.ecs);
+        let mut damage = DamageSystem{};
+        damage.run_now(&self.ecs);
         self.ecs.maintain();
     }
 
@@ -133,23 +142,29 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
     gs.ecs.register::<Monster>(); 
     gs.ecs.register::<Name>(); 
     gs.ecs.register::<BlocksTile>(); 
+    gs.ecs.register::<CombatStats>(); 
+    gs.ecs.register::<SufferDamage>(); 
+    gs.ecs.register::<WantsToMelee>(); 
 
     let mut map = Map::new();
     map.create_temp_walls();
     let px = 20;
     let py = 20;
 
-    gs.ecs
+    let player = gs.ecs
         .create_entity()
-        .with(Position { x: px, y: py })
-        .with(Renderable { glyph: String::from("player-m") })
         .with(Player{})
         .with(Name { name: "The Hero".to_string() })
+        .with(Position { x: px, y: py })
+        .with(Renderable { glyph: String::from("player-m") })
         .with(FieldOfView {
             visible_tiles: Vec::new(),
             range: 5,
         })
+        .with(CombatStats{ max_hp: 30, hp: 30, defense: 2, power: 5 })
         .build();
+
+    gs.ecs.insert(player);
 
     let mut rng = rand::thread_rng();
 
@@ -166,15 +181,16 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
         }
         gs.ecs
             .create_entity()
-            .with(Position { x, y })
-            .with(Renderable { glyph })
             .with(Monster{})
             .with(Name { name: format!("{} #{}", &name, i) })
+            .with(Position { x, y })
+            .with(Renderable { glyph })
             .with(FieldOfView {
                 visible_tiles: Vec::new(),
                 range: 5,
             })
             .with(BlocksTile{})
+            .with(CombatStats{ max_hp: 16, hp: 16, defense: 1, power: 4 })
             .build();
     }
 

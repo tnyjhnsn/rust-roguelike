@@ -1,7 +1,6 @@
 use specs::prelude::*;
 use roguelike_common::*;
 use super::player::*;
-use super::gamelog::*;
 use super::components::*;
 use super::map::*;
 
@@ -13,18 +12,18 @@ impl<'a> System<'a> for MonsterAISystem {
                         WriteExpect<'a, Map>, 
                         ReadStorage<'a, Monster>,
                         WriteStorage<'a, Position>,
-                        WriteExpect<'a, GameLog>,
-                        ReadStorage<'a, Name>);
+                        ReadExpect<'a, Entity>,
+                        Entities<'a>,
+                        WriteStorage<'a, WantsToMelee>,
+                        );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (ppos, fov, mut map, monster, mut mpos, mut log, name) = data;
+        let (ppos, fov, mut map, monster, mut mpos, player_entity, entities, mut wants_to_melee) = data;
 
-        for (fov, _monster, mpos, name) in (&fov, &monster, &mut mpos, &name).join() {
+        for (entity, fov, _monster, mpos) in (&entities, &fov, &monster, &mut mpos).join() {
             let distance = ppos.position.distance(Point::new(mpos.x, mpos.y));
             if distance < 1.5 {
-                println!("{} at {} shouts insults!", name.name, distance);
-                log.add_log((LogType::Monster, format!("{} shouts insults", name.name)));
-                return;
+                wants_to_melee.insert(entity, WantsToMelee{ target: *player_entity }).expect("Unable to insert attack");
             } else if fov.visible_tiles.contains(&ppos.position) {
                 let mut idx = map.xy_idx(mpos.x, mpos.y);
                 map.blocked[idx] = false;
