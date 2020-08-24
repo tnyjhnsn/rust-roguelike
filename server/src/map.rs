@@ -140,7 +140,7 @@ impl Map {
         let map = (self.width, self.height);
         let gm = GameMsg {
             msg: String::from("GAME"),
-            data: serde_json::to_value(map).unwrap(),
+            data: json!(map),
         };
         let s = serde_json::to_string(&gm).unwrap();
         //println!("{}", s);

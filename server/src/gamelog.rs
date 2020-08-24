@@ -1,3 +1,4 @@
+use serde_json::json;
 use roguelike_common::*;
 
 pub struct GameLog {
@@ -22,7 +23,7 @@ impl GameLog {
         if self.has_log == true {
             let gm = GameMsg {
                 msg: String::from("LOG"),
-                data: serde_json::to_value(&self.logs).unwrap(),
+                data: json!(&self.logs),
             };
             let s = serde_json::to_string(&gm).unwrap();
             println!("GAMELOG {}", s);
