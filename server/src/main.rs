@@ -1,7 +1,6 @@
 use actix::{Actor, StreamHandler};
 use actix_web::{web, App, Error, HttpRequest, HttpResponse, HttpServer};
 use actix_web_actors::ws;
-use rand::Rng;
 
 use specs::prelude::*;
 use roguelike_common::*;
@@ -24,6 +23,8 @@ mod melee_combat_system;
 pub use melee_combat_system::*;
 mod damage_system;
 pub use damage_system::*;
+mod spawner;
+pub use spawner::*;
 
 struct GameSocket {
     ecs: World,
@@ -115,13 +116,10 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for GameSocket {
                     "/game" => {
                         let map = self.ecs.fetch::<Map>();
                         ctx.text(map.draw_game());
+                        return;
                     }
                     _ => {
                         player_input(txt, &mut self.ecs);
-                        delete_the_dead(&mut self.ecs);
-                        self.run_systems();
-                        self.tick(ctx);
-                        self.run_systems_ai();
                         delete_the_dead(&mut self.ecs);
                         self.run_systems();
                         self.tick(ctx);
@@ -134,6 +132,10 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for GameSocket {
             }
             _ => (),
         }
+        self.run_systems_ai();
+        delete_the_dead(&mut self.ecs);
+        self.run_systems();
+        self.tick(ctx);
     }
 }
 
@@ -158,47 +160,12 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
     let px = 20;
     let py = 20;
 
-    let player = gs.ecs
-        .create_entity()
-        .with(Player{})
-        .with(Name { name: "The Hero".to_string() })
-        .with(Position { x: px, y: py })
-        .with(Renderable { glyph: String::from("player-m") })
-        .with(FieldOfView {
-            visible_tiles: Vec::new(),
-            range: 5,
-        })
-        .with(CombatStats{ max_hp: 30, hp: 30, defense: 2, power: 5 })
-        .build();
-
+    let player = player(&mut gs.ecs, px, py);
     gs.ecs.insert(player);
-
-    let mut rng = rand::thread_rng();
 
     for i in 1..8 {
         let (x, y) = map.get_random_space();
-        let glyph;
-        let name;
-        let roll = rng.gen_range(1, 5);
-        match roll {
-            1 => { glyph = String:: from("white-centipede"); name = "Carnivorous White Centipede".to_string(); }
-            2 => { glyph = String:: from("red-ant"); name = "Giant Red Ant".to_string(); }
-            3 => { glyph = String:: from("ghost"); name = "Scary Ghost".to_string(); }
-            _ => { glyph = String:: from("grey-mould"); name = "Grey Mould".to_string(); }
-        }
-        gs.ecs
-            .create_entity()
-            .with(Monster{})
-            .with(Name { name: format!("{} #{}", &name, i) })
-            .with(Position { x, y })
-            .with(Renderable { glyph })
-            .with(FieldOfView {
-                visible_tiles: Vec::new(),
-                range: 5,
-            })
-            .with(BlocksTile{})
-            .with(CombatStats{ max_hp: 16, hp: 16, defense: 1, power: 4 })
-            .build();
+        random_monster(&mut gs.ecs, x, y, i);
     }
 
     gs.ecs.insert(
