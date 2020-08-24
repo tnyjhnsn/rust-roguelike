@@ -30,12 +30,8 @@ struct GameSocket {
 }
 
 impl GameSocket {
-    fn tick(&mut self,  txt: String, ctx: &mut ws::WebsocketContext<Self>) {
+    fn tick(&mut self,  ctx: &mut ws::WebsocketContext<Self>) {
         //println!("Tick...");
-
-        player_input(txt, &mut self.ecs);
-        self.run_systems();
-        delete_the_dead(&mut self.ecs);
 
         let fovs = self.ecs.read_storage::<FieldOfView>();
         let player = self.ecs.read_storage::<Player>();
@@ -84,14 +80,18 @@ impl GameSocket {
     fn run_systems(&mut self) {
         let mut vis = VisibilitySystem{};
         vis.run_now(&self.ecs);
-        let mut mob = MonsterAISystem{};
-        mob.run_now(&self.ecs);
         let mut mapindex = MapIndexingSystem{};
         mapindex.run_now(&self.ecs);
         let mut melee = MeleeCombatSystem{};
         melee.run_now(&self.ecs);
         let mut damage = DamageSystem{};
         damage.run_now(&self.ecs);
+        self.ecs.maintain();
+    }
+    
+    fn run_systems_ai(&mut self) {
+        let mut mob = MonsterAISystem{};
+        mob.run_now(&self.ecs);
         self.ecs.maintain();
     }
 
@@ -117,7 +117,14 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for GameSocket {
                         ctx.text(map.draw_game());
                     }
                     _ => {
-                        self.tick(txt, ctx);
+                        player_input(txt, &mut self.ecs);
+                        delete_the_dead(&mut self.ecs);
+                        self.run_systems();
+                        self.tick(ctx);
+                        self.run_systems_ai();
+                        delete_the_dead(&mut self.ecs);
+                        self.run_systems();
+                        self.tick(ctx);
                     }
                 }
             }
