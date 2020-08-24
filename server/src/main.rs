@@ -1,3 +1,4 @@
+use std::collections::{HashMap};
 use actix::{Actor, StreamHandler};
 use actix_web::{web, App, Error, HttpRequest, HttpResponse, HttpServer};
 use actix_web_actors::ws;
@@ -39,6 +40,7 @@ impl GameSocket {
         let position = self.ecs.read_storage::<Position>();
         let renderable = self.ecs.read_storage::<Renderable>();
         let map = self.ecs.fetch::<Map>();
+        let ppos = self.ecs.fetch::<PlayerPosition>();
 
         let mut f: Fov = Vec::new();
         let mut player_fov = Vec::new();
@@ -58,16 +60,19 @@ impl GameSocket {
             f.push((TileType::Floor, floor));
         }
 
-        let mut e = Vec::new();
-
+        let mut tree: HashMap<usize, Vec<String>> = HashMap::new();
         for (pos, render) in (&position, &renderable).join() {
             let idx = map.xy_idx(pos.x, pos.y);
             if player_fov.contains(&idx) {
-                e.push((idx, vec![(render.glyph).to_string()]));
+                tree.entry(idx).or_insert(Vec::new()).push((render.glyph).to_string());
             }
         };
 
-        ctx.text(draw_fov(f, e));
+        let mut e = Vec::new();
+        for (idx, content) in tree {
+            e.push((idx, content));
+        }
+        ctx.text(draw_fov(f, map.xy_idx(ppos.position.x, ppos.position.y), e));
 
         let mut gl = self.ecs.write_resource::<GameLog>();
         match gl.draw_gamelog() {

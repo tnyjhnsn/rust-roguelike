@@ -164,11 +164,13 @@ impl Map {
     }
 }
 
-pub fn draw_fov(fov: Fov, contents: Contents) -> String {
+pub fn draw_fov(fov: Fov, ppos: usize, contents: Contents) -> String {
     let mut d = Vec::new();
     let f = serde_json::to_value(fov).unwrap();
+    let p = serde_json::to_value(ppos).unwrap();
     let e = serde_json::to_value(contents).unwrap();
     d.push(f);
+    d.push(p);
     d.push(e);
     let gm = GameMsg {
         msg: String::from("FOV"),

@@ -48,9 +48,9 @@ impl MMap {
         }
         self.fov.clear();
         let fov: Fov = serde_json::from_value(data[0].clone()).unwrap();
-        let contents: Contents = serde_json::from_value(data[1].clone()).unwrap();
-        let ppos = contents[0].0;
-        self.set_viewport(ppos as i32);
+        let ppos = serde_json::from_value(data[1].clone()).unwrap();
+        let contents: Contents = serde_json::from_value(data[2].clone()).unwrap();
+        self.set_viewport(ppos);
         for (tile, indexes) in fov.iter() {
             for idx in indexes.iter() {
                 self.tiles[*idx] = *tile;
