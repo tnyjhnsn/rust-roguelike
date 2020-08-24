@@ -1,5 +1,15 @@
 use specs::prelude::*;
-use super::{CombatStats, Player, Renderable, Name, Position, FieldOfView, Monster, BlocksTile};
+use super::{
+    CombatStats,
+    Player,
+    Renderable,
+    Name,
+    Position,
+    FieldOfView,
+    Monster,
+    Item,
+    Potion,
+    BlocksTile};
 use rand::Rng;
 
 pub fn player(ecs: &mut World, x: i32, y: i32) -> Entity {
@@ -40,6 +50,16 @@ pub fn random_monster(ecs: &mut World, x: i32, y: i32, i: usize) {
         })
         .with(BlocksTile{})
         .with(CombatStats{ max_hp: 16, hp: 16, defense: 1, power: 4 })
+        .build();
+}
+
+pub fn health_potion(ecs: &mut World, x: i32, y: i32) {
+    ecs.create_entity()
+        .with(Name { name: "Health Potion".to_string() })
+        .with(Position{ x, y })
+        .with(Renderable{ glyph: String::from("health-potion") })
+        .with(Item{})
+        .with(Potion{ heal: 8 })
         .build();
 }
 

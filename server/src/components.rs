@@ -51,6 +51,14 @@ impl SufferDamage {
     }
 }
 
+#[derive(Component, Debug)]
+pub struct Item {}
+
+#[derive(Component, Debug)]
+pub struct Potion {
+    pub heal: i32,
+}
+
 // Component for each intent
 
 #[derive(Component, Debug, Clone)]

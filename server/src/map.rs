@@ -175,7 +175,7 @@ pub fn draw_fov(fov: Fov, contents: Contents) -> String {
         data: json!(d),
     };
     let s = serde_json::to_string(&gm).unwrap();
-    //println!("{}", s);
+    println!("{}", s);
     s
 }
 

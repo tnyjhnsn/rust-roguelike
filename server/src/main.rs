@@ -154,6 +154,8 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
     gs.ecs.register::<CombatStats>(); 
     gs.ecs.register::<SufferDamage>(); 
     gs.ecs.register::<WantsToMelee>(); 
+    gs.ecs.register::<Item>(); 
+    gs.ecs.register::<Potion>(); 
 
     let mut map = Map::new();
     map.create_temp_walls();
@@ -168,12 +170,13 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
         random_monster(&mut gs.ecs, x, y, i);
     }
 
-    gs.ecs.insert(
-        PlayerPosition {
-            position: Point::new(px, py),
-        });
-    gs.ecs.insert(map);
+    for _i in 1..8 {
+        let (x, y) = map.get_random_space();
+        health_potion(&mut gs.ecs, x, y);
+    }
 
+    gs.ecs.insert(PlayerPosition::new(px, py));
+    gs.ecs.insert(map);
     gs.ecs.insert(GameLog::new());
     
     let res = ws::start(gs, &req, stream);
