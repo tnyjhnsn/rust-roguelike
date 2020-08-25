@@ -165,31 +165,3 @@ impl Map {
     }
 }
 
-pub fn send_fov(ppos: usize, fov: Fov) -> String {
-    let mut map = HashMap::new();
-    let mut d = Vec::new();
-    let p = serde_json::to_value(ppos).unwrap();
-    let f = serde_json::to_value(fov).unwrap();
-    d.push(p);
-    d.push(f);
-    map.entry(String::from("FOV")).or_insert(d);
-    let gm = GameMsg {
-        data: json!(map),
-    };
-    let s = serde_json::to_string(&gm).unwrap();
-    //println!("{}", s);
-    s
-}
-
-pub fn send_contents(contents: Contents) -> String {
-    let mut map = HashMap::new();
-    let c = serde_json::to_value(contents).unwrap();
-    map.entry(String::from("CONTENTS")).or_insert(c);
-    let gm = GameMsg {
-        data: json!(map),
-    };
-    let s = serde_json::to_string(&gm).unwrap();
-    //println!("{}", s);
-    s
-}
-

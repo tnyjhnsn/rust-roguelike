@@ -2,6 +2,7 @@ use std::collections::{HashMap};
 use actix::{Actor, StreamHandler};
 use actix_web::{web, App, Error, HttpRequest, HttpResponse, HttpServer};
 use actix_web_actors::ws;
+use serde_json::json;
 
 use specs::prelude::*;
 use roguelike_common::*;
@@ -66,7 +67,7 @@ impl GameSocket {
         let ppos = self.ecs.fetch::<PlayerPosition>();
         let mut state = self.ecs.fetch_mut::<RunState>();
 
-        let mut f: Fov = Vec::new();
+        let mut fov_tiles: Fov = Vec::new();
         let mut player_fov = Vec::new();
 
         for (_p, fov) in (&player, &fov).join() {
@@ -80,12 +81,20 @@ impl GameSocket {
                 }
                 player_fov.push(idx);
             }
-            f.push((TileType::Wall, wall));
-            f.push((TileType::Floor, floor));
+            fov_tiles.push((TileType::Wall, wall));
+            fov_tiles.push((TileType::Floor, floor));
         }
 
+        let mut hm = HashMap::new();
+
         if state.check_state(FOV_CHANGE) {
-            ctx.text(send_fov(map.xy_idx(ppos.position.x, ppos.position.y), f));
+            let idx = map.xy_idx(ppos.position.x, ppos.position.y);
+            let p = serde_json::to_value(idx).unwrap();
+            let f = serde_json::to_value(fov_tiles).unwrap();
+            let mut v = Vec::new();
+            v.push(p);
+            v.push(f);
+            hm.entry(String::from("FOV")).or_insert(serde_json::to_value(v).unwrap());
             state.remove_state(FOV_CHANGE);
         }
 
@@ -97,12 +106,21 @@ impl GameSocket {
                     tree.entry(idx).or_insert(Vec::new()).push((render.glyph).to_string());
                 }
             };
-            let mut e = Vec::new();
+            let mut v = Vec::new();
             for (idx, content) in tree {
-                e.push((idx, content));
+                v.push((idx, content));
             }
-            ctx.text(send_contents(e));
+            let contents = serde_json::to_value(v).unwrap();
+            hm.entry(String::from("CONTENTS")).or_insert(contents);
             state.remove_state(CONTENTS_CHANGE);
+        }
+
+        if hm.len() > 0 {
+            let gm = GameMsg {
+                data: json!(hm),
+            };
+            let s = serde_json::to_string(&gm).unwrap();
+            ctx.text(s);
         }
 
         let mut gl = self.ecs.write_resource::<GameLog>();
