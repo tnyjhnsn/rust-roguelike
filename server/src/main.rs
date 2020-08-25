@@ -27,6 +27,29 @@ pub use damage_system::*;
 mod spawner;
 pub use spawner::*;
 
+#[derive(PartialEq, Copy, Clone)]
+pub struct RunState {
+    state: i32,
+}
+
+impl RunState {
+    fn new(state: i32) -> Self {
+        Self { state }
+    }
+
+    pub fn add_state(&mut self, state: i32) {
+        self.state |= state;
+    }
+
+    pub fn remove_state(&mut self, state: i32) {
+        self.state &= !state;
+    }
+
+    pub fn check_state(&self, state: i32) -> bool {
+        self.state & state != 0
+    }
+}
+
 struct GameSocket {
     ecs: World,
 }
@@ -35,17 +58,18 @@ impl GameSocket {
     fn tick(&mut self,  ctx: &mut ws::WebsocketContext<Self>) {
         //println!("Tick...");
 
-        let fovs = self.ecs.read_storage::<FieldOfView>();
+        let fov = self.ecs.read_storage::<FieldOfView>();
         let player = self.ecs.read_storage::<Player>();
         let position = self.ecs.read_storage::<Position>();
         let renderable = self.ecs.read_storage::<Renderable>();
         let map = self.ecs.fetch::<Map>();
         let ppos = self.ecs.fetch::<PlayerPosition>();
+        let mut state = self.ecs.fetch_mut::<RunState>();
 
         let mut f: Fov = Vec::new();
         let mut player_fov = Vec::new();
 
-        for (_p, fov) in (&player, &fovs).join() {
+        for (_p, fov) in (&player, &fov).join() {
             let mut wall: Vec<usize> = Vec::new();
             let mut floor: Vec<usize> = Vec::new();
             for t in &fov.visible_tiles {
@@ -60,19 +84,26 @@ impl GameSocket {
             f.push((TileType::Floor, floor));
         }
 
-        let mut tree: HashMap<usize, Vec<String>> = HashMap::new();
-        for (pos, render) in (&position, &renderable).join() {
-            let idx = map.xy_idx(pos.x, pos.y);
-            if player_fov.contains(&idx) {
-                tree.entry(idx).or_insert(Vec::new()).push((render.glyph).to_string());
-            }
-        };
-
-        let mut e = Vec::new();
-        for (idx, content) in tree {
-            e.push((idx, content));
+        if state.check_state(FOV_CHANGE) {
+            ctx.text(send_fov(map.xy_idx(ppos.position.x, ppos.position.y), f));
+            state.remove_state(FOV_CHANGE);
         }
-        ctx.text(draw_fov(f, map.xy_idx(ppos.position.x, ppos.position.y), e));
+
+        if state.check_state(CONTENTS_CHANGE) {
+            let mut tree: HashMap<usize, Vec<String>> = HashMap::new();
+            for (pos, render) in (&position, &renderable).join() {
+                let idx = map.xy_idx(pos.x, pos.y);
+                if player_fov.contains(&idx) {
+                    tree.entry(idx).or_insert(Vec::new()).push((render.glyph).to_string());
+                }
+            };
+            let mut e = Vec::new();
+            for (idx, content) in tree {
+                e.push((idx, content));
+            }
+            ctx.text(send_contents(e));
+            state.remove_state(CONTENTS_CHANGE);
+        }
 
         let mut gl = self.ecs.write_resource::<GameLog>();
         match gl.draw_gamelog() {
@@ -183,6 +214,7 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
     gs.ecs.insert(PlayerPosition::new(px, py));
     gs.ecs.insert(map);
     gs.ecs.insert(GameLog::new());
+    gs.ecs.insert(RunState::new(WAITING));
     
     let res = ws::start(gs, &req, stream);
     println!("{:?}", res);

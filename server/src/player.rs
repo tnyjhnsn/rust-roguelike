@@ -1,5 +1,5 @@
 use specs::prelude::*;
-use super::{Player, CombatStats, WantsToMelee};
+use super::{Player, CombatStats, WantsToMelee, RunState};
 use std::cmp::{min, max};
 use roguelike_common::*;
 
@@ -23,6 +23,7 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
     let mut players = ecs.write_storage::<Player>();
     let combat_stats = ecs.read_storage::<CombatStats>();
     let map = ecs.fetch::<Map>();
+    let mut state = ecs.fetch_mut::<RunState>();
     let entities = ecs.entities();
     let mut wants_to_melee = ecs.write_storage::<WantsToMelee>();
 
@@ -49,6 +50,8 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
             let mut ppos = ecs.write_resource::<PlayerPosition>();
             ppos.position.x = pos.x;
             ppos.position.y = pos.y;
+            state.add_state(FOV_CHANGE);
+            state.add_state(CONTENTS_CHANGE);
         }
     }
 }

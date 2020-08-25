@@ -2,6 +2,7 @@ use specs::prelude::*;
 use roguelike_common::*;
 use serde_json::json;
 use rand::Rng;
+use std::collections::HashMap;
 
 const DIJKSTRA_MAX: i32 = 1000;
 const WIDTH: i32 = 40;
@@ -137,9 +138,9 @@ impl Map {
     }
 
     pub fn draw_game(&self) -> String {
-        let map = (self.width, self.height);
+        let mut map = HashMap::new();
+        map.entry(String::from("GAME")).or_insert((self.width, self.height));
         let gm = GameMsg {
-            msg: String::from("GAME"),
             data: json!(map),
         };
         let s = serde_json::to_string(&gm).unwrap();
@@ -164,20 +165,31 @@ impl Map {
     }
 }
 
-pub fn draw_fov(fov: Fov, ppos: usize, contents: Contents) -> String {
+pub fn send_fov(ppos: usize, fov: Fov) -> String {
+    let mut map = HashMap::new();
     let mut d = Vec::new();
-    let f = serde_json::to_value(fov).unwrap();
     let p = serde_json::to_value(ppos).unwrap();
-    let e = serde_json::to_value(contents).unwrap();
-    d.push(f);
+    let f = serde_json::to_value(fov).unwrap();
     d.push(p);
-    d.push(e);
+    d.push(f);
+    map.entry(String::from("FOV")).or_insert(d);
     let gm = GameMsg {
-        msg: String::from("FOV"),
-        data: json!(d),
+        data: json!(map),
     };
     let s = serde_json::to_string(&gm).unwrap();
-    println!("{}", s);
+    //println!("{}", s);
+    s
+}
+
+pub fn send_contents(contents: Contents) -> String {
+    let mut map = HashMap::new();
+    let c = serde_json::to_value(contents).unwrap();
+    map.entry(String::from("CONTENTS")).or_insert(c);
+    let gm = GameMsg {
+        data: json!(map),
+    };
+    let s = serde_json::to_string(&gm).unwrap();
+    //println!("{}", s);
     s
 }
 

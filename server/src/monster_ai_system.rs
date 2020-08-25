@@ -1,8 +1,6 @@
 use specs::prelude::*;
 use roguelike_common::*;
-use super::player::*;
-use super::components::*;
-use super::map::*;
+use super::*;
 
 pub struct MonsterAISystem {}
 
@@ -10,6 +8,7 @@ impl<'a> System<'a> for MonsterAISystem {
     type SystemData = ( WriteExpect<'a, PlayerPosition>,
                         ReadStorage<'a, FieldOfView>, 
                         WriteExpect<'a, Map>, 
+                        WriteExpect<'a, RunState>, 
                         ReadStorage<'a, Monster>,
                         WriteStorage<'a, Position>,
                         ReadExpect<'a, Entity>,
@@ -18,7 +17,7 @@ impl<'a> System<'a> for MonsterAISystem {
                         );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (ppos, fov, mut map, monster, mut mpos, player_entity, entities, mut wants_to_melee) = data;
+        let (ppos, fov, mut map, mut state, monster, mut mpos, player_entity, entities, mut wants_to_melee) = data;
 
         for (entity, fov, _monster, mpos) in (&entities, &fov, &monster, &mut mpos).join() {
             let distance = ppos.position.distance(Point::new(mpos.x, mpos.y));
@@ -33,6 +32,7 @@ impl<'a> System<'a> for MonsterAISystem {
                 mpos.y = new_pos.y;
                 idx = map.xy_idx(mpos.x, mpos.y);
                 map.blocked[idx] = true;
+                state.add_state(CONTENTS_CHANGE);
             }
         }
     }

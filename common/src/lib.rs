@@ -8,6 +8,10 @@ use serde_repr::*;
 pub const SEEN: i32 = 1;
 pub const VISIBLE: i32 = 2;
 
+pub const WAITING: i32 = 0;
+pub const FOV_CHANGE: i32 = 1;
+pub const CONTENTS_CHANGE: i32 = 2;
+
 #[derive(Component, Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct Position {
     pub x: i32,
@@ -48,7 +52,6 @@ pub enum LogType {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GameMsg {
-    pub msg: String,
     pub data: Value,
 }
 

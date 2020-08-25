@@ -7,6 +7,7 @@ use yew::services::ConsoleService;
 use serde::{Serialize};
 use serde_json::Value;
 use roguelike_common::*;
+use std::collections::HashMap;
 
 use super::model::game_model::*;
 use super::game::*;
@@ -88,24 +89,30 @@ impl Component for Model {
     		}
     		Msg::Received(Ok(v)) => {
                 let gm: GameMsg = serde_json::from_value(v).unwrap();
-                match gm.msg.trim() {
-                    "GAME" => {
-                        self.game.map.set_map(gm.data);
-                        true
-                    }
-                    "FOV" => {
-                        self.game.map.set_fov(gm.data);
-                        true
-                    }
-                    "LOG" => {
-                        self.game.log.set_logs(gm.data);
-                        true
-                    }
-                    _ => {
-                        //ConsoleService::info(&format!("{:?}", gm.data));
-                        false
+                let data: HashMap<String, Value> = serde_json::from_value(gm.data).unwrap();
+                //ConsoleService::info(&format!("{:?}", data));
+                for (msg, v) in &data {
+                    let d = serde_json::from_value(v.clone()).unwrap(); 
+                    match msg.trim() {
+                        "GAME" => {
+                            self.game.map.set_map(d);
+                        }
+                        "FOV" => {
+                            self.game.map.set_fov(d);
+                        }
+                        "CONTENTS" => {
+                            self.game.map.set_contents(d);
+                        }
+                        "LOG" => {
+                            self.game.log.set_logs(d);
+                        }
+                        _ => {
+                            //ConsoleService::info(&format!("{:?}", gm.d));
+                            return false;
+                        }
                     }
                 }
+                true
     		}
             Msg::Received(Err(s)) => {
                 let msg = format!("Error when reading data from server: {}\n", &s.to_string());
