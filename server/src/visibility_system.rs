@@ -29,7 +29,7 @@ fn get_fov(x: i32, y: i32, r: i32) -> Vec<Point> {
             _ => n,
         };
         n = if n == 0 { 1 } else { n };
-        for j in n*-1..n+1 {
+        for j in n * -1..n + 1 {
             v.push(Point { x: x + i, y: y + j })
         }
     }

@@ -67,7 +67,7 @@ impl GameSocket {
         let ppos = self.ecs.fetch::<PlayerPosition>();
         let mut state = self.ecs.fetch_mut::<RunState>();
 
-        let mut fov_tiles: Fov = Vec::new();
+        let mut fov_tiles = Vec::new();
         let mut player_fov = Vec::new();
 
         for (_p, fov) in (&player, &fov).join() {
@@ -120,6 +120,7 @@ impl GameSocket {
                 data: json!(hm),
             };
             let s = serde_json::to_string(&gm).unwrap();
+            //println!("{}", s);
             ctx.text(s);
         }
 

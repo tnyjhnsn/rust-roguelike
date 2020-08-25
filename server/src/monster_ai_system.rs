@@ -49,8 +49,8 @@ fn create_dijkstra_map(x: i32, y: i32, map: &Map) -> Vec<usize> {
                     if (i == 0 && a == -1) || (j == 0 && b == -1) {
                         continue;
                     }
-                    let xp = x+a*i;
-                    let yp = y+b*j;
+                    let xp = x + a * i;
+                    let yp = y + b * j;
                     if xp < 0 || xp >= map.width || yp < 0 || yp >= map.height {
                         continue;
                     }
