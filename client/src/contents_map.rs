@@ -1,5 +1,6 @@
 use yew::prelude::*;
 use super::contents::*;
+use roguelike_common::*;
 
 pub struct ContentsMap {
     props: Props,
@@ -8,6 +9,7 @@ pub struct ContentsMap {
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
     pub contents: Vec<Vec<i32>>,
+    pub dict: Dictionary,
     pub viewport: Vec<i32>,
 }
 
@@ -35,7 +37,7 @@ impl Component for ContentsMap {
     fn view(&self) -> Html {
         let render_tile = |content: &Vec<i32>| {
             html! {
-                <Contents content=content />
+                <Contents content=content dict=&self.props.dict />
             }
         };
         html! {

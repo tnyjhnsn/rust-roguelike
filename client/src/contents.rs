@@ -1,4 +1,5 @@
 use yew::prelude::*;
+use roguelike_common::*;
 
 pub struct Contents {
     props: Props,
@@ -6,7 +7,8 @@ pub struct Contents {
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
-    pub content: Vec<i32>
+    pub content: Vec<i32>,
+    pub dict: Dictionary,
 }
 
 impl Component for Contents {
@@ -31,11 +33,15 @@ impl Component for Contents {
     }
 
     fn view(&self) -> Html {
-        let tile = if self.props.content.len() > 0 { "player-m" } else { "" };
+        let mut tile = String::from("");
+        if self.props.content.len() > 0 {
+            if let Some(c) = self.props.dict.get(&self.props.content[0]) {
+                tile = (c.1).to_string();
+            }
+        }
         html! {
             <div class=("tile", tile)></div>
         }
-
     }
 }
 

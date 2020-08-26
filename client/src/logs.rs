@@ -2,6 +2,7 @@ use yew::prelude::*;
 use chrono::prelude::*;
 use super::log::*;
 use super::model::log_model::*;
+use roguelike_common::*;
 
 pub struct Logs {
     props: Props,
@@ -10,6 +11,7 @@ pub struct Logs {
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
     pub logs: MLog,
+    pub dict: Dictionary,
 }
 
 impl Component for Logs {
@@ -36,7 +38,7 @@ impl Component for Logs {
     fn view(&self) -> Html {
         let render_log = |log: &(DateTime<Local>, Vec<Vec<i32>>)| {
             html! {
-                <Log log=log />
+                <Log log=log dict=&self.props.dict />
             }
         };
         html! {

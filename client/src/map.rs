@@ -5,6 +5,7 @@ use super::model::map_model::*;
 use super::tile_map::*;
 use super::contents_map::*;
 use super::status_map::*;
+use roguelike_common::*;
 
 pub struct Map {
     props: Props,
@@ -13,6 +14,7 @@ pub struct Map {
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
     pub map: MMap,
+    pub dict: Dictionary,
 }
 
 impl Component for Map {
@@ -40,7 +42,10 @@ impl Component for Map {
         html! { 
             <div>
                 <TileMap tiles=&self.props.map.tiles viewport=&self.props.map.viewport />
-                <ContentsMap contents=&self.props.map.contents viewport=&self.props.map.viewport />
+                <ContentsMap
+                    contents=&self.props.map.contents
+                    dict=&self.props.dict
+                    viewport=&self.props.map.viewport />
                 <StatusMap status=&self.props.map.status viewport=&self.props.map.viewport />
             </div>
         }

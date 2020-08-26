@@ -3,6 +3,7 @@ use specs_derive::*;
 use serde::{Serialize, Deserialize};
 use serde_json::Value;
 use serde_repr::*;
+use std::collections::HashMap;
 
 // consts for binary operations
 pub const SEEN: i32 = 1;
@@ -56,4 +57,5 @@ pub struct GameMsg {
 }
 
 pub type Fov = Vec<(TileType, Vec<usize>)>;
+pub type Dictionary = HashMap<i32, (String, String)>;
 

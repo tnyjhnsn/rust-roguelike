@@ -37,7 +37,6 @@ pub fn delete_the_dead(ecs : &mut World) {
                 }
                 let victim = codes.get(entity);
                 if let Some(victim) = victim {
-                    //log.add_log((LogType::Monster, format!("{} is dead", &victim_name.name)));
                     log.add_log(vec![LogType::Dead as i32, victim.code]);
                 }
             }

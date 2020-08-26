@@ -1,13 +1,28 @@
 use yew::prelude::*;
 use chrono::prelude::*;
+use roguelike_common::*;
 
 pub struct Log {
     props: Props,
 }
 
+impl Log {
+    fn get_system_msg(&self) -> String {
+        format!("Hello Rogue!")
+    }
+
+    fn get_attack_msg(&self) -> String {
+        let msg = &self.props.log.1[0]; 
+        let attacker = self.props.dict.get(&msg[1]).unwrap();
+        let target = self.props.dict.get(&msg[2]).unwrap();
+        format!("{} attacks {} for {} damage", attacker.0, target.0, msg[3])
+    }
+}
+
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
     pub log: (DateTime<Local>, Vec<Vec<i32>>),
+    pub dict: Dictionary,
 }
 
 impl Component for Log {
@@ -32,8 +47,13 @@ impl Component for Log {
     }
 
     fn view(&self) -> Html {
+        let s = match &self.props.log.1[0][0] {
+            0 => self.get_system_msg(),
+            1 => self.get_attack_msg(),
+            _ => format!("Something else"),
+        };
         html! {
-            <div>{ format!("{:?} {:?}", &self.props.log.0, &self.props.log.1) }</div>
+            <div>{ s }</div>
         }
     }
 }
