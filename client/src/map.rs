@@ -3,7 +3,7 @@ use yew::prelude::*;
 use super::model::map_model::*;
 
 use super::tile_map::*;
-use super::entity_map::*;
+use super::contents_map::*;
 use super::status_map::*;
 
 pub struct Map {
@@ -40,7 +40,7 @@ impl Component for Map {
         html! { 
             <div>
                 <TileMap tiles=&self.props.map.tiles viewport=&self.props.map.viewport />
-                <EntityMap contents=&self.props.map.contents viewport=&self.props.map.viewport />
+                <ContentsMap contents=&self.props.map.contents viewport=&self.props.map.viewport />
                 <StatusMap status=&self.props.map.status viewport=&self.props.map.viewport />
             </div>
         }

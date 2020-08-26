@@ -1,20 +1,22 @@
 use yew::prelude::*;
+use super::contents::*;
 
-pub struct Entity {
+pub struct ContentsMap {
     props: Props,
 }
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
-    pub content: Vec<i32>
+    pub contents: Vec<Vec<i32>>,
+    pub viewport: Vec<i32>,
 }
 
-impl Component for Entity {
+impl Component for ContentsMap {
     type Message = ();
     type Properties = Props;
 
     fn create(props: Self::Properties, _: ComponentLink<Self>) -> Self {
-        Entity { props }
+        ContentsMap { props }
     }
 
     fn change(&mut self, props: Self::Properties) -> bool {
@@ -31,11 +33,18 @@ impl Component for Entity {
     }
 
     fn view(&self) -> Html {
-        let tile = if self.props.content.len() > 0 { "player-m" } else { "" };
+        let render_tile = |content: &Vec<i32>| {
+            html! {
+                <Contents content=content />
+            }
+        };
         html! {
-            <div class=("tile", tile)></div>
+            <div class="contents">
+                { for self.props.viewport
+                    .iter()
+                    .map(|i| render_tile(&self.props.contents[*i as usize])) }
+            </div>
         }
-
     }
 }
 
