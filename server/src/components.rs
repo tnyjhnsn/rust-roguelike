@@ -3,11 +3,6 @@ use specs_derive::*;
 use roguelike_common::*;
 
 #[derive(Component, Debug)]
-pub struct Renderable {
-    pub glyph: String,
-}
-
-#[derive(Component, Debug)]
 pub struct Player {}
 
 #[derive(Component, Debug)]
@@ -23,8 +18,8 @@ pub struct FieldOfView {
 }
 
 #[derive(Component, Debug)]
-pub struct Name {
-    pub name: String,
+pub struct Code {
+    pub code: i32,
 }
 
 #[derive(Component, Debug)]

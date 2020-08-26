@@ -1,10 +1,9 @@
 use chrono::prelude::*;
 use serde_json::Value;
-use roguelike_common::*;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct MLog {
-    pub logs: Vec<(DateTime<Local>, Logs)>,
+    pub logs: Vec<(DateTime<Local>, Vec<Vec<i32>>)>,
 }
 
 impl MLog {
@@ -16,7 +15,7 @@ impl MLog {
 
     pub fn set_logs(&mut self, data: Value) {
         let local: DateTime<Local> = Local::now();
-        let logs: Logs = serde_json::from_value(data).unwrap();
+        let logs = serde_json::from_value(data).unwrap();
         self.logs.push((local, logs));
     }
 }

@@ -3,19 +3,19 @@ use roguelike_common::*;
 use std::collections::HashMap;
 
 pub struct GameLog {
-    pub logs: Logs,
+    pub logs: Vec<Vec<i32>>,
     pub has_log: bool,
 }
 
 impl GameLog {
     pub fn new() -> Self {
         Self {
-            logs: vec![(LogType::General, String::from("Hello Rogue!"))],
+            logs: vec![vec![0,0]],
             has_log: true,
         }
     }
 
-    pub fn add_log(&mut self, log: (LogType, String)) {
+    pub fn add_log(&mut self, log: Vec<i32>) {
         self.logs.push(log);
         self.has_log = true;
     }

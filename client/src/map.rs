@@ -40,7 +40,7 @@ impl Component for Map {
         html! { 
             <div>
                 <TileMap tiles=&self.props.map.tiles viewport=&self.props.map.viewport />
-                <EntityMap entities=&self.props.map.entities viewport=&self.props.map.viewport />
+                <EntityMap contents=&self.props.map.contents viewport=&self.props.map.viewport />
                 <StatusMap status=&self.props.map.status viewport=&self.props.map.viewport />
             </div>
         }

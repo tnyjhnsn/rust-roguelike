@@ -2,8 +2,7 @@ use specs::prelude::*;
 use super::{
     CombatStats,
     Player,
-    Renderable,
-    Name,
+    Code,
     Position,
     FieldOfView,
     Monster,
@@ -16,9 +15,8 @@ pub fn player(ecs: &mut World, x: i32, y: i32) -> Entity {
     ecs
         .create_entity()
         .with(Player{})
-        .with(Name { name: "You".to_string() })
+        .with(Code { code: 0 })
         .with(Position { x, y })
-        .with(Renderable { glyph: String::from("player-m") })
         .with(FieldOfView {
             visible_tiles: Vec::new(),
             range: 5,
@@ -27,23 +25,21 @@ pub fn player(ecs: &mut World, x: i32, y: i32) -> Entity {
         .build()
 }
 
-pub fn random_monster(ecs: &mut World, x: i32, y: i32, i: usize) {
+pub fn random_monster(ecs: &mut World, x: i32, y: i32) {
     let mut rng = rand::thread_rng();
-    let glyph;
-    let name;
+    let code;
     let roll = rng.gen_range(1, 5);
     match roll {
-        1 => { glyph = String::from("white-centipede"); name = "Carnivorous White Centipede".to_string(); }
-        2 => { glyph = String::from("red-ant"); name = "Giant Red Ant".to_string(); }
-        3 => { glyph = String::from("ghost"); name = "Scary Ghost".to_string(); }
-        _ => { glyph = String::from("grey-mould"); name = "Grey Mould".to_string(); }
+        1 => { code = 10 }
+        2 => { code = 11 }
+        3 => { code = 12 }
+        _ => { code = 13 }
     }
     ecs
         .create_entity()
         .with(Monster{})
-        .with(Name { name: format!("{} #{}", &name, i) })
+        .with(Code { code })
         .with(Position { x, y })
-        .with(Renderable { glyph })
         .with(FieldOfView {
             visible_tiles: Vec::new(),
             range: 5,
@@ -55,9 +51,8 @@ pub fn random_monster(ecs: &mut World, x: i32, y: i32, i: usize) {
 
 pub fn health_potion(ecs: &mut World, x: i32, y: i32) {
     ecs.create_entity()
-        .with(Name { name: "Health Potion".to_string() })
+        .with(Code { code: 2000 })
         .with(Position{ x, y })
-        .with(Renderable{ glyph: String::from("health-potion") })
         .with(Item{})
         .with(Potion{ heal: 8 })
         .build();

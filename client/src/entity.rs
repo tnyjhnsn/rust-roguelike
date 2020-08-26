@@ -6,7 +6,7 @@ pub struct Entity {
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
-    pub entity: String
+    pub content: Vec<i32>
 }
 
 impl Component for Entity {
@@ -31,8 +31,9 @@ impl Component for Entity {
     }
 
     fn view(&self) -> Html {
+        let tile = if self.props.content.len() > 0 { "player-m" } else { "" };
         html! {
-            <div class=("tile", &self.props.entity)></div>
+            <div class=("tile", tile)></div>
         }
 
     }

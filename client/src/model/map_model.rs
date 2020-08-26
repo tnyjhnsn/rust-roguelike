@@ -6,7 +6,7 @@ pub struct MMap {
     pub width: i32,
     pub height: i32,
     pub tiles: Vec<TileType>,
-    pub entities: Vec<String>,
+    pub contents: Vec<Vec<i32>>,
     pub status: Vec<i32>,
     pub fov: Vec<usize>,
     pub viewport: Vec<i32>,
@@ -21,7 +21,7 @@ impl MMap {
             width: 0,
             height: 0,
             tiles: Vec::new(),
-            entities: Vec::new(),
+            contents: Vec::new(),
             status: Vec::new(),
             fov: Vec::new(),
             viewport: Vec::new(),
@@ -37,7 +37,7 @@ impl MMap {
         self.width = game.0;
         self.height = game.1;
         self.tiles = vec![TileType::Floor; self.get_dim()];
-        self.entities = vec![String::new(); self.get_dim()];
+        self.contents = vec![Vec::new(); self.get_dim()];
         self.status = vec![0; self.get_dim()];
     }
 
@@ -60,10 +60,10 @@ impl MMap {
     }
 
     pub fn set_contents(&mut self, data: Value) {
-        let contents: Contents = serde_json::from_value(data).unwrap();
-        self.entities = vec![String::new(); self.get_dim()];
-        for (idx, entity) in contents.iter() {
-            self.entities[*idx] = (*entity[0]).to_string();
+        let contents: Vec<(usize, Vec<i32>)> = serde_json::from_value(data).unwrap();
+        self.contents = vec![Vec::new(); self.get_dim()];
+        for (idx, c) in contents.iter() {
+            self.contents[*idx] = c.to_vec();
         }
     }
 

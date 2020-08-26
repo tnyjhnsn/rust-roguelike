@@ -7,7 +7,7 @@ pub struct EntityMap {
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
-    pub entities: Vec<String>,
+    pub contents: Vec<Vec<i32>>,
     pub viewport: Vec<i32>,
 }
 
@@ -33,16 +33,16 @@ impl Component for EntityMap {
     }
 
     fn view(&self) -> Html {
-        let render_tile = |entity: &String| {
+        let render_tile = |content: &Vec<i32>| {
             html! {
-                <Entity entity=entity />
+                <Entity content=content />
             }
         };
         html! {
             <div class="entities">
                 { for self.props.viewport
                     .iter()
-                    .map(|i| render_tile(&self.props.entities[*i as usize])) }
+                    .map(|i| render_tile(&self.props.contents[*i as usize])) }
             </div>
         }
     }

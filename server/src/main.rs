@@ -61,8 +61,8 @@ impl GameSocket {
 
         let fov = self.ecs.read_storage::<FieldOfView>();
         let player = self.ecs.read_storage::<Player>();
-        let position = self.ecs.read_storage::<Position>();
-        let renderable = self.ecs.read_storage::<Renderable>();
+        let positions = self.ecs.read_storage::<Position>();
+        let codes = self.ecs.read_storage::<Code>();
         let map = self.ecs.fetch::<Map>();
         let ppos = self.ecs.fetch::<PlayerPosition>();
         let mut state = self.ecs.fetch_mut::<RunState>();
@@ -99,11 +99,11 @@ impl GameSocket {
         }
 
         if state.check_state(CONTENTS_CHANGE) {
-            let mut tree: HashMap<usize, Vec<String>> = HashMap::new();
-            for (pos, render) in (&position, &renderable).join() {
+            let mut tree: HashMap<usize, Vec<i32>> = HashMap::new();
+            for (pos, code) in (&positions, &codes).join() {
                 let idx = map.xy_idx(pos.x, pos.y);
                 if player_fov.contains(&idx) {
-                    tree.entry(idx).or_insert(Vec::new()).push((render.glyph).to_string());
+                    tree.entry(idx).or_insert(Vec::new()).push(code.code);
                 }
             };
             let mut v = Vec::new();
@@ -200,11 +200,11 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
     };
 
     gs.ecs.register::<Position>(); 
-    gs.ecs.register::<Renderable>(); 
+    gs.ecs.register::<Code>(); 
     gs.ecs.register::<Player>(); 
     gs.ecs.register::<FieldOfView>(); 
     gs.ecs.register::<Monster>(); 
-    gs.ecs.register::<Name>(); 
+    gs.ecs.register::<Code>(); 
     gs.ecs.register::<BlocksTile>(); 
     gs.ecs.register::<CombatStats>(); 
     gs.ecs.register::<SufferDamage>(); 
@@ -220,9 +220,9 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
     let player = player(&mut gs.ecs, px, py);
     gs.ecs.insert(player);
 
-    for i in 1..8 {
+    for _i in 1..8 {
         let (x, y) = map.get_random_space();
-        random_monster(&mut gs.ecs, x, y, i);
+        random_monster(&mut gs.ecs, x, y);
     }
 
     for _i in 1..8 {

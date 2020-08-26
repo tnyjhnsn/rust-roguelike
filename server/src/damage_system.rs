@@ -1,5 +1,5 @@
 use specs::prelude::*;
-use super::{CombatStats, SufferDamage, Player, GameLog, Name};
+use super::{CombatStats, SufferDamage, Player, GameLog, Code};
 use roguelike_common::*;
 
 pub struct DamageSystem {}
@@ -25,21 +25,20 @@ pub fn delete_the_dead(ecs : &mut World) {
     {
         let combat_stats = ecs.read_storage::<CombatStats>();
         let players = ecs.read_storage::<Player>();
-        let names = ecs.read_storage::<Name>();
+        let codes = ecs.read_storage::<Code>();
         let entities = ecs.entities();
         let mut log = ecs.fetch_mut::<GameLog>();
         for (entity, stats) in (&entities, &combat_stats).join() {
             if stats.hp < 1 { 
                 let player = players.get(entity);
                 match player {
-                    None => {
-                        let victim_name = names.get(entity);
-                        if let Some(victim_name) = victim_name {
-                            log.add_log((LogType::Monster, format!("{} is dead", &victim_name.name)));
-                        }
-                        dead.push(entity)
-                    }
-                    Some(_) => log.add_log((LogType::Player, String::from("You are dead!!"))),
+                    None => { dead.push(entity) }
+                    Some(_) => {}
+                }
+                let victim = codes.get(entity);
+                if let Some(victim) = victim {
+                    //log.add_log((LogType::Monster, format!("{} is dead", &victim_name.name)));
+                    log.add_log(vec![LogType::Dead as i32, victim.code]);
                 }
             }
         }

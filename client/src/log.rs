@@ -1,6 +1,5 @@
 use yew::prelude::*;
 use chrono::prelude::*;
-use roguelike_common::*;
 
 pub struct Log {
     props: Props,
@@ -8,7 +7,7 @@ pub struct Log {
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
-    pub log: (DateTime<Local>, Vec<(LogType, String)>),
+    pub log: (DateTime<Local>, Vec<Vec<i32>>),
 }
 
 impl Component for Log {
