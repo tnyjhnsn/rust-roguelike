@@ -18,5 +18,7 @@ impl MLog {
         let logs = serde_json::from_value(data).unwrap();
         self.logs.push((local, logs));
     }
+
+
 }
 

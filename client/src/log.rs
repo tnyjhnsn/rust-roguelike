@@ -1,5 +1,4 @@
 use yew::prelude::*;
-use chrono::prelude::*;
 use super::model::dictionary::*;
 
 pub struct Log {
@@ -11,17 +10,16 @@ impl Log {
         format!("Hello Rogue!")
     }
 
-    fn get_attack_msg(&self) -> String {
-        let msg = &self.props.log.1[0]; 
-        let attacker = self.props.dict.get_name(msg[1]);
-        let target = self.props.dict.get_name(msg[2]);
-        format!("{} attacks {} for {} damage", attacker, target, msg[3])
+    fn get_attack_msg(&self, attacker: i32, target: i32, damage: i32) -> String {
+        let attacker_name = self.props.dict.get_name(attacker);
+        let target_name = self.props.dict.get_name(target);
+        format!("{} attacks {} for {} damage", attacker_name, target_name, damage)
     }
 }
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
-    pub log: (DateTime<Local>, Vec<Vec<i32>>),
+    pub log: Vec<Vec<i32>>,
     pub dict: Dictionary,
 }
 
@@ -47,13 +45,18 @@ impl Component for Log {
     }
 
     fn view(&self) -> Html {
-        let s = match &self.props.log.1[0][0] {
-            0 => self.get_system_msg(),
-            1 => self.get_attack_msg(),
-            _ => format!("Something else"),
+        let render_log = |_l| {
+            let msg = &self.props.log[0];
+            match msg[0] {
+                0 => html! { self.get_system_msg() },
+                1 => html! { self.get_attack_msg(msg[1], msg[2], msg[3]) },
+                _ => html! { "Something else" },
+            }
         };
         html! {
-            <div>{ s }</div>
+            { for self.props.log
+                .iter()
+                .map( render_log )}
         }
     }
 }
