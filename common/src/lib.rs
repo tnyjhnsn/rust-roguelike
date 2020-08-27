@@ -48,6 +48,7 @@ pub enum LogType {
     System = 0,
     Melee = 1,
     Dead = 2,
+    Collect = 3,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

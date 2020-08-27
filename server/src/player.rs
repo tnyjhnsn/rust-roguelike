@@ -1,5 +1,13 @@
 use specs::prelude::*;
-use super::{Player, CombatStats, WantsToMelee, RunState};
+use super::{
+    Player,
+    Item,
+    GameLog,
+    CombatStats,
+    WantsToMelee,
+    WantsToPickupItem,
+    RunState,
+};
 use std::cmp::{min, max};
 use roguelike_common::*;
 
@@ -56,7 +64,7 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
     }
 }
 
-pub fn player_input( txt: String, ecs: &mut World) {
+pub fn player_input(txt: String, ecs: &mut World) {
     match txt.trim() {
         "ArrowLeft" => try_move_player(-1, 0, ecs),
         "ArrowRight" => try_move_player(1, 0, ecs),
@@ -67,5 +75,30 @@ pub fn player_input( txt: String, ecs: &mut World) {
         "N"|"n" => try_move_player(1, 1, ecs),
         "B"|"b" => try_move_player(-1, 1, ecs),
         _ => ()
+    }
+}
+
+pub fn get_item(ecs: &mut World) {
+
+    let ppos = ecs.fetch::<PlayerPosition>();
+    let player = ecs.fetch::<Entity>();
+    let entities = ecs.entities();
+    let items = ecs.read_storage::<Item>();
+    let positions = ecs.read_storage::<Position>();
+    let mut gamelog = ecs.fetch_mut::<GameLog>();    
+
+    let mut target_item: Option<Entity> = None;
+    for (item, _i, pos) in (&entities, &items, &positions).join() {
+        if pos.x == ppos.position.x && pos.y == ppos.position.y {
+            target_item = Some(item);
+        }
+    }
+
+    match target_item {
+        None => gamelog.add_log(vec![LogType::System as i32, 1]),
+        Some(item) => {
+            let mut collect = ecs.write_storage::<WantsToPickupItem>();
+            collect.insert(*player, WantsToPickupItem{ collected_by: *player, item }).expect("Unable to insert want to pickup");
+        }
     }
 }

@@ -25,6 +25,8 @@ mod melee_combat_system;
 pub use melee_combat_system::*;
 mod damage_system;
 pub use damage_system::*;
+mod inventory_system;
+pub use inventory_system::*;
 mod spawner;
 pub use spawner::*;
 
@@ -142,6 +144,8 @@ impl GameSocket {
         melee.run_now(&self.ecs);
         let mut damage = DamageSystem{};
         damage.run_now(&self.ecs);
+        let mut inventory = InventorySystem{};
+        inventory.run_now(&self.ecs);
         self.ecs.maintain();
     }
     
@@ -172,6 +176,11 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for GameSocket {
                         let map = self.ecs.fetch::<Map>();
                         ctx.text(map.draw_game());
                         return;
+                    }
+                    "g"|"G" => {
+                        get_item(&mut self.ecs);
+                        self.run_systems();
+                        self.tick(ctx);
                     }
                     _ => {
                         player_input(txt, &mut self.ecs);
@@ -211,6 +220,8 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
     gs.ecs.register::<WantsToMelee>(); 
     gs.ecs.register::<Item>(); 
     gs.ecs.register::<Potion>(); 
+    gs.ecs.register::<InInventory>(); 
+    gs.ecs.register::<WantsToPickupItem>(); 
 
     let mut map = Map::new();
     map.create_temp_walls();

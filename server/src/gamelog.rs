@@ -10,7 +10,7 @@ pub struct GameLog {
 impl GameLog {
     pub fn new() -> Self {
         Self {
-            logs: vec![vec![0]],
+            logs: vec![vec![LogType::System as i32, 0]],
             has_log: true,
         }
     }

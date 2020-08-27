@@ -54,10 +54,21 @@ pub struct Potion {
     pub heal: i32,
 }
 
+#[derive(Component, Debug)]
+pub struct InInventory {
+    pub owner: Entity,
+}
+
 // Component for each intent
 
 #[derive(Component, Debug, Clone)]
 pub struct WantsToMelee {
     pub target: Entity,
+}
+
+#[derive(Component, Debug, Clone)]
+pub struct WantsToPickupItem {
+    pub item: Entity,
+    pub collected_by: Entity,
 }
 
