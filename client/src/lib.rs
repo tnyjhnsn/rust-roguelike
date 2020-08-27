@@ -26,6 +26,8 @@ mod logs;
 pub use logs::*;
 mod log;
 pub use log::*;
+mod inventory;
+pub use inventory::*;
 
 #[cfg(feature = "wee_alloc")]
 #[global_allocator]

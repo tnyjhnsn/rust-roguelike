@@ -1,5 +1,6 @@
 use super::map_model::*;
 use super::log_model::*;
+use super::inventory_model::*;
 use super::dictionary::*;
 
 #[derive(Debug, PartialEq, Clone)]
@@ -7,7 +8,7 @@ pub struct MGame {
     pub title: String,
     pub stats: String,
     pub body: String,
-    pub inventory: String,
+    pub inventory: MInventory,
     pub minimap: String,
     pub log: MLog,
     pub map: MMap,
@@ -20,7 +21,7 @@ impl MGame {
             title: String::from("Rogue"),
             stats: String::from("Stats"),
             body: String::from("Body"),
-            inventory: String::from("Inventory"),
+            inventory: MInventory::new(),
             minimap: String::from("Mini Map"),
             log: MLog::new(),
             map: MMap::new(),

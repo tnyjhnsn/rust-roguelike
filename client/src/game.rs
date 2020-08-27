@@ -3,6 +3,7 @@ use yew::prelude::*;
 use super::model::game_model::*;
 use super::map::*;
 use super::logs::*;
+use super::inventory::*;
 
 pub struct Game {
     props: Props,
@@ -37,7 +38,9 @@ impl Component for Game {
     fn view(&self) -> Html {
         html! { 
             <div class="game">
-                <div class="holding left-panel">{ "Left Panel" }</div>
+                <div class="holding left-panel">
+                    <Inventory inventory=&self.props.game.inventory />
+                </div>
                 <div class="holding right-panel">
                     <Logs logs=&self.props.game.log dict=&self.props.game.dict />
                 </div>

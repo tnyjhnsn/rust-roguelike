@@ -106,6 +106,9 @@ impl Component for Model {
                         "LOG" => {
                             self.game.log.set_logs(d);
                         }
+                        "INVENTORY" => {
+                            self.game.inventory.set_items(d);
+                        }
                         _ => {
                             //ConsoleService::info(&format!("{:?}", gm.d));
                             return false;

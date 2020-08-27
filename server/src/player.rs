@@ -86,6 +86,7 @@ pub fn get_item(ecs: &mut World) {
     let items = ecs.read_storage::<Item>();
     let positions = ecs.read_storage::<Position>();
     let mut gamelog = ecs.fetch_mut::<GameLog>();    
+    let mut state = ecs.fetch_mut::<RunState>();
 
     let mut target_item: Option<Entity> = None;
     for (item, _i, pos) in (&entities, &items, &positions).join() {
@@ -99,6 +100,7 @@ pub fn get_item(ecs: &mut World) {
         Some(item) => {
             let mut collect = ecs.write_storage::<WantsToPickupItem>();
             collect.insert(*player, WantsToPickupItem{ collected_by: *player, item }).expect("Unable to insert want to pickup");
+            state.add_state(INVENTORY_CHANGE);
         }
     }
 }

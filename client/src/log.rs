@@ -12,7 +12,6 @@ impl Log {
             1 => format!("There is nothing to pick up here"),
             _ => format!("Unknown System Message"),
         }
-        
     }
 
     fn get_attack_msg(&self, attacker: i32, target: i32, damage: i32) -> String {
@@ -21,15 +20,15 @@ impl Log {
         format!("{} attacks {} for {} damage", attacker_name, target_name, damage)
     }
 
+    fn get_dead_msg(&self, deceased: i32) -> String {
+        let deceased_name = self.props.dict.get_name(deceased);
+        format!("{} is dead", deceased_name)
+    }
+
     fn get_collect_msg(&self, collector: i32, item: i32) -> String {
         let collector_name = self.props.dict.get_name(collector);
         let item_name = self.props.dict.get_name(item);
         format!("{} picks up the {}", collector_name, item_name)
-    }
-
-    fn get_dead_msg(&self, deceased: i32) -> String {
-        let deceased_name = self.props.dict.get_name(deceased);
-        format!("{} is dead", deceased_name)
     }
 }
 

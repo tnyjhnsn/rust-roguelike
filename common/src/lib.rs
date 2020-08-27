@@ -11,6 +11,7 @@ pub const VISIBLE: i32 = 2;
 pub const WAITING: i32 = 0;
 pub const FOV_CHANGE: i32 = 1;
 pub const CONTENTS_CHANGE: i32 = 2;
+pub const INVENTORY_CHANGE: i32 = 4;
 
 #[derive(Component, Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct Position {
