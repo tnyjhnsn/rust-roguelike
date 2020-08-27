@@ -1,5 +1,12 @@
 use specs::prelude::*;
-use super::{WantsToPickupItem, Code, InInventory, Position, GameLog};
+use super::{
+    WantsToPickupItem,
+    Code,
+    InInventory,
+    Position,
+    GameLog,
+    RunState,
+};
 use roguelike_common::*;
 
 pub struct InventorySystem {}
@@ -11,10 +18,11 @@ impl<'a> System<'a> for InventorySystem {
                        WriteStorage<'a, Position>,
                        ReadStorage<'a, Code>,
                        WriteStorage<'a, InInventory>,
+                       WriteExpect<'a, RunState>,
                        );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (player, mut gamelog, mut wants_pickup, mut positions, codes, mut inventory) = data;
+        let (player, mut gamelog, mut wants_pickup, mut positions, codes, mut inventory, mut state) = data;
 
         for pickup in wants_pickup.join() {
             positions.remove(pickup.item);
@@ -24,6 +32,7 @@ impl<'a> System<'a> for InventorySystem {
             if pickup.collected_by == *player {
                 let item_code = codes.get(pickup.item).unwrap().code;
                 gamelog.add_log(vec![LogType::Collect as i32, 0, item_code]);
+                state.add_state(INVENTORY_CHANGE);
             }
         }
         wants_pickup.clear();

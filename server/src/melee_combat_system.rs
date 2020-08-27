@@ -25,9 +25,8 @@ impl<'a> System<'a> for MeleeCombatSystem {
                     if damage == 0 {
                         log.add_log(vec![LogType::Melee as i32, code.code, target_code.code, 0]);
                     } else {
-                        log.add_log(vec![LogType::Melee as i32, code.code, target_code.code, damage]);
                         SufferDamage::new_damage(&mut inflict_damage, wants_melee.target, damage);
-
+                        log.add_log(vec![LogType::Melee as i32, code.code, target_code.code, damage]);
                     }
                 }
             }
