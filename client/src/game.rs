@@ -39,16 +39,25 @@ impl Component for Game {
         html! { 
             <div class="game">
                 <div class="holding left-panel">
-                    <Inventory inventory=&self.props.game.inventory />
+                    <Inventory
+                        inventory=&self.props.game.inventory
+                        dict=&self.props.game.dict
+                    />
                 </div>
                 <div class="holding right-panel">
-                    <Logs logs=&self.props.game.log dict=&self.props.game.dict />
+                    <Logs
+                        logs=&self.props.game.log
+                        dict=&self.props.game.dict
+                    />
                 </div>
                 <div class="holding top-panel">
                     <h1 class="title">{ &self.props.game.title }</h1>
                 </div>
                 <div class="holding bottom-panel">{ "Bottom Panel" }</div>
-                <Map map=&self.props.game.map dict=&self.props.game.dict />
+                <Map
+                    map=&self.props.game.map
+                    dict=&self.props.game.dict
+                />
             </div>
         }
     }

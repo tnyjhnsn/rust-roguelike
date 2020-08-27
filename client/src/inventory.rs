@@ -1,5 +1,6 @@
 use yew::prelude::*;
 use super::model::inventory_model::*;
+use super::model::dictionary::*;
 
 pub struct Inventory {
     props: Props,
@@ -8,6 +9,7 @@ pub struct Inventory {
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
     pub inventory: MInventory,
+    pub dict: Dictionary,
 }
 
 impl Component for Inventory {
@@ -34,8 +36,7 @@ impl Component for Inventory {
     fn view(&self) -> Html {
         let render_items = |item: &i32| {
             html! {
-                //<div>{inventory.get_item(item)}</div>
-                <div>{ format!("Item {}", item) }</div>
+                <div>{ self.props.dict.get_name(*item) }</div>
             }
         };
         html! {
