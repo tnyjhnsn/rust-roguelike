@@ -1,6 +1,6 @@
 use yew::prelude::*;
 use super::contents::*;
-use roguelike_common::*;
+use super::model::dictionary::*;
 
 pub struct ContentsMap {
     props: Props,

@@ -1,6 +1,6 @@
 use yew::prelude::*;
 use chrono::prelude::*;
-use roguelike_common::*;
+use super::model::dictionary::*;
 
 pub struct Log {
     props: Props,
@@ -13,9 +13,9 @@ impl Log {
 
     fn get_attack_msg(&self) -> String {
         let msg = &self.props.log.1[0]; 
-        let attacker = self.props.dict.get(&msg[1]).unwrap();
-        let target = self.props.dict.get(&msg[2]).unwrap();
-        format!("{} attacks {} for {} damage", attacker.0, target.0, msg[3])
+        let attacker = self.props.dict.get_name(msg[1]);
+        let target = self.props.dict.get_name(msg[2]);
+        format!("{} attacks {} for {} damage", attacker, target, msg[3])
     }
 }
 

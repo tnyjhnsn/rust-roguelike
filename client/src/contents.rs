@@ -1,5 +1,5 @@
 use yew::prelude::*;
-use roguelike_common::*;
+use super::model::dictionary::*;
 
 pub struct Contents {
     props: Props,
@@ -35,9 +35,7 @@ impl Component for Contents {
     fn view(&self) -> Html {
         let mut tile = String::from("");
         if self.props.content.len() > 0 {
-            if let Some(c) = self.props.dict.get(&self.props.content[0]) {
-                tile = (c.1).to_string();
-            }
+            tile = self.props.dict.get_css(self.props.content[0]);
         }
         html! {
             <div class=("tile", tile)></div>

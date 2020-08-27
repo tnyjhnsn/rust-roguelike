@@ -2,7 +2,7 @@ use yew::prelude::*;
 use chrono::prelude::*;
 use super::log::*;
 use super::model::log_model::*;
-use roguelike_common::*;
+use super::model::dictionary::*;
 
 pub struct Logs {
     props: Props,

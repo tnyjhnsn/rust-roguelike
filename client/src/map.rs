@@ -1,11 +1,11 @@
 use yew::prelude::*;
 
 use super::model::map_model::*;
+use super::model::dictionary::*;
 
 use super::tile_map::*;
 use super::contents_map::*;
 use super::status_map::*;
-use roguelike_common::*;
 
 pub struct Map {
     props: Props,
