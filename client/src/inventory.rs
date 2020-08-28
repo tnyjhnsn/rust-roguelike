@@ -36,15 +36,17 @@ impl Component for Inventory {
     fn view(&self) -> Html {
         let render_items = |item: &i32| {
             html! {
-                <div>{ self.props.dict.get_name(*item) }</div>
+                <li>{ self.props.dict.get_name(*item) }</li>
             }
         };
         html! {
             <div class="log">
                 <h3>{ "Inventory" }</h3>
+                <ul>
                 { for self.props.inventory.items
                     .iter()
                     .map(render_items) }
+                </ul>
             </div>
         }
     }
