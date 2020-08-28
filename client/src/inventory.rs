@@ -41,6 +41,7 @@ impl Component for Inventory {
         };
         html! {
             <div class="log">
+                <h3>{ "Inventory" }</h3>
                 { for self.props.inventory.items
                     .iter()
                     .map(render_items) }

@@ -12,6 +12,7 @@ pub struct Game {
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
     pub game: MGame,
+    pub show_inv_modal: bool,
 }
 
 impl Component for Game {

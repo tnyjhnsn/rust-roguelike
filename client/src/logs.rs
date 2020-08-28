@@ -46,6 +46,7 @@ impl Component for Logs {
         };
         html! {
             <div class="log">
+                <h3>{ "Log" }</h3>
                 { for self.props.logs.logs
                     .iter()
                     .rev()

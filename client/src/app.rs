@@ -11,6 +11,7 @@ use std::collections::HashMap;
 
 use super::model::game_model::*;
 use super::game::*;
+use super::inventory::*;
 
 pub struct Model {
     ws: Option<WebSocketTask>,
@@ -18,6 +19,7 @@ pub struct Model {
     #[allow(dead_code)]
     key_listener: KeyListenerHandle,
     game: MGame,
+    show_inv_modal: bool,
 }
 
 pub enum Msg {
@@ -47,6 +49,7 @@ impl Component for Model {
             link: link,
             key_listener,
             game: MGame::new(),
+            show_inv_modal: false,
     	}
     }
 
@@ -124,12 +127,17 @@ impl Component for Model {
             }
             Msg::Pressed(e) => {
                 if e.key_code() >= 37 && e.key_code() <= 90 {
-                    match self.ws {
-                        Some(ref mut task) => {
-                            task.send(Ok(e.key()));
-                            false
+                    if e.key_code() == 73 {
+                        self.show_inv_modal = true;
+                        true
+                    } else {
+                        match self.ws {
+                            Some(ref mut task) => {
+                                task.send(Ok(e.key()));
+                                false
+                            }
+                            None => false
                         }
-                        None => false
                     }
                 } else { false }
             }
@@ -141,12 +149,21 @@ impl Component for Model {
     }
 
     fn view(&self) -> Html {
+        let inv_style = if self.show_inv_modal == true { "display: block;" } else { "display: none" };
     	html! {
             <>
+                <div class="modal" style=inv_style>
+                    <div class="modal-content">
+                        <Inventory
+                            inventory=&self.game.inventory
+                            dict=&self.game.dict
+                        />
+                    </div>
+                </div>
                 <button onclick=self.link.callback(|_| Msg::Connect)>{ "Connect" }</button>
                 <span style="color: white">{ "Connected: " } { !self.ws.is_none() }</span>
                 <button onclick=self.link.callback(|_| Msg::GetGame)>{ "Get Game Dimensions" }</button>
-                <Game game=&self.game />
+                <Game game=&self.game show_inv_modal=&self.show_inv_modal />
             </>
     	}
     }
