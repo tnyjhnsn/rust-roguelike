@@ -11,7 +11,7 @@ use std::collections::HashMap;
 
 use super::model::game_model::*;
 use super::game::*;
-use super::inventory::*;
+use super::inventory_dialog::*;
 
 pub struct Model {
     ws: Option<WebSocketTask>,
@@ -29,6 +29,7 @@ pub enum Msg {
     GetGame,
     Received(Result<Value, Error>),
     Pressed(KeyboardEvent),
+    Test(KeyboardEvent),
 }
 
 #[derive(Serialize)]
@@ -141,6 +142,10 @@ impl Component for Model {
                     }
                 } else { false }
             }
+            Msg::Test(e) => {
+                ConsoleService::info(&format!("Key received {}", e.key_code()));
+                false
+            }
         }
     }
 
@@ -149,17 +154,18 @@ impl Component for Model {
     }
 
     fn view(&self) -> Html {
-        let inv_style = if self.show_inv_modal == true { "display: block;" } else { "display: none" };
+        //let inv_style = if self.show_inv_modal == true { "display: block;" } else { "display: none" };
     	html! {
             <>
-                <div class="modal" style=inv_style>
-                    <div class="modal-content">
-                        <Inventory
-                            inventory=&self.game.inventory
-                            dict=&self.game.dict
-                        />
-                    </div>
-                </div>
+                //<div class="modal" style=inv_style>
+                    //<div class="modal-content">
+                        //<Inventory
+                            //inventory=&self.game.inventory
+                            //dict=&self.game.dict
+                        //>
+                    //</div>
+                //</div>
+                <InventoryDialog show=&self.show_inv_modal onkeydown_signal=self.link.callback(Msg::Test) />
                 <button onclick=self.link.callback(|_| Msg::Connect)>{ "Connect" }</button>
                 <span style="color: white">{ "Connected: " } { !self.ws.is_none() }</span>
                 <button onclick=self.link.callback(|_| Msg::GetGame)>{ "Get Game Dimensions" }</button>

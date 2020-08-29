@@ -28,7 +28,9 @@ roguelike_common = { path = "../common" }
 wasm-bindgen-test = "0.3"
 
 [dependencies.web-sys]
-version = "0.3.44"
+version = "0.3"
 features = [
   'KeyboardEvent',
+  'Element',
+  'HtmlCollection'
 ]

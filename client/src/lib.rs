@@ -28,6 +28,8 @@ mod log;
 pub use log::*;
 mod inventory;
 pub use inventory::*;
+mod inventory_dialog;
+pub use inventory_dialog::*;
 
 #[cfg(feature = "wee_alloc")]
 #[global_allocator]
