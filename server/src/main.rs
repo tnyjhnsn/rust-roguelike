@@ -250,9 +250,9 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
         random_monster(&mut gs.ecs, x, y);
     }
 
-    for _i in 1..8 {
+    for _i in 1..15 {
         let (x, y) = map.get_random_space();
-        health_potion(&mut gs.ecs, x, y);
+        random_potion(&mut gs.ecs, x, y);
     }
 
     gs.ecs.insert(PlayerPosition::new(px, py));

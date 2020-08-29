@@ -49,9 +49,19 @@ pub fn random_monster(ecs: &mut World, x: i32, y: i32) {
         .build();
 }
 
-pub fn health_potion(ecs: &mut World, x: i32, y: i32) {
+pub fn random_potion(ecs: &mut World, x: i32, y: i32) {
+    let mut rng = rand::thread_rng();
+    let code;
+    let roll = rng.gen_range(1, 6);
+    match roll {
+        1 => { code = 2000 }
+        2 => { code = 2001 }
+        3 => { code = 2002 }
+        4 => { code = 2003 }
+        _ => { code = 2004 }
+    }
     ecs.create_entity()
-        .with(Code { code: 2000 })
+        .with(Code { code })
         .with(Position{ x, y })
         .with(Item{})
         .with(Potion{ heal: 8 })
