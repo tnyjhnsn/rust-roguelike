@@ -145,7 +145,7 @@ impl Component for Model {
     }
 
     fn change(&mut self, _: Self::Properties) -> ShouldRender {
-        true
+        false
     }
 
     fn view(&self) -> Html {

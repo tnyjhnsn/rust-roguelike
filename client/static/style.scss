@@ -104,10 +104,23 @@ body {
   background-color: #fefefe;
   margin: 5% auto 15% auto;
   border: 1px solid #888;
-  width: 50%;
+  width: 25%;
 }
 
 ul {
   list-style: none;
   padding-left: 0;
+}
+
+.flex-wrap {
+  display: flex;
+  align-items: center;
+
+  .logo-box {
+    justify-content: center;
+    background-repeat: no-repeat;
+  }
+  .content {
+    margin-left: 0.5rem;
+  }
 }

@@ -14,10 +14,19 @@ impl Log {
         }
     }
 
-    fn get_attack_msg(&self, attacker: i32, target: i32, damage: i32) -> String {
+    fn get_attack_msg(&self, attacker: i32, target: i32, damage: i32) -> Html {
         let attacker_name = self.props.dict.get_name(attacker);
+        let attacker_css = self.props.dict.get_css(attacker);
         let target_name = self.props.dict.get_name(target);
-        format!("{} attacks {} for {} damage", attacker_name, target_name, damage)
+        let content = format!("{} attacks {} for {} damage", attacker_name, target_name, damage);
+        html! {
+            <>
+                <div class="logo-box">
+                    <div class=("tile", attacker_css)></div>
+                </div>
+                <div class="content">{ content }</div>
+            </>
+        }
     }
 
     fn get_dead_msg(&self, deceased: i32) -> String {
@@ -62,18 +71,28 @@ impl Component for Log {
     fn view(&self) -> Html {
         let render_log = |_l| {
             let msg = &self.props.log[0];
-            match msg[0] {
-                0 => html! { self.get_system_msg(msg[1]) },
-                1 => html! { self.get_attack_msg(msg[1], msg[2], msg[3]) },
-                2 => html! { self.get_dead_msg(msg[1]) },
-                3 => html! { self.get_collect_msg(msg[1], msg[2]) },
-                _ => html! { "Unknown log message" },
+            html! {
+                <li>
+                    <div class="flex-wrap">
+                    {
+                        match msg[0] {
+                            0 => html! { self.get_system_msg(msg[1]) },
+                            1 => self.get_attack_msg(msg[1], msg[2], msg[3]),
+                            2 => html! { self.get_dead_msg(msg[1]) },
+                            3 => html! { self.get_collect_msg(msg[1], msg[2]) },
+                            _ => html! { "Unknown log message" },
+                        }
+                    }
+                    </div>
+                </li>
             }
         };
         html! {
-            { for self.props.log
-                .iter()
-                .map( render_log )}
+            <ul>
+                { for self.props.log
+                    .iter()
+                    .map( render_log )}
+            </ul>
         }
     }
 }

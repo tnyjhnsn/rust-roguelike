@@ -35,8 +35,15 @@ impl Component for Inventory {
 
     fn view(&self) -> Html {
         let render_items = |item: &i32| {
+            let name = self.props.dict.get_name(*item);
+            let css = self.props.dict.get_css(*item);
             html! {
-                <li>{ self.props.dict.get_name(*item) }</li>
+                <li>
+                    <div class="flex-wrap">
+                        <div class=("tile", css)></div>
+                        <div class="content">{ name }</div>
+                    </div>
+                </li>
             }
         };
         html! {
