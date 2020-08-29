@@ -7,7 +7,7 @@ use super::dictionary::*;
 pub struct MGame {
     pub title: String,
     pub stats: String,
-    pub body: String,
+    pub armour: String,
     pub inventory: MInventory,
     pub minimap: String,
     pub log: MLog,
@@ -20,7 +20,7 @@ impl MGame {
         Self {
             title: String::from("Rogue"),
             stats: String::from("Stats"),
-            body: String::from("Body"),
+            armour: String::from("Armour & Weapons"),
             inventory: MInventory::new(),
             minimap: String::from("Mini Map"),
             log: MLog::new(),

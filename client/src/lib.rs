@@ -26,6 +26,8 @@ mod logs;
 pub use logs::*;
 mod log;
 pub use log::*;
+mod armour;
+pub use armour::*;
 mod inventory;
 pub use inventory::*;
 mod inventory_dialog;

@@ -47,7 +47,7 @@ impl Component for Inventory {
             }
         };
         html! {
-            <div class="log">
+            <div class="inventory">
                 <h3>{ "Inventory" }</h3>
                 <ul>
                 { for self.props.inventory.items

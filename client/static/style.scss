@@ -18,10 +18,15 @@ body {
   grid-template-columns: 2fr 6fr 2fr;
   grid-template-rows: 1fr minmax(80vh, auto) 1fr;
   color: #9fa6ad;
+
+  &:focus {
+    outline: none;
+  }
 }
 
 .title {
   font-family: "Uncial Antiqua";
+  margin: 0;
 }
 
 .holding {
@@ -56,11 +61,13 @@ body {
   grid-row: 1 / span 2;
 }
 
+.armour,
 .inventory,
 .log {
   font-size: 0.8rem;
   border: 1px solid white;
   padding: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .bottom-panel {

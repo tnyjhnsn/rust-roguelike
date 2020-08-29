@@ -1,9 +1,10 @@
 use yew::prelude::*;
 
 use super::model::game_model::*;
+use super::armour::*;
+use super::inventory::*;
 use super::map::*;
 use super::logs::*;
-use super::inventory::*;
 
 pub struct Game {
     props: Props,
@@ -38,27 +39,31 @@ impl Component for Game {
 
     fn view(&self) -> Html {
         html! { 
-            <div class="game">
+            <div class="game" tabindex="0">
                 <div class="holding left-panel">
-                    <Inventory
-                        inventory=&self.props.game.inventory
+                    <Armour
+                        armour=&self.props.game.armour
                         dict=&self.props.game.dict
                     />
-                </div>
-                <div class="holding right-panel">
-                    <Logs
-                        logs=&self.props.game.log
+                    <Inventory
+                        inventory=&self.props.game.inventory
                         dict=&self.props.game.dict
                     />
                 </div>
                 <div class="holding top-panel">
                     <h1 class="title">{ &self.props.game.title }</h1>
                 </div>
-                <div class="holding bottom-panel">{ "Bottom Panel" }</div>
                 <Map
                     map=&self.props.game.map
                     dict=&self.props.game.dict
                 />
+                <div class="holding right-panel">
+                    <Logs
+                        logs=&self.props.game.log
+                        dict=&self.props.game.dict
+                    />
+                </div>
+                <div class="holding bottom-panel">{ "Bottom Panel" }</div>
             </div>
         }
     }
