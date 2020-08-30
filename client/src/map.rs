@@ -46,7 +46,6 @@ impl Component for Map {
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
             Msg::Pressed(e) => {
-                //ConsoleService::info("Pressed in dialog");
                 self.props.onkeydown_signal.emit(e);
             }
         }

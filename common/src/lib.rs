@@ -20,6 +20,10 @@ pub const KEY_LEFT: u32 = 37;
 pub const KEY_UP: u32 = 38;
 pub const KEY_RIGHT: u32 = 39;
 pub const KEY_DOWN: u32 = 40;
+pub const KEY_Y: u32 = 89;
+pub const KEY_U: u32 = 85;
+pub const KEY_B: u32 = 66;
+pub const KEY_N: u32 = 78;
 pub const KEY_G: u32 = 71;
 
 #[derive(Component, Clone, Copy, Debug, Serialize, Deserialize)]

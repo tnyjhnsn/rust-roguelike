@@ -1,6 +1,7 @@
 use yew::prelude::*;
 use super::model::inventory_model::*;
 use super::model::dictionary::*;
+use roguelike_common::*;
 
 pub struct Inventory {
     link: ComponentLink<Self>,
@@ -41,7 +42,7 @@ impl Component for Inventory {
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
             Msg::Pressed(e) => {
-                if e.key_code() == 27 {
+                if e.key_code() == KEY_ESC {
                     self.props.onkeydown_signal.emit(e);
                 }
             }

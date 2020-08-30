@@ -41,7 +41,7 @@ impl Component for Model {
     type Properties = ();
 
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
-    	Model {
+    	Self {
             ws: None,
             link: link,
             game: MGame::new(),
@@ -123,18 +123,19 @@ impl Component for Model {
             }
             Msg::Pressed(e) => {
                 match e.key_code() {
-                    KEY_ESC => { set_focus("map"); true },
-                    KEY_I => { set_focus("inventory"); true },
+                    KEY_ESC => { set_focus("map"); false },
+                    KEY_I => { set_focus("inventory"); false },
                     KEY_LEFT|KEY_UP|KEY_RIGHT|KEY_DOWN
-                        |KEY_G => { 
-                            match self.ws {
-                                Some(ref mut task) => {
-                                    task.send(Ok(e.key()));
-                                    false
-                                }
-                                None => false
+                    |KEY_Y|KEY_U|KEY_B|KEY_N
+                    |KEY_G => { 
+                        match self.ws {
+                            Some(ref mut task) => {
+                                task.send(Ok(e.key()));
+                                false
                             }
-                        },
+                            None => false
+                        }
+                    },
                     _ => false,
                 }
             }
@@ -144,6 +145,14 @@ impl Component for Model {
     fn change(&mut self, _: Self::Properties) -> ShouldRender {
         false
     }
+
+    //fn rendered(&mut self, first_render: bool) {
+        //if first_render {
+            //ConsoleService::info("first render");
+            //self.link.send_message(Msg::Connect);
+            //self.link.send_message(Msg::GetGame);
+        //}
+    //}
 
     fn view(&self) -> Html {
     	html! {

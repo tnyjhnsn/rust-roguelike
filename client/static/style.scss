@@ -120,17 +120,24 @@ body {
 ul {
   list-style: none;
   padding-left: 0;
+  margin: 0;
+}
+
+.datetime {
+  color: #7e9098;
 }
 
 .flex-wrap {
   display: flex;
   align-items: center;
+  margin-bottom: 0.5rem;
 
-  .logo-box {
+  .tile-box {
     justify-content: center;
     background-repeat: no-repeat;
   }
   .content {
     margin-left: 0.5rem;
+    color: #c2c3c5;
   }
 }

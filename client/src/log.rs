@@ -21,7 +21,7 @@ impl Log {
         let content = format!("{} attacks {} for {} damage", attacker_name, target_name, damage);
         html! {
             <>
-                <div class="logo-box">
+                <div class="tile-box">
                     <div class=("tile", attacker_css)></div>
                 </div>
                 <div class="content">{ content }</div>

@@ -37,9 +37,10 @@ impl Component for Logs {
 
     fn view(&self) -> Html {
         let render_log = |log: &(DateTime<Local>, Vec<Vec<i32>>)| {
+            let datestr = log.0.format("%F %X").to_string();
             html! {
                 <>
-                    <div>{log.0}</div>
+                    <div class="datetime">{ datestr }</div>
                     <Log log=&log.1 dict=&self.props.dict />
                 </>
             }

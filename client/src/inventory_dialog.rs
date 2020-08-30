@@ -48,7 +48,7 @@ impl Component for InventoryDialog {
     }
 
     fn rendered(&mut self, _: bool) {
-        if self.props.show == true {
+        if self.props.show {
             document()
                 .get_elements_by_class_name("modal")
                 .get_with_index(0)
@@ -61,7 +61,7 @@ impl Component for InventoryDialog {
     }
 
     fn view(&self) -> Html {
-        let inv_style = if self.props.show == true { "display: block;" } else { "display: none" };
+        let inv_style = if self.props.show { "display: block;" } else { "display: none;" };
         html! {
             <div
                 class="modal"

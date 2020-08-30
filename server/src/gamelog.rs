@@ -21,7 +21,7 @@ impl GameLog {
     }
 
     pub fn draw_gamelog(&mut self) -> Option<String> {
-        if self.has_log == true {
+        if self.has_log {
             let mut map = HashMap::new();
             map.entry(String::from("LOG")).or_insert(&self.logs);
             let gm = GameMsg {
