@@ -18,7 +18,7 @@ impl Dictionary {
         dict.insert(2001, (String::from("Super-Tuff Anti Mould"), String::from("anti-mould")));
         dict.insert(2002, (String::from("Dragon Breath"), String::from("dragon-breath")));
         dict.insert(2003, (String::from("Acid Rain"), String::from("acid-rain")));
-        dict.insert(2004, (String::from("Fine Merlot (2015)"), String::from("wine")));
+        dict.insert(2004, (String::from("Vintage Wine"), String::from("wine")));
 
         Self { dict }
     }

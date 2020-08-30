@@ -14,6 +14,7 @@ pub struct Game {
 pub struct Props {
     pub game: MGame,
     pub show_inv_modal: bool,
+    pub onkeydown_signal: Callback<KeyboardEvent>,
 }
 
 impl Component for Game {
@@ -39,7 +40,7 @@ impl Component for Game {
 
     fn view(&self) -> Html {
         html! { 
-            <div class="game" tabindex="0">
+            <div class="game">
                 <div class="holding left-panel">
                     <Armour
                         armour=&self.props.game.armour
@@ -48,6 +49,7 @@ impl Component for Game {
                     <Inventory
                         inventory=&self.props.game.inventory
                         dict=&self.props.game.dict
+                        onkeydown_signal=&self.props.onkeydown_signal
                     />
                 </div>
                 <div class="holding top-panel">
@@ -56,6 +58,7 @@ impl Component for Game {
                 <Map
                     map=&self.props.game.map
                     dict=&self.props.game.dict
+                    onkeydown_signal=&self.props.onkeydown_signal
                 />
                 <div class="holding right-panel">
                     <Logs

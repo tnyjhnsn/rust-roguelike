@@ -3,6 +3,7 @@ use super::model::inventory_model::*;
 use super::model::dictionary::*;
 
 pub struct Inventory {
+    link: ComponentLink<Self>,
     props: Props,
 }
 
@@ -10,14 +11,22 @@ pub struct Inventory {
 pub struct Props {
     pub inventory: MInventory,
     pub dict: Dictionary,
+    pub onkeydown_signal: Callback<KeyboardEvent>,
+}
+
+pub enum Msg {
+    Pressed(KeyboardEvent),
 }
 
 impl Component for Inventory {
-    type Message = ();
+    type Message = Msg;
     type Properties = Props;
 
-    fn create(props: Self::Properties, _: ComponentLink<Self>) -> Self {
-        Inventory { props }
+    fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
+        Self {
+            link,
+            props,
+        }
     }
 
     fn change(&mut self, props: Self::Properties) -> bool {
@@ -29,7 +38,14 @@ impl Component for Inventory {
         }
     }
 
-    fn update(&mut self, _: Self::Message) -> ShouldRender {
+    fn update(&mut self, msg: Self::Message) -> ShouldRender {
+        match msg {
+            Msg::Pressed(e) => {
+                if e.key_code() == 27 {
+                    self.props.onkeydown_signal.emit(e);
+                }
+            }
+        }
         false
     }
 
@@ -47,7 +63,11 @@ impl Component for Inventory {
             }
         };
         html! {
-            <div class="inventory">
+            <div
+                class="inventory"
+                tabindex="0"
+                onkeydown=self.link.callback(Msg::Pressed)
+            >
                 <h3>{ "Inventory" }</h3>
                 <ul>
                 { for self.props.inventory.items

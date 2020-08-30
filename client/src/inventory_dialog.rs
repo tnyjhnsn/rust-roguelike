@@ -1,8 +1,7 @@
 use wasm_bindgen::JsCast;
 use yew::prelude::*;
-use yew::services::ConsoleService;
 use yew::utils::document;
-use web_sys::{Element, HtmlElement};
+use web_sys::{HtmlElement};
 
 pub struct InventoryDialog {
     link: ComponentLink<Self>,
@@ -42,7 +41,6 @@ impl Component for InventoryDialog {
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
             Msg::Pressed(e) => {
-                ConsoleService::info("Pressed in dialog");
                 self.props.onkeydown_signal.emit(e);
             }
         }
@@ -51,7 +49,6 @@ impl Component for InventoryDialog {
 
     fn rendered(&mut self, _: bool) {
         if self.props.show == true {
-            ConsoleService::info("Calling render");
             document()
                 .get_elements_by_class_name("modal")
                 .get_with_index(0)
@@ -69,7 +66,7 @@ impl Component for InventoryDialog {
             <div
                 class="modal"
                 style=inv_style
-                tabindex="0"
+                tabindex="-1"
                 onkeydown=self.link.callback(Msg::Pressed)
             >
                 <div class="modal-content">

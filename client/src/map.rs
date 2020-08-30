@@ -8,6 +8,7 @@ use super::contents_map::*;
 use super::status_map::*;
 
 pub struct Map {
+    link: ComponentLink<Self>,
     props: Props,
 }
 
@@ -15,14 +16,22 @@ pub struct Map {
 pub struct Props {
     pub map: MMap,
     pub dict: Dictionary,
+    pub onkeydown_signal: Callback<KeyboardEvent>,
+}
+
+pub enum Msg {
+    Pressed(KeyboardEvent),
 }
 
 impl Component for Map {
-    type Message = ();
+    type Message = Msg;
     type Properties = Props;
 
-    fn create(props: Self::Properties, _: ComponentLink<Self>) -> Self {
-        Map { props }
+    fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
+        Self {
+            link,
+            props,
+        }
     }
 
     fn change(&mut self, props: Self::Properties) -> bool {
@@ -34,13 +43,23 @@ impl Component for Map {
         }
     }
 
-    fn update(&mut self, _: Self::Message) -> ShouldRender {
+    fn update(&mut self, msg: Self::Message) -> ShouldRender {
+        match msg {
+            Msg::Pressed(e) => {
+                //ConsoleService::info("Pressed in dialog");
+                self.props.onkeydown_signal.emit(e);
+            }
+        }
         false
     }
 
     fn view(&self) -> Html {
         html! { 
-            <div>
+            <div
+                class="map"
+                tabindex="0"
+                onkeydown=self.link.callback(Msg::Pressed)
+            >
                 <TileMap tiles=&self.props.map.tiles viewport=&self.props.map.viewport />
                 <ContentsMap
                     contents=&self.props.map.contents

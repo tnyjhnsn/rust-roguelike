@@ -2,22 +2,22 @@ use anyhow::Error;
 use yew::prelude::*;
 use yew::format::Json;
 use yew::services::websocket::{WebSocketService, WebSocketStatus, WebSocketTask};
-use yew::services::keyboard::{KeyboardService, KeyListenerHandle};
 use yew::services::ConsoleService;
 use serde::{Serialize};
 use serde_json::Value;
 use roguelike_common::*;
 use std::collections::HashMap;
+use web_sys::{HtmlElement};
+use yew::utils::document;
+use wasm_bindgen::JsCast;
 
 use super::model::game_model::*;
 use super::game::*;
-use super::inventory_dialog::*;
 
 pub struct Model {
     ws: Option<WebSocketTask>,
     link: ComponentLink<Model>,
     #[allow(dead_code)]
-    key_listener: KeyListenerHandle,
     game: MGame,
     show_inv_modal: bool,
 }
@@ -29,7 +29,6 @@ pub enum Msg {
     GetGame,
     Received(Result<Value, Error>),
     Pressed(KeyboardEvent),
-    Test(KeyboardEvent),
 }
 
 #[derive(Serialize)]
@@ -42,13 +41,9 @@ impl Component for Model {
     type Properties = ();
 
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
-        let window = &web_sys::window().unwrap();
-        let key_listener = KeyboardService::register_key_down(&window,
-            (&link).callback(|e: KeyboardEvent| {e.prevent_default(); Msg::Pressed(e)}));
     	Model {
             ws: None,
             link: link,
-            key_listener,
             game: MGame::new(),
             show_inv_modal: false,
     	}
@@ -127,24 +122,21 @@ impl Component for Model {
                 false
             }
             Msg::Pressed(e) => {
-                if e.key_code() >= 37 && e.key_code() <= 90 {
-                    if e.key_code() == 73 {
-                        self.show_inv_modal = true;
-                        true
-                    } else {
-                        match self.ws {
-                            Some(ref mut task) => {
-                                task.send(Ok(e.key()));
-                                false
+                match e.key_code() {
+                    KEY_ESC => { set_focus("map"); true },
+                    KEY_I => { set_focus("inventory"); true },
+                    KEY_LEFT|KEY_UP|KEY_RIGHT|KEY_DOWN
+                        |KEY_G => { 
+                            match self.ws {
+                                Some(ref mut task) => {
+                                    task.send(Ok(e.key()));
+                                    false
+                                }
+                                None => false
                             }
-                            None => false
-                        }
-                    }
-                } else { false }
-            }
-            Msg::Test(e) => {
-                ConsoleService::info(&format!("Key received {}", e.key_code()));
-                false
+                        },
+                    _ => false,
+                }
             }
         }
     }
@@ -154,24 +146,28 @@ impl Component for Model {
     }
 
     fn view(&self) -> Html {
-        //let inv_style = if self.show_inv_modal == true { "display: block;" } else { "display: none" };
     	html! {
             <>
-                //<div class="modal" style=inv_style>
-                    //<div class="modal-content">
-                        //<Inventory
-                            //inventory=&self.game.inventory
-                            //dict=&self.game.dict
-                        //>
-                    //</div>
-                //</div>
-                <InventoryDialog show=&self.show_inv_modal onkeydown_signal=self.link.callback(Msg::Test) />
                 <button onclick=self.link.callback(|_| Msg::Connect)>{ "Connect" }</button>
                 <span style="color: white">{ "Connected: " } { !self.ws.is_none() }</span>
                 <button onclick=self.link.callback(|_| Msg::GetGame)>{ "Get Game Dimensions" }</button>
-                <Game game=&self.game show_inv_modal=&self.show_inv_modal />
+                <Game
+                    game=&self.game
+                    show_inv_modal=&self.show_inv_modal
+                    onkeydown_signal=self.link.callback(Msg::Pressed)
+                />
             </>
     	}
     }
 }
 
+fn set_focus(s: &str) {
+    document()
+        .get_elements_by_class_name(s)
+        .get_with_index(0)
+        .unwrap()
+        .dyn_into::<HtmlElement>()
+        .unwrap()
+        .focus()
+        .unwrap();
+}

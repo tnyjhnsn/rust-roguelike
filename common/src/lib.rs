@@ -13,6 +13,15 @@ pub const FOV_CHANGE: i32 = 1;
 pub const CONTENTS_CHANGE: i32 = 2;
 pub const INVENTORY_CHANGE: i32 = 4;
 
+// key codes
+pub const KEY_ESC: u32 = 27;
+pub const KEY_I: u32 = 73;
+pub const KEY_LEFT: u32 = 37;
+pub const KEY_UP: u32 = 38;
+pub const KEY_RIGHT: u32 = 39;
+pub const KEY_DOWN: u32 = 40;
+pub const KEY_G: u32 = 71;
+
 #[derive(Component, Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct Position {
     pub x: i32,
