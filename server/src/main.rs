@@ -159,12 +159,12 @@ impl GameSocket {
         melee.run_now(&self.ecs);
         let mut damage = DamageSystem{};
         damage.run_now(&self.ecs);
-        let mut pickup = PickupItemSystem{};
-        pickup.run_now(&self.ecs);
-        let mut potion = UsePotionSystem{};
-        potion.run_now(&self.ecs);
-        let mut drop = DropItemSystem{};
-        drop.run_now(&self.ecs);
+        let mut pickup_item = PickupItemSystem{};
+        pickup_item.run_now(&self.ecs);
+        let mut use_item = UseItemSystem{};
+        use_item.run_now(&self.ecs);
+        let mut drop_item = DropItemSystem{};
+        drop_item.run_now(&self.ecs);
         self.ecs.maintain();
     }
     
@@ -256,11 +256,12 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
     gs.ecs.register::<SufferDamage>(); 
     gs.ecs.register::<WantsToMelee>(); 
     gs.ecs.register::<Item>(); 
-    gs.ecs.register::<Potion>(); 
+    gs.ecs.register::<Consumeable>(); 
+    gs.ecs.register::<ProvidesHealing>(); 
     gs.ecs.register::<InInventory>(); 
     gs.ecs.register::<WantsToPickupItem>(); 
     gs.ecs.register::<WantsToDropItem>(); 
-    gs.ecs.register::<WantsToDrinkPotion>(); 
+    gs.ecs.register::<WantsToUseItem>(); 
 
     let mut map = Map::new();
     map.create_temp_walls();

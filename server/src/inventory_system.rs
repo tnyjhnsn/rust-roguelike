@@ -2,12 +2,12 @@ use specs::prelude::*;
 use super::{
     WantsToPickupItem,
     WantsToDropItem,
-    WantsToDrinkPotion,
+    WantsToUseItem,
     Code,
     InInventory,
     Position,
     GameLog,
-    Potion,
+    ProvidesHealing,
     CombatStats,
     RunState,
 };
@@ -79,37 +79,37 @@ impl<'a> System<'a> for DropItemSystem {
     }
 }
 
-pub struct UsePotionSystem {}
+pub struct UseItemSystem {}
 
-impl<'a> System<'a> for UsePotionSystem {
+impl<'a> System<'a> for UseItemSystem {
     type SystemData = ( ReadExpect<'a, Entity>,
                         WriteExpect<'a, GameLog>,
                         Entities<'a>,
-                        WriteStorage<'a, WantsToDrinkPotion>,
+                        WriteStorage<'a, WantsToUseItem>,
                         ReadStorage<'a, Code>,
-                        ReadStorage<'a, Potion>,
+                        ReadStorage<'a, ProvidesHealing>,
                         WriteStorage<'a, CombatStats>,
                         WriteExpect<'a, RunState>,
                       );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (player, mut gamelog, entities, mut wants_drink, codes, potions, mut combat_stats, mut state) = data;
+        let (player, mut gamelog, entities, mut wants_use, codes, consumeables, mut combat_stats, mut state) = data;
 
-        for (entity, drink, stats) in (&entities, &wants_drink, &mut combat_stats).join() {
-            let potion = potions.get(drink.potion);
-            match potion {
+        for (entity, use_item, stats) in (&entities, &wants_use, &mut combat_stats).join() {
+            let consumeable = consumeables.get(use_item.item);
+            match consumeable {
                 None => {}
-                Some(potion) => {
-                    stats.hp = i32::min(stats.max_hp, stats.hp + potion.heal);
+                Some(item) => {
+                    stats.hp = i32::min(stats.max_hp, stats.hp + item.heal);
                     if entity == *player {
-                        let item_code = codes.get(drink.potion).unwrap().code;
-                        gamelog.add_log(vec![LogType::Drink as i32, 0, item_code, potion.heal]);
+                        let item_code = codes.get(use_item.item).unwrap().code;
+                        gamelog.add_log(vec![LogType::Drink as i32, 0, item_code, item.heal]);
                     }
-                    entities.delete(drink.potion).expect("Delete failed");
+                    entities.delete(use_item.item).expect("Delete item failed");
                     state.add_state(INVENTORY_CHANGE);
                 }
             }
         }
-        wants_drink.clear();
+        wants_use.clear();
     }
 }

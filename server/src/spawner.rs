@@ -7,7 +7,8 @@ use super::{
     FieldOfView,
     Monster,
     Item,
-    Potion,
+    Consumeable,
+    ProvidesHealing,
     BlocksTile};
 use rand::Rng;
 
@@ -64,7 +65,8 @@ pub fn random_potion(ecs: &mut World, x: i32, y: i32) {
         .with(Code { code })
         .with(Position{ x, y })
         .with(Item{})
-        .with(Potion{ heal: 8 })
+        .with(Consumeable{})
+        .with(ProvidesHealing{ heal: 8 })
         .build();
 }
 
