@@ -98,8 +98,10 @@ pub fn get_item(ecs: &mut World) {
 
     match target_item {
         Some(item) => {
-            let mut collect = ecs.write_storage::<WantsToPickupItem>();
-            collect.insert(*player, WantsToPickupItem{ collected_by: *player, item }).expect("Unable to insert want to pickup");
+            let mut intent = ecs.write_storage::<WantsToPickupItem>();
+            intent.insert(*player,
+                WantsToPickupItem{ collected_by: *player, item })
+                    .expect("Unable to insert wants to pickup");
         }
         None => gamelog.add_log(vec![LogType::System as i32, 1]),
     }
@@ -112,6 +114,7 @@ pub fn drop_item(idx: u64, ecs: &mut World) {
 
     for (entity, _i) in (&entities, &inventory).join().filter(|item| item.0.id() as u64 == idx) {
         let mut intent = ecs.write_storage::<WantsToDropItem>();
-        intent.insert(*player, WantsToDropItem{ item: entity }).expect("Unable to insert intent");
+        intent.insert(*player,
+            WantsToDropItem{ item: entity }).expect("Unable to insert wants to drop");
     }
 }
