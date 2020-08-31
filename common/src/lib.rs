@@ -68,6 +68,7 @@ pub enum LogType {
     Dead = 2,
     Collect = 3,
     Drop = 4,
+    Drink = 5,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

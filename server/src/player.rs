@@ -7,6 +7,7 @@ use super::{
     WantsToMelee,
     WantsToPickupItem,
     WantsToDropItem,
+    WantsToDrinkPotion,
     InInventory,
     RunState,
 };
@@ -116,5 +117,17 @@ pub fn drop_item(idx: u64, ecs: &mut World) {
         let mut intent = ecs.write_storage::<WantsToDropItem>();
         intent.insert(*player,
             WantsToDropItem{ item: entity }).expect("Unable to insert wants to drop");
+    }
+}
+
+pub fn use_item(idx: u64, ecs: &mut World) {
+    let player = ecs.fetch::<Entity>();
+    let inventory = ecs.read_storage::<InInventory>();
+    let entities = ecs.entities();
+
+    for (entity, _i) in (&entities, &inventory).join().filter(|item| item.0.id() as u64 == idx) {
+        let mut intent = ecs.write_storage::<WantsToDrinkPotion>();
+        intent.insert(*player,
+            WantsToDrinkPotion{ potion: entity }).expect("Unable to insert wants to drink potion");
     }
 }

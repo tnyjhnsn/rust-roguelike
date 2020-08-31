@@ -161,6 +161,8 @@ impl GameSocket {
         damage.run_now(&self.ecs);
         let mut pickup = PickupItemSystem{};
         pickup.run_now(&self.ecs);
+        let mut potion = UsePotionSystem{};
+        potion.run_now(&self.ecs);
         let mut drop = DropItemSystem{};
         drop.run_now(&self.ecs);
         self.ecs.maintain();
@@ -199,27 +201,28 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for GameSocket {
                             }
                             "g"|"G" => {
                                 get_item(&mut self.ecs);
-                                self.run_systems();
-                                self.tick(ctx);
                             }
                             _ => {
                                 player_input(txt, &mut self.ecs);
                                 delete_the_dead(&mut self.ecs);
-                                self.run_systems();
-                                self.tick(ctx);
                             }
                         }
+                        self.run_systems();
+                        self.tick(ctx);
                     }
                     2 => {
+                        let idx = chunks[1].parse::<u64>().unwrap();
                         match chunks[0] {
                             "/drop" => {
-                                let idx = chunks[1].parse::<u64>().unwrap();
                                 drop_item(idx, &mut self.ecs);
-                                self.run_systems();
-                                self.tick(ctx);
+                            }
+                            "/use" => {
+                                use_item(idx, &mut self.ecs);
                             }
                             _ => ()
                         }
+                        self.run_systems();
+                        self.tick(ctx);
                     }
                     _ => ()
                 }
@@ -257,6 +260,7 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
     gs.ecs.register::<InInventory>(); 
     gs.ecs.register::<WantsToPickupItem>(); 
     gs.ecs.register::<WantsToDropItem>(); 
+    gs.ecs.register::<WantsToDrinkPotion>(); 
 
     let mut map = Map::new();
     map.create_temp_walls();

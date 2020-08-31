@@ -2,10 +2,13 @@ use specs::prelude::*;
 use super::{
     WantsToPickupItem,
     WantsToDropItem,
+    WantsToDrinkPotion,
     Code,
     InInventory,
     Position,
     GameLog,
+    Potion,
+    CombatStats,
     RunState,
 };
 use roguelike_common::*;
@@ -73,5 +76,40 @@ impl<'a> System<'a> for DropItemSystem {
             }
         }
         wants_drop.clear();
+    }
+}
+
+pub struct UsePotionSystem {}
+
+impl<'a> System<'a> for UsePotionSystem {
+    type SystemData = ( ReadExpect<'a, Entity>,
+                        WriteExpect<'a, GameLog>,
+                        Entities<'a>,
+                        WriteStorage<'a, WantsToDrinkPotion>,
+                        ReadStorage<'a, Code>,
+                        ReadStorage<'a, Potion>,
+                        WriteStorage<'a, CombatStats>,
+                        WriteExpect<'a, RunState>,
+                      );
+
+    fn run(&mut self, data: Self::SystemData) {
+        let (player, mut gamelog, entities, mut wants_drink, codes, potions, mut combat_stats, mut state) = data;
+
+        for (entity, drink, stats) in (&entities, &wants_drink, &mut combat_stats).join() {
+            let potion = potions.get(drink.potion);
+            match potion {
+                None => {}
+                Some(potion) => {
+                    stats.hp = i32::min(stats.max_hp, stats.hp + potion.heal);
+                    if entity == *player {
+                        let item_code = codes.get(drink.potion).unwrap().code;
+                        gamelog.add_log(vec![LogType::Drink as i32, 0, item_code, potion.heal]);
+                    }
+                    entities.delete(drink.potion).expect("Delete failed");
+                    state.add_state(INVENTORY_CHANGE);
+                }
+            }
+        }
+        wants_drink.clear();
     }
 }

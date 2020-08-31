@@ -15,8 +15,8 @@ pub struct Props {
     pub game: MGame,
     pub show_inv_modal: bool,
     pub change_panel_signal: Callback<KeyboardEvent>,
-    pub player_action_signal: Callback<KeyboardEvent>,
-    pub drop_item_signal: Callback<u64>,
+    pub map_action_signal: Callback<KeyboardEvent>,
+    pub item_action_signal: Callback<(KeyboardEvent, u64)>,
 }
 
 impl Component for Game {
@@ -52,7 +52,7 @@ impl Component for Game {
                         inventory=&self.props.game.inventory
                         dict=&self.props.game.dict
                         change_panel_signal=&self.props.change_panel_signal
-                        drop_item_signal=&self.props.drop_item_signal
+                        item_action_signal=&self.props.item_action_signal
                     />
                 </div>
                 <div class="holding top-panel">
@@ -62,7 +62,7 @@ impl Component for Game {
                     map=&self.props.game.map
                     dict=&self.props.game.dict
                     change_panel_signal=&self.props.change_panel_signal
-                    player_action_signal=&self.props.player_action_signal
+                    map_action_signal=&self.props.map_action_signal
                 />
                 <div class="holding right-panel">
                     <Logs

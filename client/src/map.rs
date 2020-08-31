@@ -19,7 +19,7 @@ pub struct Props {
     pub map: MMap,
     pub dict: Dictionary,
     pub change_panel_signal: Callback<KeyboardEvent>,
-    pub player_action_signal: Callback<KeyboardEvent>,
+    pub map_action_signal: Callback<KeyboardEvent>,
 }
 
 pub enum Msg {
@@ -51,7 +51,7 @@ impl Component for Map {
             Msg::Pressed(e) => {
                 match e.key_code() {
                     KEY_I => self.props.change_panel_signal.emit(e),
-                    _ => self.props.player_action_signal.emit(e),
+                    _ => self.props.map_action_signal.emit(e),
                 }
             }
         }

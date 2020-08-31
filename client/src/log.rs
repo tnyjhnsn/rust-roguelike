@@ -45,6 +45,12 @@ impl Log {
         let item_name = self.props.dict.get_name(item);
         format!("{} drops the {}", entity_name, item_name)
     }
+
+    fn get_drink_msg(&self, entity: i32, item: i32, amount: i32) -> String {
+        let entity_name = self.props.dict.get_name(entity);
+        let item_name = self.props.dict.get_name(item);
+        format!("{} drinks the {} for {} healing", entity_name, item_name, amount)
+    }
 }
 
 #[derive(Clone, PartialEq, Properties)]
@@ -87,6 +93,7 @@ impl Component for Log {
                             2 => html! { self.get_dead_msg(msg[1]) },
                             3 => html! { self.get_collect_msg(msg[1], msg[2]) },
                             4 => html! { self.get_drop_msg(msg[1], msg[2]) },
+                            5 => html! { self.get_drink_msg(msg[1], msg[2], msg[3]) },
                             _ => html! { "Unknown log message" },
                         }
                     }

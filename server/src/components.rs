@@ -77,3 +77,8 @@ pub struct WantsToDropItem {
     pub item: Entity,
 }
 
+#[derive(Component, Debug, Clone)]
+pub struct WantsToDrinkPotion {
+    pub potion: Entity,
+}
+

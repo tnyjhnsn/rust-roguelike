@@ -18,7 +18,7 @@ pub struct Props {
     pub inventory: MInventory,
     pub dict: Dictionary,
     pub change_panel_signal: Callback<KeyboardEvent>,
-    pub drop_item_signal: Callback<u64>,
+    pub item_action_signal: Callback<(KeyboardEvent, u64)>,
 }
 
 pub enum Msg {
@@ -93,11 +93,11 @@ impl Component for Inventory {
                     },
                     KEY_DOWN =>  self.cycle_list(1),
                     KEY_UP => self.cycle_list(-1),
-                    KEY_D => {
+                    KEY_D|KEY_U => {
                         match self.list_items {
                             Some(_) => {
                                 let idx = self.props.inventory.items[self.selected_item as usize].1;
-                                self.props.drop_item_signal.emit(idx);
+                                self.props.item_action_signal.emit((e, idx));
                             }
                             None => (),
                         }
