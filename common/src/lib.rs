@@ -14,8 +14,10 @@ pub const CONTENTS_CHANGE: i32 = 2;
 pub const INVENTORY_CHANGE: i32 = 4;
 
 // key codes
+// sections
 pub const KEY_ESC: u32 = 27;
 pub const KEY_I: u32 = 73;
+// movement
 pub const KEY_LEFT: u32 = 37;
 pub const KEY_UP: u32 = 38;
 pub const KEY_RIGHT: u32 = 39;
@@ -25,6 +27,8 @@ pub const KEY_U: u32 = 85;
 pub const KEY_B: u32 = 66;
 pub const KEY_N: u32 = 78;
 pub const KEY_G: u32 = 71;
+// actions
+pub const KEY_D: u32 = 68;
 
 #[derive(Component, Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct Position {

@@ -70,6 +70,7 @@ impl GameSocket {
         let map = self.ecs.fetch::<Map>();
         let ppos = self.ecs.fetch::<PlayerPosition>();
         let mut state = self.ecs.fetch_mut::<RunState>();
+        let entities = self.ecs.entities();
 
         let mut fov_tiles = Vec::new();
         let mut player_fov = Vec::new();
@@ -121,10 +122,10 @@ impl GameSocket {
 
         if state.check_state(INVENTORY_CHANGE) {
             let mut pack = Vec::new();
-            for (_inv, code) in (&inventory, &codes)
+            for (_inv, code, entity) in (&inventory, &codes, &entities)
                 .join()
                 .filter(|item| item.0.owner == *player_entity) {
-                    pack.push(code.code);
+                    pack.push((code.code, entity.id()));
                 }
             let p = serde_json::to_value(pack).unwrap();
             hm.entry(String::from("INVENTORY")).or_insert(p);

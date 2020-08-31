@@ -2,7 +2,7 @@ use serde_json::Value;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct MInventory {
-    pub items: Vec<i32>,
+    pub items: Vec<(i32, u64)>,
 }
 
 impl MInventory {

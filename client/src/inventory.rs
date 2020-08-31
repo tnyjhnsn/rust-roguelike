@@ -42,7 +42,7 @@ impl Inventory {
 
     fn get_list_items(&self) -> HtmlCollection {
         document()
-            .get_elements_by_class_name("inventory-list")
+            .get_elements_by_class_name("selectable-list")
             .get_with_index(0)
             .unwrap()
             .dyn_into::<HtmlElement>()
@@ -85,13 +85,14 @@ impl Component for Inventory {
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
             Msg::Pressed(e) => {
-                if e.key_code() == KEY_ESC {
-                    self.set_selected_item(self.selected_item, "");
-                    self.props.onkeydown_signal.emit(e);
-                } else if e.key_code() == KEY_DOWN {
-                    self.cycle_list(1);
-                } else if e.key_code() == KEY_UP {
-                    self.cycle_list(-1);
+                match e.key_code() {
+                    KEY_ESC => {
+                        self.set_selected_item(self.selected_item, "");
+                        self.props.onkeydown_signal.emit(e);
+                    },
+                    KEY_DOWN =>  self.cycle_list(1),
+                    KEY_UP => self.cycle_list(-1),
+                    _ => (),
                 }
             }
             Msg::GotFocus(_e) => {
@@ -110,9 +111,9 @@ impl Component for Inventory {
     }
 
     fn view(&self) -> Html {
-        let render_items = |item: &i32| {
-            let name = self.props.dict.get_name(*item);
-            let css = self.props.dict.get_css(*item);
+        let render_items = |item: &(i32, u64)| {
+            let name = self.props.dict.get_name(item.0);
+            let css = self.props.dict.get_css(item.0);
             html! {
                 <li>
                     <div class="flex-wrap">
@@ -130,7 +131,7 @@ impl Component for Inventory {
                 onfocus= self.link.callback(Msg::GotFocus)
             >
                 <h3>{ "Inventory" }</h3>
-                <ul class="inventory-list">
+                <ul class="selectable-list">
                 { for self.props.inventory.items
                     .iter()
                     .map(render_items) }
