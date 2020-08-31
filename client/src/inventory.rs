@@ -8,6 +8,7 @@ use wasm_bindgen::JsCast;
 
 pub struct Inventory {
     link: ComponentLink<Self>,
+    list_items: Option<HtmlCollection>,
     selected_item: i32,
     props: Props,
 }
@@ -26,11 +27,17 @@ pub enum Msg {
 
 impl Inventory {
     fn cycle_list(&mut self, direction: i32) {
-        self.set_selected_item(self.selected_item, "");
-        let length = self.get_list_items().length() as i32;
-        let selected_idx = ((self.selected_item + direction) % length + length) % length;
-        self.set_selected_item(selected_idx, "li-selected");
-        self.selected_item = selected_idx;
+        match &self.list_items {
+            Some(items) => {
+                let length = items.length() as i32;
+                if length == 0 { return; }
+                self.set_selected_item(self.selected_item, "");
+                let selected_idx = ((self.selected_item + direction) % length + length) % length;
+                self.set_selected_item(selected_idx, "li-selected");
+                self.selected_item = selected_idx;
+            }
+            None => (),
+        }
     }
 
     fn get_list_items(&self) -> HtmlCollection {
@@ -44,9 +51,11 @@ impl Inventory {
     }
 
     fn set_selected_item(&self, idx: i32, s: &str) {
-        match self.get_list_items().get_with_index(idx as u32) {
-            Some(item) => item.set_class_name(s),
-            None => (),
+        match &self.list_items {
+            Some(items) => {
+                items.get_with_index(idx as u32).unwrap().set_class_name(s);
+            }
+            None => ()
         }
     }
 }
@@ -58,6 +67,7 @@ impl Component for Inventory {
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
         Self {
             link,
+            list_items: None,
             selected_item: 0,
             props,
         }
@@ -85,8 +95,15 @@ impl Component for Inventory {
                 }
             }
             Msg::GotFocus(_e) => {
-                self.selected_item = 0;
-                self.set_selected_item(0, "li-selected");
+                match self.props.inventory.items.len() {
+                    0 => (),
+                    _ => {
+                        self.list_items = Some(self.get_list_items());
+                        self.selected_item = 0;
+                        self.set_selected_item(0, "li-selected");
+                    }
+
+                }
             }
         }
         false
