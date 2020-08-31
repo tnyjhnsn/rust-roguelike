@@ -7,6 +7,8 @@ use super::tile_map::*;
 use super::contents_map::*;
 use super::status_map::*;
 
+use roguelike_common::*;
+
 pub struct Map {
     link: ComponentLink<Self>,
     props: Props,
@@ -16,7 +18,8 @@ pub struct Map {
 pub struct Props {
     pub map: MMap,
     pub dict: Dictionary,
-    pub onkeydown_signal: Callback<KeyboardEvent>,
+    pub change_panel_signal: Callback<KeyboardEvent>,
+    pub player_action_signal: Callback<KeyboardEvent>,
 }
 
 pub enum Msg {
@@ -46,7 +49,10 @@ impl Component for Map {
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
             Msg::Pressed(e) => {
-                self.props.onkeydown_signal.emit(e);
+                match e.key_code() {
+                    KEY_I => self.props.change_panel_signal.emit(e),
+                    _ => self.props.player_action_signal.emit(e),
+                }
             }
         }
         false

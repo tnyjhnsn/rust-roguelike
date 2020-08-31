@@ -34,10 +34,16 @@ impl Log {
         format!("{} is dead", deceased_name)
     }
 
-    fn get_collect_msg(&self, collector: i32, item: i32) -> String {
-        let collector_name = self.props.dict.get_name(collector);
+    fn get_collect_msg(&self, entity: i32, item: i32) -> String {
+        let entity_name = self.props.dict.get_name(entity);
         let item_name = self.props.dict.get_name(item);
-        format!("{} picks up the {}", collector_name, item_name)
+        format!("{} picks up the {}", entity_name, item_name)
+    }
+
+    fn get_drop_msg(&self, entity: i32, item: i32) -> String {
+        let entity_name = self.props.dict.get_name(entity);
+        let item_name = self.props.dict.get_name(item);
+        format!("{} drops the {}", entity_name, item_name)
     }
 }
 
@@ -80,6 +86,7 @@ impl Component for Log {
                             1 => self.get_attack_msg(msg[1], msg[2], msg[3]),
                             2 => html! { self.get_dead_msg(msg[1]) },
                             3 => html! { self.get_collect_msg(msg[1], msg[2]) },
+                            4 => html! { self.get_drop_msg(msg[1], msg[2]) },
                             _ => html! { "Unknown log message" },
                         }
                     }

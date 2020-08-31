@@ -28,7 +28,9 @@ pub enum Msg {
     Ignore,
     GetGame,
     Received(Result<Value, Error>),
-    Pressed(KeyboardEvent),
+    ChangePanel(KeyboardEvent),
+    PlayerAction(KeyboardEvent),
+    DropItem(u64),
 }
 
 #[derive(Serialize)]
@@ -121,10 +123,15 @@ impl Component for Model {
                 ConsoleService::info(&format!("{}", msg));
                 false
             }
-            Msg::Pressed(e) => {
+            Msg::ChangePanel(e) => {
                 match e.key_code() {
                     KEY_ESC => { set_focus("map"); false },
                     KEY_I => { set_focus("inventory"); false },
+                    _ => false,
+                }
+            }
+            Msg::PlayerAction(e) => {
+                match e.key_code() {
                     KEY_LEFT|KEY_UP|KEY_RIGHT|KEY_DOWN
                     |KEY_Y|KEY_U|KEY_B|KEY_N
                     |KEY_G => { 
@@ -137,6 +144,16 @@ impl Component for Model {
                         }
                     },
                     _ => false,
+                }
+            }
+            Msg::DropItem(i) => {
+                let action = format!("{} {}", "/drop", i.to_string());
+                match self.ws {
+                    Some(ref mut task) => {
+                        task.send(Ok(action));
+                        false
+                    }
+                    None => false
                 }
             }
         }
@@ -163,7 +180,9 @@ impl Component for Model {
                 <Game
                     game=&self.game
                     show_inv_modal=&self.show_inv_modal
-                    onkeydown_signal=self.link.callback(Msg::Pressed)
+                    change_panel_signal=self.link.callback(Msg::ChangePanel)
+                    player_action_signal=self.link.callback(Msg::PlayerAction)
+                    drop_item_signal=self.link.callback(Msg::DropItem)
                 />
             </>
     	}

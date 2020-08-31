@@ -159,8 +159,10 @@ impl GameSocket {
         melee.run_now(&self.ecs);
         let mut damage = DamageSystem{};
         damage.run_now(&self.ecs);
-        let mut inventory = InventorySystem{};
-        inventory.run_now(&self.ecs);
+        let mut pickup = PickupItemSystem{};
+        pickup.run_now(&self.ecs);
+        let mut drop = DropItemSystem{};
+        drop.run_now(&self.ecs);
         self.ecs.maintain();
     }
     
@@ -186,23 +188,40 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for GameSocket {
         match msg {
             Ok(ws::Message::Ping(m)) => ctx.pong(&m),
             Ok(ws::Message::Text(txt)) => {
-                match txt.trim() {
-                    "/game" => {
-                        let map = self.ecs.fetch::<Map>();
-                        ctx.text(map.draw_game());
-                        return;
+                let chunks: Vec<&str> = txt.trim().split(" ").collect();
+                match chunks.len() {
+                    1 => {
+                        match chunks[0] {
+                            "/game" => {
+                                let map = self.ecs.fetch::<Map>();
+                                ctx.text(map.draw_game());
+                                return;
+                            }
+                            "g"|"G" => {
+                                get_item(&mut self.ecs);
+                                self.run_systems();
+                                self.tick(ctx);
+                            }
+                            _ => {
+                                player_input(txt, &mut self.ecs);
+                                delete_the_dead(&mut self.ecs);
+                                self.run_systems();
+                                self.tick(ctx);
+                            }
+                        }
                     }
-                    "g"|"G" => {
-                        get_item(&mut self.ecs);
-                        self.run_systems();
-                        self.tick(ctx);
+                    2 => {
+                        match chunks[0] {
+                            "/drop" => {
+                                let idx = chunks[1].parse::<u64>().unwrap();
+                                drop_item(idx, &mut self.ecs);
+                                self.run_systems();
+                                self.tick(ctx);
+                            }
+                            _ => ()
+                        }
                     }
-                    _ => {
-                        player_input(txt, &mut self.ecs);
-                        delete_the_dead(&mut self.ecs);
-                        self.run_systems();
-                        self.tick(ctx);
-                    }
+                    _ => ()
                 }
             }
             Ok(ws::Message::Binary(bin)) => {
@@ -237,6 +256,7 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
     gs.ecs.register::<Potion>(); 
     gs.ecs.register::<InInventory>(); 
     gs.ecs.register::<WantsToPickupItem>(); 
+    gs.ecs.register::<WantsToDropItem>(); 
 
     let mut map = Map::new();
     map.create_temp_walls();

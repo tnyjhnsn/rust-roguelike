@@ -72,3 +72,8 @@ pub struct WantsToPickupItem {
     pub collected_by: Entity,
 }
 
+#[derive(Component, Debug, Clone)]
+pub struct WantsToDropItem {
+    pub item: Entity,
+}
+
