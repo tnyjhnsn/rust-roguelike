@@ -89,8 +89,7 @@ impl Map {
 
     fn populate_neighbours(&mut self) {
         for i in 0..self.get_dim() - 1 {
-            let row = i as i32 % self.width;
-            let col = i as i32 / self.width;
+            let (row, col) = self.idx_xy(i as i32);
             let mut neighbours = Vec::new();
             for r in [-1, 0, 1].iter().cloned() {
                 let rr = row + r;
@@ -144,12 +143,15 @@ impl Map {
             data: json!(map),
         };
         let s = serde_json::to_string(&gm).unwrap();
-        //println!("{}", s);
         s
     }
 
     pub fn xy_idx(&self, x: i32, y: i32) -> usize {
         (y as usize * self.width as usize) + x as usize
+    }
+
+    pub fn idx_xy(&self, idx: i32) -> (i32, i32) {
+        (idx % self.width, idx / self.width)
     }
 
     pub fn get_random_space(&self) -> (i32, i32) {

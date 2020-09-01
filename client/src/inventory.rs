@@ -113,7 +113,6 @@ impl Component for Inventory {
                                 } else {
                                     self.props.target_indicator_signal.emit(25);
                                 }
-
                             }
                             None => (),
                         }
