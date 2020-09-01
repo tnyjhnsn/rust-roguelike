@@ -1,6 +1,5 @@
 use yew::prelude::*;
 use super::model::inventory_model::*;
-use super::model::map_model::*;
 use super::model::dictionary::*;
 use roguelike_common::*;
 use web_sys::{HtmlElement, HtmlCollection};
@@ -17,7 +16,7 @@ pub struct Inventory {
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
     pub inventory: MInventory,
-    pub map: MMap,
+    pub fov: Vec<usize>,
     pub dict: Dictionary,
     pub change_panel_signal: Callback<KeyboardEvent>,
     pub item_action_signal: Callback<(KeyboardEvent, u64, i32)>,
@@ -100,7 +99,7 @@ impl Component for Inventory {
                         match self.list_items {
                             Some(_) => {
                                 let idx = self.props.inventory.items[self.selected_item as usize].1;
-                                self.props.item_action_signal.emit((e, idx, 0));
+                                self.props.item_action_signal.emit((e, idx, -1));
                             }
                             None => (),
                         }
@@ -110,7 +109,7 @@ impl Component for Inventory {
                             Some(_) => {
                                 let (item, idx) = self.props.inventory.items[self.selected_item as usize];
                                 if item < 2100 {
-                                    self.props.item_action_signal.emit((e, idx, 0));
+                                    self.props.item_action_signal.emit((e, idx, -1));
                                 } else {
                                     self.props.target_indicator_signal.emit(25);
                                 }

@@ -51,7 +51,7 @@ impl Component for Game {
                     />
                     <Inventory
                         inventory=&self.props.game.inventory
-                        map=&self.props.game.map
+                        fov=&self.props.game.map.fov
                         dict=&self.props.game.dict
                         change_panel_signal=&self.props.change_panel_signal
                         item_action_signal=&self.props.item_action_signal

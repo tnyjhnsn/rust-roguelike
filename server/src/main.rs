@@ -218,7 +218,7 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for GameSocket {
                             }
                             "/use" => {
                                 let t = chunks[2].parse::<i32>().unwrap();
-                                let target = if t == 0 { None } else { Some(t) };
+                                let target = if t == -1 { None } else { Some(t) };
                                 use_item(idx, target, &mut self.ecs);
                             }
                             _ => ()
