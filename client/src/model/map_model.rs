@@ -43,6 +43,7 @@ impl MMap {
 
     pub fn set_fov(&mut self, data: Value) {
         for c in &self.fov {
+            self.status[*c] &= !TARGETED;
             self.status[*c] &= !VISIBLE;
             self.status[*c] |= SEEN;
         }
@@ -57,6 +58,13 @@ impl MMap {
                 self.fov.push(*idx);
             }
         }
+    }
+
+    pub fn set_single_target(&mut self, target: usize) {
+        for idx in self.fov.iter() {
+            self.status[*idx] &= !TARGETED;
+        }
+        self.status[target] |= TARGETED;
     }
 
     pub fn set_contents(&mut self, data: Value) {

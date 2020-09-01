@@ -7,6 +7,7 @@ use serde_repr::*;
 // consts for binary operations
 pub const SEEN: i32 = 1;
 pub const VISIBLE: i32 = 2;
+pub const TARGETED: i32 = 4;
 
 pub const WAITING: i32 = 0;
 pub const FOV_CHANGE: i32 = 1;
@@ -36,7 +37,7 @@ pub struct Position {
     pub y: i32,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Copy, Clone)]
 pub struct Point {
     pub x: i32,
     pub y: i32,
@@ -69,6 +70,7 @@ pub enum LogType {
     Collect = 3,
     Drop = 4,
     Drink = 5,
+    UseItem = 6,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

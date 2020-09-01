@@ -120,7 +120,7 @@ pub fn drop_item(idx: u64, ecs: &mut World) {
     }
 }
 
-pub fn use_item(idx: u64, ecs: &mut World) {
+pub fn use_item(idx: u64, target: Option<i32>, ecs: &mut World) {
     let player = ecs.fetch::<Entity>();
     let inventory = ecs.read_storage::<InInventory>();
     let entities = ecs.entities();
@@ -128,6 +128,6 @@ pub fn use_item(idx: u64, ecs: &mut World) {
     for (entity, _i) in (&entities, &inventory).join().filter(|item| item.0.id() as u64 == idx) {
         let mut intent = ecs.write_storage::<WantsToUseItem>();
         intent.insert(*player,
-            WantsToUseItem{ item: entity }).expect("Unable to insert wants to drink potion");
+            WantsToUseItem{ item: entity, target  }).expect("Unable to insert wants to use item");
     }
 }

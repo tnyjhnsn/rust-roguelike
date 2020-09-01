@@ -66,11 +66,11 @@ impl Component for Map {
                 onkeydown=self.link.callback(Msg::Pressed)
             >
                 <TileMap tiles=&self.props.map.tiles viewport=&self.props.map.viewport />
+                <StatusMap status=&self.props.map.status viewport=&self.props.map.viewport />
                 <ContentsMap
                     contents=&self.props.map.contents
                     dict=&self.props.dict
                     viewport=&self.props.map.viewport />
-                <StatusMap status=&self.props.map.status viewport=&self.props.map.viewport />
             </div>
         }
     }

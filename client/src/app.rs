@@ -30,7 +30,8 @@ pub enum Msg {
     Received(Result<Value, Error>),
     ChangePanel(KeyboardEvent),
     MapAction(KeyboardEvent),
-    ItemAction((KeyboardEvent, u64)),
+    ItemAction((KeyboardEvent, u64, i32)),
+    TargetIndicator(usize)
 }
 
 #[derive(Serialize)]
@@ -146,13 +147,13 @@ impl Component for Model {
                     _ => false,
                 }
             }
-            Msg::ItemAction((e, idx)) => {
+            Msg::ItemAction((e, idx, target)) => {
                 let event = match e.key_code() {
                     KEY_D => "/drop",
                     KEY_U => "/use",
                     _ => "",
                 };
-                let action = format!("{} {}", event, idx.to_string());
+                let action = format!("{} {} {}", event, idx.to_string(), target.to_string());
                 match self.ws {
                     Some(ref mut task) => {
                         task.send(Ok(action));
@@ -160,6 +161,10 @@ impl Component for Model {
                     }
                     None => false
                 }
+            }
+            Msg::TargetIndicator(i) => {
+                self.game.map.set_single_target(self.game.map.fov[i]); 
+                true
             }
         }
     }
@@ -188,6 +193,7 @@ impl Component for Model {
                     change_panel_signal=self.link.callback(Msg::ChangePanel)
                     map_action_signal=self.link.callback(Msg::MapAction)
                     item_action_signal=self.link.callback(Msg::ItemAction)
+                    target_indicator_signal=self.link.callback(Msg::TargetIndicator)
                 />
             </>
     	}

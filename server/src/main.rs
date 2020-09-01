@@ -210,21 +210,22 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for GameSocket {
                         self.run_systems();
                         self.tick(ctx);
                     }
-                    2 => {
+                    _ => {
                         let idx = chunks[1].parse::<u64>().unwrap();
                         match chunks[0] {
                             "/drop" => {
                                 drop_item(idx, &mut self.ecs);
                             }
                             "/use" => {
-                                use_item(idx, &mut self.ecs);
+                                let t = chunks[2].parse::<i32>().unwrap();
+                                let target = if t == 0 { None } else { Some(t) };
+                                use_item(idx, target, &mut self.ecs);
                             }
                             _ => ()
                         }
                         self.run_systems();
                         self.tick(ctx);
                     }
-                    _ => ()
                 }
             }
             Ok(ws::Message::Binary(bin)) => {
@@ -257,7 +258,9 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
     gs.ecs.register::<WantsToMelee>(); 
     gs.ecs.register::<Item>(); 
     gs.ecs.register::<Consumeable>(); 
+    gs.ecs.register::<Ranged>(); 
     gs.ecs.register::<ProvidesHealing>(); 
+    gs.ecs.register::<InflictsDamage>(); 
     gs.ecs.register::<InInventory>(); 
     gs.ecs.register::<WantsToPickupItem>(); 
     gs.ecs.register::<WantsToDropItem>(); 
@@ -278,7 +281,7 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
 
     for _i in 1..15 {
         let (x, y) = map.get_random_space();
-        random_potion(&mut gs.ecs, x, y);
+        random_item(&mut gs.ecs, x, y);
     }
 
     gs.ecs.insert(PlayerPosition::new(px, py));
