@@ -59,7 +59,6 @@ struct GameSocket {
 
 impl GameSocket {
     fn tick(&mut self,  ctx: &mut ws::WebsocketContext<Self>) {
-        //println!("Tick...");
 
         let fov = self.ecs.read_storage::<FieldOfView>();
         let player = self.ecs.read_storage::<Player>();
@@ -146,8 +145,6 @@ impl GameSocket {
             Some(log) => ctx.text(log),
             _ => (),
         }
-
-        //println!("...Tock");
     }
 
     fn run_systems(&mut self) {
@@ -259,6 +256,7 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
     gs.ecs.register::<Item>(); 
     gs.ecs.register::<Consumeable>(); 
     gs.ecs.register::<Ranged>(); 
+    gs.ecs.register::<AreaOfEffect>(); 
     gs.ecs.register::<ProvidesHealing>(); 
     gs.ecs.register::<InflictsDamage>(); 
     gs.ecs.register::<InInventory>(); 

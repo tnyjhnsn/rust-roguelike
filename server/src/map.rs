@@ -55,6 +55,20 @@ impl Map {
         }
     }
 
+    pub fn get_area_of_effect(&self, area: &mut Vec<i32>, radius: i32) {
+        if radius == 0 {
+            return;
+        }
+        let mut v = Vec::new();
+        for idx in area.iter() {
+            for n in self.neighbours[*idx as usize].iter() {
+                v.push(*n as i32);
+            }
+        }
+        area.append(&mut v);
+        self.get_area_of_effect(area, radius - 1);
+    }
+
     pub fn populate_dijkstra_values(&mut self, dijkstra_map: &[usize], x: i32, y: i32) -> Position {
         self.dijkstra_values = vec![DIJKSTRA_MAX; self.get_dim()];
         self.dijkstra_values[dijkstra_map[0]] = 0;

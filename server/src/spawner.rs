@@ -9,6 +9,7 @@ use super::{
     Item,
     Consumeable,
     Ranged,
+    AreaOfEffect,
     InflictsDamage,
     ProvidesHealing,
     BlocksTile};
@@ -55,13 +56,12 @@ pub fn random_monster(ecs: &mut World, x: i32, y: i32) {
 pub fn random_potion(ecs: &mut World, x: i32, y: i32) {
     let mut rng = rand::thread_rng();
     let code;
-    let roll = rng.gen_range(1, 6);
+    let roll = rng.gen_range(1, 5);
     match roll {
         1 => { code = 2000 }
         2 => { code = 2001 }
         3 => { code = 2002 }
-        4 => { code = 2101 }
-        _ => { code = 2102 }
+        _ => { code = 2101 }
     }
     ecs.create_entity()
         .with(Code { code })
@@ -83,12 +83,25 @@ pub fn magic_missile_scroll(ecs: &mut World, x: i32, y: i32) {
         .build();
 }
 
+pub fn acid_rain_potion(ecs: &mut World, x: i32, y: i32) {
+    ecs.create_entity()
+        .with(Code { code: 2102 })
+        .with(Position{ x, y })
+        .with(Item{})
+        .with(Consumeable{})
+        .with(Ranged{ range: 6 })
+        .with(InflictsDamage{ damage: 8 })
+        .with(AreaOfEffect{ radius: 3 })
+        .build();
+}
+
 pub fn random_item(ecs: &mut World, x: i32, y: i32) {
     let mut rng = rand::thread_rng();
-    let roll = rng.gen_range(1, 3);
+    let roll = rng.gen_range(1, 4);
     match roll {
         1 => { random_potion(ecs, x, y) }
-        _ => { magic_missile_scroll(ecs, x, y) }
+        2 => { magic_missile_scroll(ecs, x, y) }
+        _ => { acid_rain_potion(ecs, x, y) }
     }
 }
 

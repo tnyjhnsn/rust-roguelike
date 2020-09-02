@@ -11,11 +11,14 @@ use super::{
     Consumeable,
     ProvidesHealing,
     InflictsDamage,
+    AreaOfEffect,
     SufferDamage,
     CombatStats,
     RunState,
 };
 use roguelike_common::*;
+use std::collections::HashSet;
+use std::iter::FromIterator;
 
 pub struct PickupItemSystem {}
 
@@ -97,23 +100,56 @@ impl<'a> System<'a> for UseItemSystem {
                         ReadStorage<'a, InflictsDamage>,
                         WriteStorage<'a, SufferDamage>,
                         WriteStorage<'a, CombatStats>,
+                        ReadStorage<'a, AreaOfEffect>,
                         WriteExpect<'a, RunState>,
                       );
 
     fn run(&mut self, data: Self::SystemData) {
         let (player, mut gamelog, map, entities, mut wants_use, codes, consumeables,
-             healing, inflict_damage, mut suffer_damage, mut combat_stats, mut state) = data;
+             healing, inflict_damage, mut suffer_damage, mut combat_stats, aoe, mut state) = data;
 
-        for (entity, use_item, stats) in (&entities, &wants_use, &mut combat_stats).join() {
+        for (entity, use_item) in (&entities, &wants_use).join() {
             let mut used_item = true;
+
+            let mut targets = Vec::new();
+            match use_item.target {
+                Some(_t) => {
+                    let area_effect = aoe.get(use_item.item);
+                    match area_effect {
+                        Some(_a) => {
+                            let idx = use_item.target.unwrap();
+                            let mut aoe = vec![idx];
+                            map.get_area_of_effect(&mut aoe, 3);
+                            let aoe_tiles: HashSet<i32> = HashSet::from_iter(aoe);
+                            for tile in aoe_tiles.iter() {
+                                for mob in map.contents[*tile as usize].iter() {
+                                    targets.push(*mob);
+                                }
+                            }
+                        }
+                        None => {
+                            let idx = use_item.target.unwrap();
+                            for mob in map.contents[idx as usize].iter() {
+                                targets.push(*mob);
+                            }
+                        }
+                    }
+                }
+                None => targets.push(*player),
+            }
 
             let item_heals = healing.get(use_item.item);
             match item_heals {
                 Some(item) => {
-                    stats.hp = i32::min(stats.max_hp, stats.hp + item.heal);
-                    if entity == *player {
-                        let item_code = codes.get(use_item.item).unwrap().code;
-                        gamelog.add_log(vec![LogType::Drink as i32, 0, item_code, item.heal]);
+                    for target in targets.iter() {
+                        let stats = combat_stats.get_mut(*target);
+                        if let Some(stats) = stats {
+                            stats.hp = i32::min(stats.max_hp, stats.hp + item.heal);
+                            if entity == *player {
+                                let item_code = codes.get(use_item.item).unwrap().code;
+                                gamelog.add_log(vec![LogType::Drink as i32, 0, item_code, item.heal]);
+                            }
+                        }
                     }
                 }
                 None => {}
@@ -122,9 +158,8 @@ impl<'a> System<'a> for UseItemSystem {
             let item_damages = inflict_damage.get(use_item.item);
             match item_damages {
                 Some(item) => {
-                    let idx = use_item.target.unwrap();
                     used_item = false;
-                    for mob in map.contents[idx as usize].iter() {
+                    for mob in targets.iter() {
                         SufferDamage::new_damage(&mut suffer_damage, *mob, item.damage);
                         if entity == *player {
                             let mob_code = codes.get(*mob).unwrap().code;
