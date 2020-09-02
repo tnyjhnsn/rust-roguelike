@@ -31,25 +31,32 @@ impl Log {
 
     fn get_dead_msg(&self, deceased: i32) -> String {
         let deceased_name = self.props.dict.get_name(deceased);
-        format!("{} is dead", deceased_name)
+        format!("The {} is dead", deceased_name)
     }
 
     fn get_collect_msg(&self, entity: i32, item: i32) -> String {
         let entity_name = self.props.dict.get_name(entity);
         let item_name = self.props.dict.get_name(item);
-        format!("{} picks up the {}", entity_name, item_name)
+        format!("The {} picks up the {}", entity_name, item_name)
     }
 
     fn get_drop_msg(&self, entity: i32, item: i32) -> String {
         let entity_name = self.props.dict.get_name(entity);
         let item_name = self.props.dict.get_name(item);
-        format!("{} drops the {}", entity_name, item_name)
+        format!("The {} drops the {}", entity_name, item_name)
     }
 
     fn get_drink_msg(&self, entity: i32, item: i32, amount: i32) -> String {
         let entity_name = self.props.dict.get_name(entity);
         let item_name = self.props.dict.get_name(item);
-        format!("{} drinks the {} for {} healing", entity_name, item_name, amount)
+        format!("The {} drinks the {} for {} healing", entity_name, item_name, amount)
+    }
+
+    fn get_use_item_msg(&self, entity: i32, item: i32, target: i32, amount: i32) -> String {
+        let entity_name = self.props.dict.get_name(entity);
+        let item_name = self.props.dict.get_name(item);
+        let target_name = self.props.dict.get_name(target);
+        format!("The {} uses the {} on the {} for {} damage", entity_name, item_name, target_name, amount)
     }
 }
 
@@ -94,6 +101,7 @@ impl Component for Log {
                             3 => html! { self.get_collect_msg(msg[1], msg[2]) },
                             4 => html! { self.get_drop_msg(msg[1], msg[2]) },
                             5 => html! { self.get_drink_msg(msg[1], msg[2], msg[3]) },
+                            6 => html! { self.get_use_item_msg(msg[1], msg[2], msg[3], msg[4]) },
                             _ => html! { "Unknown log message" },
                         }
                     }

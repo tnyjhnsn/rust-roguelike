@@ -119,24 +119,23 @@ impl<'a> System<'a> for UseItemSystem {
                 None => {}
             }
 
-            //let item_damages = inflict_damage.get(use_item.item);
-            //match item_damages {
-                //Some(item) => {
-                    //let target_point = use_item.target.unwrap();
-                    //let idx = map.xy_idx(target_point.x, target_point.y);
-                    //used_item = false;
-                    //for mob in map.contents[idx].iter() {
-                        //SufferDamage::new_damage(&mut suffer_damage, *mob, item.damage);
-                        //if entity == *player {
-                            //let mob_code = codes.get(*mob).unwrap().code;
-                            //let item_code = codes.get(use_item.item).unwrap().code;
-                            //gamelog.add_log(vec![LogType::UseItem as i32, 0, item_code, mob_code, item.damage]);
-                        //}
-                        //used_item = true;
-                    //}
-                //}
-                //None => {}
-            //}
+            let item_damages = inflict_damage.get(use_item.item);
+            match item_damages {
+                Some(item) => {
+                    let idx = use_item.target.unwrap();
+                    used_item = false;
+                    for mob in map.contents[idx as usize].iter() {
+                        SufferDamage::new_damage(&mut suffer_damage, *mob, item.damage);
+                        if entity == *player {
+                            let mob_code = codes.get(*mob).unwrap().code;
+                            let item_code = codes.get(use_item.item).unwrap().code;
+                            gamelog.add_log(vec![LogType::UseItem as i32, 0, item_code, mob_code, item.damage]);
+                        }
+                        used_item = true;
+                    }
+                }
+                None => {}
+            }
 
             if used_item {
                 let consumeable = consumeables.get(use_item.item);

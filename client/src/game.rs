@@ -13,11 +13,10 @@ pub struct Game {
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
     pub game: MGame,
-    pub show_inv_modal: bool,
     pub change_panel_signal: Callback<KeyboardEvent>,
     pub map_action_signal: Callback<KeyboardEvent>,
     pub item_action_signal: Callback<(KeyboardEvent, u64, i32)>,
-    pub target_indicator_signal: Callback<usize>,
+    pub target_indicator_signal: Callback<(Option<KeyboardEvent>, Option<i32>)>,
 }
 
 impl Component for Game {

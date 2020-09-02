@@ -10,6 +10,7 @@ pub struct MMap {
     pub status: Vec<i32>,
     pub fov: Vec<usize>,
     pub viewport: Vec<i32>,
+    pub ppos: i32,
 }
 
 pub const VP_W: i32 = 20;
@@ -25,6 +26,7 @@ impl MMap {
             status: Vec::new(),
             fov: Vec::new(),
             viewport: Vec::new(),
+            ppos: 0,
         }
     }
 
@@ -48,9 +50,9 @@ impl MMap {
             self.status[*c] |= SEEN;
         }
         self.fov.clear();
-        let ppos = serde_json::from_value(data[0].clone()).unwrap();
+        self.ppos = serde_json::from_value(data[0].clone()).unwrap();
         let fov: Fov = serde_json::from_value(data[1].clone()).unwrap();
-        self.set_viewport(ppos);
+        self.set_viewport();
         for (tile, indexes) in fov.iter() {
             for idx in indexes.iter() {
                 self.tiles[*idx] = *tile;
@@ -75,7 +77,8 @@ impl MMap {
         }
     }
 
-    pub fn set_viewport(&mut self, ppos: i32) {
+    pub fn set_viewport(&mut self) {
+        let ppos = self.ppos;
         let x = ppos % self.width;
         let y = ppos / self.width;
         let mut v = Vec::new();

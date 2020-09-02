@@ -10,6 +10,7 @@ pub struct Inventory {
     link: ComponentLink<Self>,
     list_items: Option<HtmlCollection>,
     selected_item: i32,
+    targetting: bool,
     props: Props,
 }
 
@@ -20,7 +21,7 @@ pub struct Props {
     pub dict: Dictionary,
     pub change_panel_signal: Callback<KeyboardEvent>,
     pub item_action_signal: Callback<(KeyboardEvent, u64, i32)>,
-    pub target_indicator_signal: Callback<usize>,
+    pub target_indicator_signal: Callback<(Option<KeyboardEvent>, Option<i32>)>,
 }
 
 pub enum Msg {
@@ -72,6 +73,7 @@ impl Component for Inventory {
             link,
             list_items: None,
             selected_item: 0,
+            targetting: false,
             props,
         }
     }
@@ -86,53 +88,78 @@ impl Component for Inventory {
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
-        match msg {
-            Msg::Pressed(e) => {
-                match e.key_code() {
-                    KEY_ESC => {
-                        //self.set_selected_item(self.selected_item, "");
-                        self.props.change_panel_signal.emit(e);
-                    },
-                    KEY_DOWN =>  self.cycle_list(1),
-                    KEY_UP => self.cycle_list(-1),
-                    KEY_D => {
-                        match self.list_items {
-                            Some(_) => {
-                                let idx = self.props.inventory.items[self.selected_item as usize].1;
-                                self.props.item_action_signal.emit((e, idx, -1));
-                            }
-                            None => (),
+        if self.targetting {
+            match msg {
+                Msg::Pressed(e) => {
+                    match e.key_code() {
+                        KEY_ESC => {
+                            //TODO targetter cleanup
+                            self.targetting = false;
                         }
+                        KEY_ENTER => {
+                            let idx = self.props.inventory.items[self.selected_item as usize].1;
+                            self.props.target_indicator_signal.emit((Some(e), Some(idx as i32)));
+                            self.targetting = false;
+                        }
+                        KEY_LEFT|KEY_RIGHT|KEY_UP|KEY_DOWN
+                        |KEY_Y|KEY_U|KEY_B|KEY_N => {
+                            self.props.target_indicator_signal.emit((Some(e), None));
+                        }
+                        _ => ()
                     }
-                    KEY_U => {
-                        match self.list_items {
-                            Some(_) => {
-                                let (item, idx) = self.props.inventory.items[self.selected_item as usize];
-                                if item < 2100 {
+                }
+                _ => ()
+            }
+            false
+        } else {
+            match msg {
+                Msg::Pressed(e) => {
+                    match e.key_code() {
+                        KEY_ESC => {
+                            //self.set_selected_item(self.selected_item, "");
+                            self.props.change_panel_signal.emit(e);
+                        },
+                        KEY_DOWN =>  self.cycle_list(1),
+                        KEY_UP => self.cycle_list(-1),
+                        KEY_D => {
+                            match self.list_items {
+                                Some(_) => {
+                                    let idx = self.props.inventory.items[self.selected_item as usize].1;
                                     self.props.item_action_signal.emit((e, idx, -1));
-                                } else {
-                                    self.props.target_indicator_signal.emit(25);
                                 }
+                                None => (),
                             }
-                            None => (),
+                        }
+                        KEY_U => {
+                            match self.list_items {
+                                Some(_) => {
+                                    let (item, idx) = self.props.inventory.items[self.selected_item as usize];
+                                    if item < 2100 {
+                                        self.props.item_action_signal.emit((e, idx, -1));
+                                    } else {
+                                        self.targetting = true;
+                                        self.props.target_indicator_signal.emit((None, Some(0)));
+                                    }
+                                }
+                                None => (),
+                            }
+                        }
+                        _ => (),
+                    }
+                }
+                Msg::GotFocus(_e) => {
+                    match self.props.inventory.items.len() {
+                        0 => (),
+                        _ => {
+                            self.list_items = Some(self.get_list_items());
+                            self.selected_item = 0;
+                            self.set_selected_item(0, "li-selected");
                         }
                     }
-                    _ => (),
                 }
             }
-            Msg::GotFocus(_e) => {
-                match self.props.inventory.items.len() {
-                    0 => (),
-                    _ => {
-                        self.list_items = Some(self.get_list_items());
-                        self.selected_item = 0;
-                        self.set_selected_item(0, "li-selected");
-                    }
-
-                }
-            }
+            false
         }
-        false
     }
 
     fn view(&self) -> Html {

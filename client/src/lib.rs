@@ -1,4 +1,5 @@
 #![recursion_limit = "512"]
+#![feature(or_patterns)]
 
 use wasm_bindgen::prelude::*;
 
