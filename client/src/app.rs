@@ -223,7 +223,7 @@ impl Component for Model {
             Msg::TargetIndicator((e, n)) => {
                 match (e, n) {
                     (None, Some(0)) => {
-                        ConsoleService::info("setting up targetter");
+                        ConsoleService::info("setting up targeter");
                         self.targeter.create(
                             &self.game.map.fov, self.game.map.ppos, self.game.map.width);
                         self.game.map.set_single_target(self.game.map.ppos as usize);

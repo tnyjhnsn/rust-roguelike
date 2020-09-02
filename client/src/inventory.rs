@@ -10,7 +10,7 @@ pub struct Inventory {
     link: ComponentLink<Self>,
     list_items: Option<HtmlCollection>,
     selected_item: i32,
-    targetting: bool,
+    targeting: bool,
     props: Props,
 }
 
@@ -73,7 +73,7 @@ impl Component for Inventory {
             link,
             list_items: None,
             selected_item: 0,
-            targetting: false,
+            targeting: false,
             props,
         }
     }
@@ -88,18 +88,18 @@ impl Component for Inventory {
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
-        if self.targetting {
+        if self.targeting {
             match msg {
                 Msg::Pressed(e) => {
                     match e.key_code() {
                         KEY_ESC => {
-                            //TODO targetter cleanup
-                            self.targetting = false;
+                            //TODO targeter cleanup
+                            self.targeting = false;
                         }
                         KEY_ENTER => {
                             let idx = self.props.inventory.items[self.selected_item as usize].1;
                             self.props.target_indicator_signal.emit((Some(e), Some(idx as i32)));
-                            self.targetting = false;
+                            self.targeting = false;
                         }
                         KEY_LEFT|KEY_RIGHT|KEY_UP|KEY_DOWN
                         |KEY_Y|KEY_U|KEY_B|KEY_N => {
@@ -137,7 +137,7 @@ impl Component for Inventory {
                                     if item < 2100 {
                                         self.props.item_action_signal.emit((e, idx, -1));
                                     } else {
-                                        self.targetting = true;
+                                        self.targeting = true;
                                         self.props.target_indicator_signal.emit((None, Some(0)));
                                     }
                                 }
