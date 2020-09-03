@@ -29,7 +29,7 @@ pub struct CombatStats {
 }
 
 #[derive(Component, Debug)]
-pub struct DefenseStats {
+pub struct HealthStats {
     pub max_hp: i32,
     pub hp: i32,
 }

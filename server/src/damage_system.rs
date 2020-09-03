@@ -1,6 +1,6 @@
 use specs::prelude::*;
 use super::{
-    DefenseStats,
+    HealthStats,
     SufferDamage,
     Player,
     GameLog,
@@ -11,7 +11,7 @@ use roguelike_common::*;
 pub struct DamageSystem {}
 
 impl<'a> System<'a> for DamageSystem {
-    type SystemData = ( WriteStorage<'a, DefenseStats>,
+    type SystemData = ( WriteStorage<'a, HealthStats>,
                         WriteStorage<'a, SufferDamage>,
                         );
 
@@ -29,12 +29,12 @@ impl<'a> System<'a> for DamageSystem {
 pub fn delete_the_dead(ecs : &mut World) {
     let mut dead: Vec<Entity> = Vec::new();
     {
-        let defense_stats = ecs.read_storage::<DefenseStats>();
+        let health_stats = ecs.read_storage::<HealthStats>();
         let players = ecs.read_storage::<Player>();
         let codes = ecs.read_storage::<Code>();
         let entities = ecs.entities();
         let mut log = ecs.fetch_mut::<GameLog>();
-        for (entity, stats) in (&entities, &defense_stats).join() {
+        for (entity, stats) in (&entities, &health_stats).join() {
             if stats.hp < 1 { 
                 let player = players.get(entity);
                 match player {
