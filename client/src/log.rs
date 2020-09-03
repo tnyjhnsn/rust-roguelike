@@ -34,6 +34,11 @@ impl Log {
         format!("The {} is dead", deceased_name)
     }
 
+    fn get_destroyed_msg(&self, destroyed: i32) -> String {
+        let destroyed_name = self.props.dict.get_name(destroyed);
+        format!("The {} has been destroyed", destroyed_name)
+    }
+
     fn get_collect_msg(&self, entity: i32, item: i32) -> String {
         let entity_name = self.props.dict.get_name(entity);
         let item_name = self.props.dict.get_name(item);
@@ -101,6 +106,7 @@ impl Component for Log {
                             4 => html! { self.get_drop_msg(log[1], log[2]) },
                             5 => html! { self.get_drink_msg(log[1], log[2], log[3]) },
                             6 => html! { self.get_use_item_msg(log[1], log[2], log[3], log[4]) },
+                            7 => html! { self.get_destroyed_msg(log[1]) },
                             _ => html! { "Unknown log message" },
                         }
                     }

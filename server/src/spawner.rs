@@ -1,6 +1,7 @@
 use specs::prelude::*;
 use super::{
     CombatStats,
+    DefenseStats,
     Player,
     Code,
     Position,
@@ -25,7 +26,8 @@ pub fn player(ecs: &mut World, x: i32, y: i32) -> Entity {
             visible_tiles: Vec::new(),
             range: 5,
         })
-        .with(CombatStats{ max_hp: 300, hp: 300, defense: 2, power: 5 })
+        .with(CombatStats{ defense: 2, power: 5 })
+        .with(DefenseStats{ max_hp: 300, hp: 300 })
         .build()
 }
 
@@ -49,7 +51,8 @@ pub fn random_monster(ecs: &mut World, x: i32, y: i32) {
             range: 5,
         })
         .with(BlocksTile{})
-        .with(CombatStats{ max_hp: 16, hp: 16, defense: 1, power: 4 })
+        .with(CombatStats{ defense: 1, power: 4 })
+        .with(DefenseStats{ max_hp: 16, hp: 16 })
         .build();
 }
 
@@ -69,6 +72,7 @@ pub fn random_potion(ecs: &mut World, x: i32, y: i32) {
         .with(Item{})
         .with(Consumeable{})
         .with(ProvidesHealing{ heal: 8 })
+        .with(DefenseStats{ max_hp: 1, hp: 1 })
         .build();
 }
 
@@ -80,6 +84,7 @@ pub fn magic_missile_scroll(ecs: &mut World, x: i32, y: i32) {
         .with(Consumeable{})
         .with(Ranged{ range: 6 })
         .with(InflictsDamage{ damage: 8 })
+        .with(DefenseStats{ max_hp: 1, hp: 1 })
         .build();
 }
 
@@ -92,6 +97,7 @@ pub fn acid_rain_potion(ecs: &mut World, x: i32, y: i32) {
         .with(Ranged{ range: 6 })
         .with(InflictsDamage{ damage: 8 })
         .with(AreaOfEffect{ radius: 3 })
+        .with(DefenseStats{ max_hp: 1, hp: 1 })
         .build();
 }
 

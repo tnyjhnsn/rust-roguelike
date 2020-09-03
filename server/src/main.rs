@@ -251,6 +251,7 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
     gs.ecs.register::<Code>(); 
     gs.ecs.register::<BlocksTile>(); 
     gs.ecs.register::<CombatStats>(); 
+    gs.ecs.register::<DefenseStats>(); 
     gs.ecs.register::<SufferDamage>(); 
     gs.ecs.register::<WantsToMelee>(); 
     gs.ecs.register::<Item>(); 

@@ -1,11 +1,17 @@
 use specs::prelude::*;
-use super::{CombatStats, SufferDamage, Player, GameLog, Code};
+use super::{
+    DefenseStats,
+    SufferDamage,
+    Player,
+    GameLog,
+    Code
+};
 use roguelike_common::*;
 
 pub struct DamageSystem {}
 
 impl<'a> System<'a> for DamageSystem {
-    type SystemData = ( WriteStorage<'a, CombatStats>,
+    type SystemData = ( WriteStorage<'a, DefenseStats>,
                         WriteStorage<'a, SufferDamage>,
                         );
 
@@ -23,12 +29,12 @@ impl<'a> System<'a> for DamageSystem {
 pub fn delete_the_dead(ecs : &mut World) {
     let mut dead: Vec<Entity> = Vec::new();
     {
-        let combat_stats = ecs.read_storage::<CombatStats>();
+        let defense_stats = ecs.read_storage::<DefenseStats>();
         let players = ecs.read_storage::<Player>();
         let codes = ecs.read_storage::<Code>();
         let entities = ecs.entities();
         let mut log = ecs.fetch_mut::<GameLog>();
-        for (entity, stats) in (&entities, &combat_stats).join() {
+        for (entity, stats) in (&entities, &defense_stats).join() {
             if stats.hp < 1 { 
                 let player = players.get(entity);
                 match player {
@@ -37,7 +43,11 @@ pub fn delete_the_dead(ecs : &mut World) {
                 }
                 let victim = codes.get(entity);
                 if let Some(victim) = victim {
-                    log.add_log(vec![LogType::Dead as i32, victim.code]);
+                    if victim.code < 2000 {
+                        log.add_log(vec![LogType::Dead as i32, victim.code]);
+                    } else {
+                        log.add_log(vec![LogType::Destroyed as i32, victim.code]);
+                    }
                 }
             }
         }

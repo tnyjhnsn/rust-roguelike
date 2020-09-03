@@ -13,7 +13,7 @@ use super::{
     InflictsDamage,
     AreaOfEffect,
     SufferDamage,
-    CombatStats,
+    DefenseStats,
     RunState,
 };
 use roguelike_common::*;
@@ -99,14 +99,14 @@ impl<'a> System<'a> for UseItemSystem {
                         ReadStorage<'a, ProvidesHealing>,
                         ReadStorage<'a, InflictsDamage>,
                         WriteStorage<'a, SufferDamage>,
-                        WriteStorage<'a, CombatStats>,
+                        WriteStorage<'a, DefenseStats>,
                         ReadStorage<'a, AreaOfEffect>,
                         WriteExpect<'a, RunState>,
                       );
 
     fn run(&mut self, data: Self::SystemData) {
         let (player, mut gamelog, map, entities, mut wants_use, codes, consumeables,
-             healing, inflict_damage, mut suffer_damage, mut combat_stats, aoe, mut state) = data;
+             healing, inflict_damage, mut suffer_damage, mut defense_stats, aoe, mut state) = data;
 
         for (entity, use_item) in (&entities, &wants_use).join() {
             let mut used_item = true;
@@ -142,7 +142,7 @@ impl<'a> System<'a> for UseItemSystem {
             match item_heals {
                 Some(item) => {
                     for target in targets.iter() {
-                        let stats = combat_stats.get_mut(*target);
+                        let stats = defense_stats.get_mut(*target);
                         if let Some(stats) = stats {
                             stats.hp = i32::min(stats.max_hp, stats.hp + item.heal);
                             if entity == *player {
