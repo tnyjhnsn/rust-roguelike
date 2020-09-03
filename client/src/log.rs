@@ -88,20 +88,19 @@ impl Component for Log {
     }
 
     fn view(&self) -> Html {
-        let render_log = |_l| {
-            let msg = &self.props.log[0];
+        let render_log = |log: &Vec<i32>| {
             html! {
                 <li>
                     <div class="flex-wrap">
                     {
-                        match msg[0] {
-                            0 => html! { self.get_system_msg(msg[1]) },
-                            1 => self.get_attack_msg(msg[1], msg[2], msg[3]),
-                            2 => html! { self.get_dead_msg(msg[1]) },
-                            3 => html! { self.get_collect_msg(msg[1], msg[2]) },
-                            4 => html! { self.get_drop_msg(msg[1], msg[2]) },
-                            5 => html! { self.get_drink_msg(msg[1], msg[2], msg[3]) },
-                            6 => html! { self.get_use_item_msg(msg[1], msg[2], msg[3], msg[4]) },
+                        match log[0] {
+                            0 => html! { self.get_system_msg(log[1]) },
+                            1 => self.get_attack_msg(log[1], log[2], log[3]),
+                            2 => html! { self.get_dead_msg(log[1]) },
+                            3 => html! { self.get_collect_msg(log[1], log[2]) },
+                            4 => html! { self.get_drop_msg(log[1], log[2]) },
+                            5 => html! { self.get_drink_msg(log[1], log[2], log[3]) },
+                            6 => html! { self.get_use_item_msg(log[1], log[2], log[3], log[4]) },
                             _ => html! { "Unknown log message" },
                         }
                     }
@@ -113,7 +112,7 @@ impl Component for Log {
             <ul>
                 { for self.props.log
                     .iter()
-                    .map( render_log )}
+                    .map(render_log)}
             </ul>
         }
     }
