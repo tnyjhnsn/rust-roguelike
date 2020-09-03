@@ -81,6 +81,11 @@ pub struct InflictsDamage {
     pub damage: i32,
 }
 
+#[derive(Component, Debug)]
+pub struct Confusion {
+    pub turns: i32,
+}
+
 // Component for each intent
 
 #[derive(Component, Debug, Clone)]

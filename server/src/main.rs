@@ -259,6 +259,7 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
     gs.ecs.register::<Ranged>(); 
     gs.ecs.register::<AreaOfEffect>(); 
     gs.ecs.register::<ProvidesHealing>(); 
+    gs.ecs.register::<Confusion>(); 
     gs.ecs.register::<InflictsDamage>(); 
     gs.ecs.register::<InInventory>(); 
     gs.ecs.register::<WantsToPickupItem>(); 

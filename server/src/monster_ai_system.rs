@@ -14,25 +14,39 @@ impl<'a> System<'a> for MonsterAISystem {
                         ReadExpect<'a, Entity>,
                         Entities<'a>,
                         WriteStorage<'a, WantsToMelee>,
+                        WriteStorage<'a, Confusion>,
                         );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (ppos, fov, mut map, mut state, monster, mut mpos, player_entity, entities, mut wants_to_melee) = data;
+        let (ppos, fov, mut map, mut state, monster, mut mpos, player_entity,
+             entities, mut wants_to_melee, mut confused) = data;
 
         for (entity, fov, _monster, mpos) in (&entities, &fov, &monster, &mut mpos).join() {
-            let distance = ppos.position.distance(Point::new(mpos.x, mpos.y));
-            if distance < 1.5 {
-                wants_to_melee.insert(entity, WantsToMelee{ target: *player_entity }).expect("Unable to insert attack");
-            } else if fov.visible_tiles.contains(&ppos.position) {
-                let mut idx = map.xy_idx(mpos.x, mpos.y);
-                map.blocked[idx] = false;
-                let dijkstra_map = create_dijkstra_map(ppos.position.x, ppos.position.y, &map);
-                let new_pos = map.populate_dijkstra_values(&dijkstra_map, mpos.x, mpos.y);
-                mpos.x = new_pos.x;
-                mpos.y = new_pos.y;
-                idx = map.xy_idx(mpos.x, mpos.y);
-                map.blocked[idx] = true;
-                state.add_state(CONTENTS_CHANGE);
+            let mut can_act = true;
+            let is_confused = confused.get_mut(entity);
+            if let Some(i_am_confused) = is_confused {
+                i_am_confused.turns -= 1;
+                if i_am_confused.turns < 1 {
+                    confused.remove(entity);
+                }
+                can_act = false;
+            }
+
+            if can_act {
+                let distance = ppos.position.distance(Point::new(mpos.x, mpos.y));
+                if distance < 1.5 {
+                    wants_to_melee.insert(entity, WantsToMelee{ target: *player_entity }).expect("Unable to insert attack");
+                } else if fov.visible_tiles.contains(&ppos.position) {
+                    let mut idx = map.xy_idx(mpos.x, mpos.y);
+                    map.blocked[idx] = false;
+                    let dijkstra_map = create_dijkstra_map(ppos.position.x, ppos.position.y, &map);
+                    let new_pos = map.populate_dijkstra_values(&dijkstra_map, mpos.x, mpos.y);
+                    mpos.x = new_pos.x;
+                    mpos.y = new_pos.y;
+                    idx = map.xy_idx(mpos.x, mpos.y);
+                    map.blocked[idx] = true;
+                    state.add_state(CONTENTS_CHANGE);
+                }
             }
         }
     }

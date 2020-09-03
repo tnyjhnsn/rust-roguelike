@@ -63,6 +63,13 @@ impl Log {
         let target_name = self.props.dict.get_name(target);
         format!("The {} uses the {} on the {} for {} damage", entity_name, item_name, target_name, amount)
     }
+
+    fn get_confused_msg(&self, entity: i32, item: i32, target: i32) -> String {
+        let entity_name = self.props.dict.get_name(entity);
+        let item_name = self.props.dict.get_name(item);
+        let target_name = self.props.dict.get_name(target);
+        format!("The {} uses the {} on the {}, causing confusion ", entity_name, item_name, target_name)
+    }
 }
 
 #[derive(Clone, PartialEq, Properties)]
@@ -107,6 +114,7 @@ impl Component for Log {
                             5 => html! { self.get_drink_msg(log[1], log[2], log[3]) },
                             6 => html! { self.get_use_item_msg(log[1], log[2], log[3], log[4]) },
                             7 => html! { self.get_destroyed_msg(log[1]) },
+                            8 => html! { self.get_confused_msg(log[1], log[2], log[3]) },
                             _ => html! { "Unknown log message" },
                         }
                     }

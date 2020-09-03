@@ -12,6 +12,7 @@ use super::{
     ProvidesHealing,
     InflictsDamage,
     AreaOfEffect,
+    Confusion,
     SufferDamage,
     HealthStats,
     RunState,
@@ -101,15 +102,16 @@ impl<'a> System<'a> for UseItemSystem {
                         WriteStorage<'a, SufferDamage>,
                         WriteStorage<'a, HealthStats>,
                         ReadStorage<'a, AreaOfEffect>,
+                        WriteStorage<'a, Confusion>,
                         WriteExpect<'a, RunState>,
                       );
 
     fn run(&mut self, data: Self::SystemData) {
         let (player, mut gamelog, map, entities, mut wants_use, codes, consumeables,
-             healing, inflict_damage, mut suffer_damage, mut health_stats, aoe, mut state) = data;
+             healing, inflict_damage, mut suffer_damage, mut health_stats, aoe,
+             mut confused, mut state) = data;
 
         for (entity, use_item) in (&entities, &wants_use).join() {
-            let mut used_item = true;
 
             let mut targets = Vec::new();
             match use_item.target {
@@ -158,7 +160,6 @@ impl<'a> System<'a> for UseItemSystem {
             let item_damages = inflict_damage.get(use_item.item);
             match item_damages {
                 Some(item) => {
-                    used_item = false;
                     for mob in targets.iter() {
                         SufferDamage::new_damage(&mut suffer_damage, *mob, item.damage);
                         if entity == *player {
@@ -166,21 +167,39 @@ impl<'a> System<'a> for UseItemSystem {
                             let item_code = codes.get(use_item.item).unwrap().code;
                             gamelog.add_log(vec![LogType::UseItem as i32, 0, item_code, mob_code, item.damage]);
                         }
-                        used_item = true;
                     }
                 }
                 None => {}
             }
 
-            if used_item {
-                let consumeable = consumeables.get(use_item.item);
-                match consumeable {
-                    Some(_) => {
-                        entities.delete(use_item.item).expect("Delete item failed");
-                        state.add_state(INVENTORY_CHANGE);
+            let mut add_confusion = Vec::new();
+            {
+                let causes_confusion = confused.get(use_item.item);
+                match causes_confusion {
+                    Some(confusion) => {
+                        for mob in targets.iter() {
+                            add_confusion.push((*mob, confusion.turns));
+                            if entity == *player {
+                                let mob_code = codes.get(*mob).unwrap().code;
+                                let item_code = codes.get(use_item.item).unwrap().code;
+                                gamelog.add_log(vec![LogType::Confusion as i32, 0, item_code, mob_code]);
+                            }
+                        }
                     }
                     None => {}
                 }
+            }
+            for mob in add_confusion.iter() {
+                confused.insert(mob.0, Confusion { turns: mob.1 }).expect("Unable to insert confusion status");
+            }
+
+            let consumeable = consumeables.get(use_item.item);
+            match consumeable {
+                Some(_) => {
+                    entities.delete(use_item.item).expect("Delete item failed");
+                    state.add_state(INVENTORY_CHANGE);
+                }
+                None => {}
             }
         }
         wants_use.clear();
