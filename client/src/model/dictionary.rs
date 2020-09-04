@@ -15,8 +15,6 @@ impl Dictionary {
         dict.insert(12, (String::from("Scary Ghost"), String::from("ghost")));
         dict.insert(13, (String::from("Shambling Grey Mould"), String::from("grey-mould")));
         dict.insert(2000, (String::from("Health Potion"), String::from("health-potion")));
-        dict.insert(2001, (String::from("Super-Tuff Anti Mould"), String::from("anti-mould")));
-        dict.insert(2002, (String::from("Vintage Wine"), String::from("wine")));
         dict.insert(2100, (String::from("Magic Missiles Scroll"), String::from("scroll")));
         dict.insert(2101, (String::from("Dragon Breath"), String::from("dragon-breath")));
         dict.insert(2102, (String::from("Acid Rain"), String::from("acid-rain")));
