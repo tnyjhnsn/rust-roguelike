@@ -48,14 +48,21 @@ pub fn spawn_map(map: &mut Map, ecs: &mut World) {
 
 pub fn random_monster(ecs: &mut World, x: i32, y: i32) {
     let mut rng = rand::thread_rng();
-    let code;
     let roll = rng.gen_range(1, 5);
     match roll {
-        1 => { code = 10 }
-        2 => { code = 11 }
-        3 => { code = 12 }
-        _ => { code = 13 }
+        1 => { white_centipede(ecs, x, y) }
+        2 => { red_ant(ecs, x, y) }
+        3 => { ghost(ecs, x, y) }
+        _ => { grey_mould(ecs, x, y) }
     }
+}
+
+fn white_centipede(ecs: &mut World, x: i32, y: i32) { monster(ecs, 10, x, y); }
+fn red_ant(ecs: &mut World, x: i32, y: i32) { monster(ecs, 11, x, y); }
+fn ghost(ecs: &mut World, x: i32, y: i32) { monster(ecs, 12, x, y); }
+fn grey_mould(ecs: &mut World, x: i32, y: i32) { monster(ecs, 13, x, y); }
+
+pub fn monster(ecs: &mut World, code: i32, x: i32, y: i32) {
     ecs
         .create_entity()
         .with(Monster{})

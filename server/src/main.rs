@@ -272,8 +272,8 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
     gs.ecs.register::<WantsToDropItem>(); 
     gs.ecs.register::<WantsToUseItem>(); 
 
-    let px = 20;
-    let py = 20;
+    let px = 10;
+    let py = 10;
     let player = player(&mut gs.ecs, px, py);
     gs.ecs.insert(player);
     gs.ecs.insert(PlayerPosition::new(px, py));
