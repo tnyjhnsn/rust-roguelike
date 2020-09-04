@@ -10,6 +10,7 @@ impl Log {
         match msg {
             0 => format!("Hello Rogue!"),
             1 => format!("There is nothing to pick up here"),
+            2 => format!("There is no way down from here"),
             _ => format!("Unknown System Message"),
         }
     }

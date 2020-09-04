@@ -14,7 +14,8 @@ use super::{
     Confusion,
     InflictsDamage,
     ProvidesHealing,
-    BlocksTile};
+    BlocksTile,
+};
 use rand::Rng;
 
 pub fn player(ecs: &mut World, x: i32, y: i32) -> Entity {

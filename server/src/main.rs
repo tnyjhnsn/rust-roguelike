@@ -29,6 +29,8 @@ mod inventory_system;
 pub use inventory_system::*;
 mod spawner;
 pub use spawner::*;
+mod dungeon;
+pub use dungeon::*;
 
 #[derive(PartialEq, Copy, Clone)]
 pub struct RunState {
@@ -77,16 +79,19 @@ impl GameSocket {
         for (_p, fov) in (&player, &fov).join() {
             let mut wall: Vec<usize> = Vec::new();
             let mut floor: Vec<usize> = Vec::new();
+            let mut stairs: Vec<usize> = Vec::new();
             for t in &fov.visible_tiles {
                 let idx = map.xy_idx(t.x, t.y);
                 match map.tiles[idx] {
                     TileType::Floor => floor.push(idx),
                     TileType::Wall => wall.push(idx),
+                    TileType::DownStairs => stairs.push(idx),
                 }
                 player_fov.push(idx);
             }
             fov_tiles.push((TileType::Wall, wall));
             fov_tiles.push((TileType::Floor, floor));
+            fov_tiles.push((TileType::DownStairs, stairs));
         }
 
         let mut hm = HashMap::new();
@@ -170,7 +175,6 @@ impl GameSocket {
         mob.run_now(&self.ecs);
         self.ecs.maintain();
     }
-
 }
 
 impl Actor for GameSocket {
@@ -192,12 +196,14 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for GameSocket {
                     1 => {
                         match chunks[0] {
                             "/game" => {
-                                let map = self.ecs.fetch::<Map>();
-                                ctx.text(map.draw_game());
-                                return;
+                                get_game(&mut self.ecs, ctx);
                             }
                             "g"|"G" => {
                                 get_item(&mut self.ecs);
+                            }
+                            ">" => {
+                                get_downstairs(&mut self.ecs);
+                                get_game(&mut self.ecs, ctx);
                             }
                             _ => {
                                 player_input(txt, &mut self.ecs);
@@ -266,32 +272,82 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
     gs.ecs.register::<WantsToDropItem>(); 
     gs.ecs.register::<WantsToUseItem>(); 
 
-    let mut map = Map::new();
-    map.create_temp_walls();
     let px = 20;
     let py = 20;
-
     let player = player(&mut gs.ecs, px, py);
     gs.ecs.insert(player);
-
-    for _i in 1..8 {
-        let (x, y) = map.get_random_space();
-        random_monster(&mut gs.ecs, x, y);
-    }
-
-    for _i in 1..15 {
-        let (x, y) = map.get_random_space();
-        random_item(&mut gs.ecs, x, y);
-    }
-
     gs.ecs.insert(PlayerPosition::new(px, py));
+
+    let mut map = Map::new(0);
+    map.spawn_map(&mut gs.ecs);
     gs.ecs.insert(map);
+    
     gs.ecs.insert(GameLog::new());
     gs.ecs.insert(RunState::new(WAITING));
-    
+    gs.ecs.insert(Dungeon::new());
+
     let res = ws::start(gs, &req, stream);
     println!("{:?}", res);
     res
+}
+
+fn get_game(ecs: &mut World, ctx: &mut ws::WebsocketContext<GameSocket>) {
+    let map = ecs.fetch::<Map>();
+    ctx.text(map.draw_game());
+    let mut state = ecs.fetch_mut::<RunState>();
+    state.add_state(FOV_CHANGE);
+    state.add_state(CONTENTS_CHANGE);
+}
+
+fn get_downstairs(ecs: &mut World) {
+    if !try_next_level(ecs) { return; };
+    let to_delete = entities_to_remove_on_level_change(ecs);
+    for target in to_delete {
+        ecs.delete_entity(target).expect("Unable to delete entity");
+    }
+    let mut new_map = down_stairs(ecs);
+    new_map.spawn_map(ecs);
+    ecs.insert(new_map);
+}
+
+fn try_next_level(ecs: &mut World) -> bool {
+    let ppos = ecs.fetch::<PlayerPosition>();
+    let map = ecs.fetch::<Map>();
+    let ppos_idx = map.xy_idx(ppos.position.x, ppos.position.y);
+
+    if map.tiles[ppos_idx] == TileType::DownStairs {
+        true
+    } else {
+        let mut gamelog = ecs.fetch_mut::<GameLog>();
+        gamelog.add_log(vec![LogType::System as i32, 2]);
+        false
+    }
+}
+
+fn entities_to_remove_on_level_change(ecs: &mut World) -> Vec<Entity> {
+    let entities = ecs.entities();
+    let player = ecs.read_storage::<Player>();
+    let inventory = ecs.read_storage::<InInventory>();
+    let player_entity = ecs.fetch::<Entity>();
+
+    let mut to_delete : Vec<Entity> = Vec::new();
+    for entity in entities.join() {
+        let mut should_delete = true;
+        let p = player.get(entity);
+        if let Some(_p) = p {
+            should_delete = false;
+        }
+        let bp = inventory.get(entity);
+        if let Some(bp) = bp {
+            if bp.owner == *player_entity {
+                should_delete = false;
+            }
+        }
+        if should_delete { 
+            to_delete.push(entity);
+        }
+    }
+    to_delete
 }
 
 #[actix_rt::main]

@@ -31,6 +31,9 @@ pub const KEY_G: u32 = 71;
 // actions
 pub const KEY_D: u32 = 68;
 pub const KEY_ENTER: u32 = 13;
+// stairs
+pub const KEY_GT: u32 = 190;
+pub const KEY_LT: u32 = 188;
 
 #[derive(Component, Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct Position {
@@ -60,6 +63,7 @@ impl Point {
 pub enum TileType {
     Wall = 0,
     Floor = 1,
+    DownStairs = 2,
 }
 
 #[derive(Debug, PartialEq, Copy, Clone, Serialize_repr, Deserialize_repr)]

@@ -3,12 +3,13 @@ use roguelike_common::*;
 use serde_json::json;
 use rand::Rng;
 use std::collections::HashMap;
+use super::*;
 
 const DIJKSTRA_MAX: i32 = 1000;
 const WIDTH: i32 = 40;
 const HEIGHT: i32 = 40;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Map {
     pub width: i32,
     pub height: i32,
@@ -17,11 +18,12 @@ pub struct Map {
     pub neighbours: Vec<Vec<usize>>,
     pub dijkstra_values: Vec<i32>,
     pub contents: Vec<Vec<Entity>>,
+    pub depth: i32,
 }
 
 impl Map {
 
-    pub fn new() -> Self {
+    pub fn new(depth: i32) -> Self {
         let width = WIDTH;
         let height = HEIGHT;
         let dim = (width * height) as usize;
@@ -39,6 +41,7 @@ impl Map {
             neighbours,
             dijkstra_values,
             contents,
+            depth,
         };
 
         map.populate_neighbours();
@@ -124,7 +127,7 @@ impl Map {
         }
     }
 
-    pub fn create_temp_walls(&mut self) {
+    fn create_temp_walls(&mut self) {
         let mut rng = rand::thread_rng();
 
         for x in 0..self.width {
@@ -148,11 +151,24 @@ impl Map {
                 self.tiles[idx] = TileType::Wall;
             }
         }
+        self.tiles[100] = TileType::DownStairs;
+    }
+
+    pub fn spawn_map(&mut self, ecs: &mut World) {
+        self.create_temp_walls();
+        for _i in 1..8 {
+            let (x, y) = self.get_random_space();
+            random_monster(ecs, x, y);
+        }
+        for _i in 1..15 {
+            let (x, y) = self.get_random_space();
+            random_item(ecs, x, y);
+        }
     }
 
     pub fn draw_game(&self) -> String {
         let mut map = HashMap::new();
-        map.entry(String::from("GAME")).or_insert((self.width, self.height));
+        map.entry(String::from("GAME")).or_insert((self.width, self.height, self.depth));
         let gm = GameMsg {
             data: json!(map),
         };
@@ -181,3 +197,9 @@ impl Map {
     }
 }
 
+pub fn down_stairs(ecs: &mut World) -> Map {
+    let mut dungeon = ecs.fetch_mut::<Dungeon>();
+    let map = ecs.fetch::<Map>();
+    dungeon.store_map(&map);
+    Map::new(map.depth + 1)
+}

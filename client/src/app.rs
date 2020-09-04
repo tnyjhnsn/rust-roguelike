@@ -193,7 +193,7 @@ impl Component for Model {
                 match e.key_code() {
                     KEY_LEFT|KEY_UP|KEY_RIGHT|KEY_DOWN
                     |KEY_Y|KEY_U|KEY_B|KEY_N
-                    |KEY_G => { 
+                    |KEY_G|KEY_GT|KEY_LT => { 
                         match self.ws {
                             Some(ref mut task) => {
                                 task.send(Ok(e.key()));
@@ -223,7 +223,6 @@ impl Component for Model {
             Msg::TargetIndicator((e, n)) => {
                 match (e, n) {
                     (None, Some(0)) => {
-                        ConsoleService::info("setting up targeter");
                         self.targeter.create(
                             &self.game.map.fov, self.game.map.ppos, self.game.map.width);
                         self.game.map.set_single_target(self.game.map.ppos as usize);

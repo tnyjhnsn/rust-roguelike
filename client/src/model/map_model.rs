@@ -5,6 +5,7 @@ use roguelike_common::*;
 pub struct MMap {
     pub width: i32,
     pub height: i32,
+    pub depth: i32,
     pub tiles: Vec<TileType>,
     pub contents: Vec<Vec<i32>>,
     pub status: Vec<i32>,
@@ -21,6 +22,7 @@ impl MMap {
          Self {
             width: 0,
             height: 0,
+            depth: 0,
             tiles: Vec::new(),
             contents: Vec::new(),
             status: Vec::new(),
@@ -35,9 +37,10 @@ impl MMap {
     }
 
     pub fn set_map(&mut self, data: Value) {
-        let game: (i32, i32) = serde_json::from_value(data).unwrap();
+        let game: (i32, i32, i32) = serde_json::from_value(data).unwrap();
         self.width = game.0;
         self.height = game.1;
+        self.depth = game.2;
         self.tiles = vec![TileType::Floor; self.get_dim()];
         self.contents = vec![Vec::new(); self.get_dim()];
         self.status = vec![0; self.get_dim()];
