@@ -279,7 +279,7 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
     gs.ecs.insert(PlayerPosition::new(px, py));
 
     let mut map = Map::new(0);
-    map.spawn_map(&mut gs.ecs);
+    spawn_map(&mut map, &mut gs.ecs);
     gs.ecs.insert(map);
     
     gs.ecs.insert(GameLog::new());
@@ -306,7 +306,7 @@ fn get_downstairs(ecs: &mut World) {
         ecs.delete_entity(target).expect("Unable to delete entity");
     }
     let mut new_map = down_stairs(ecs);
-    new_map.spawn_map(ecs);
+    spawn_map(&mut new_map, ecs);
     ecs.insert(new_map);
 }
 

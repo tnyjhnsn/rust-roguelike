@@ -127,7 +127,7 @@ impl Map {
         }
     }
 
-    fn create_temp_walls(&mut self) {
+    pub fn create_temp_walls(&mut self) {
         let mut rng = rand::thread_rng();
 
         for x in 0..self.width {
@@ -152,18 +152,6 @@ impl Map {
             }
         }
         self.tiles[100] = TileType::DownStairs;
-    }
-
-    pub fn spawn_map(&mut self, ecs: &mut World) {
-        self.create_temp_walls();
-        for _i in 1..8 {
-            let (x, y) = self.get_random_space();
-            random_monster(ecs, x, y);
-        }
-        for _i in 1..15 {
-            let (x, y) = self.get_random_space();
-            random_item(ecs, x, y);
-        }
     }
 
     pub fn draw_game(&self) -> String {

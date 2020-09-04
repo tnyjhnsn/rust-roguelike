@@ -15,6 +15,7 @@ use super::{
     InflictsDamage,
     ProvidesHealing,
     BlocksTile,
+    Map,
 };
 use rand::Rng;
 
@@ -31,6 +32,18 @@ pub fn player(ecs: &mut World, x: i32, y: i32) -> Entity {
         .with(CombatStats{ defense: 2, power: 5 })
         .with(HealthStats{ max_hp: 300, hp: 300 })
         .build()
+}
+
+pub fn spawn_map(map: &mut Map, ecs: &mut World) {
+    map.create_temp_walls();
+    for _i in 1..8 {
+        let (x, y) = map.get_random_space();
+        random_monster(ecs, x, y);
+    }
+    for _i in 1..15 {
+        let (x, y) = map.get_random_space();
+        random_item(ecs, x, y);
+    }
 }
 
 pub fn random_monster(ecs: &mut World, x: i32, y: i32) {
@@ -82,9 +95,9 @@ pub fn random_item(ecs: &mut World, x: i32, y: i32) {
     let mut rng = rand::thread_rng();
     let roll = rng.gen_range(1, 5);
     match roll {
-        //1 => { random_potion(ecs, x, y) }
-        //2 => { magic_missile_scroll(ecs, x, y) }
-        //3 => { acid_rain_potion(ecs, x, y) }
+        1 => { random_potion(ecs, x, y) }
+        2 => { magic_missile_scroll(ecs, x, y) }
+        3 => { acid_rain_potion(ecs, x, y) }
         _ => { confusion_scroll(ecs, x, y) }
     }
 }

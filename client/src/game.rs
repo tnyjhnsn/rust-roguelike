@@ -41,6 +41,7 @@ impl Component for Game {
     }
 
     fn view(&self) -> Html {
+        let level_str = format!("Level {}", self.props.game.map.depth);
         html! { 
             <div class="game">
                 <div class="holding left-panel">
@@ -67,6 +68,7 @@ impl Component for Game {
                     map_action_signal=&self.props.map_action_signal
                 />
                 <div class="holding right-panel">
+                    <h3>{ level_str }</h3>
                     <Logs
                         logs=&self.props.game.log
                         dict=&self.props.game.dict
