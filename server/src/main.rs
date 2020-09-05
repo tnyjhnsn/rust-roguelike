@@ -31,6 +31,8 @@ mod spawner;
 pub use spawner::*;
 mod dungeon;
 pub use dungeon::*;
+mod random_table;
+pub use random_table::*;
 
 #[derive(PartialEq, Copy, Clone)]
 pub struct RunState {

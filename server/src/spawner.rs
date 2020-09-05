@@ -16,8 +16,10 @@ use super::{
     ProvidesHealing,
     BlocksTile,
     Map,
+    RandomTable,
 };
 use rand::Rng;
+use std::collections::HashMap;
 
 pub fn player(ecs: &mut World, x: i32, y: i32) -> Entity {
     ecs
@@ -34,15 +36,58 @@ pub fn player(ecs: &mut World, x: i32, y: i32) -> Entity {
         .build()
 }
 
+fn map_table() -> RandomTable {
+    RandomTable::new()
+        .add(10, 10)
+        .add(11, 9)
+        .add(12, 8)
+        .add(13, 7)
+        .add(2000, 6)
+        .add(2100, 5)
+        .add(2101, 4)
+        .add(2102, 3)
+        .add(2103, 2)
+}
+
+const MAX_MONSTERS : i32 = 10;
+
 pub fn spawn_map(map: &mut Map, ecs: &mut World) {
     map.create_temp_walls();
-    for _i in 1..10 {
-        let (x, y) = map.get_random_space();
-        random_monster(ecs, x, y);
+    let spawn_table = map_table();
+    let mut spawn_points = HashMap::new();
+
+    {
+        let mut rng = rand::thread_rng();
+        let num_spawns = rng.gen_range(5, MAX_MONSTERS + 1) + (map.depth as f64 * 1.5).floor() as i32;
+        for _i in 0..num_spawns {
+            let mut added = false;
+            let mut tries = 0;
+            while !added && tries < 20 {
+                let idx = map.get_random_space();
+                if !spawn_points.contains_key(&idx) {
+                    spawn_points.insert(idx, spawn_table.roll());
+                    added = true;
+                } else {
+                    tries += 1;
+                }
+            }
+        }
     }
-    for _i in 1..15 {
-        let (x, y) = map.get_random_space();
-        random_item(ecs, x, y);
+
+    for spawn in spawn_points.iter() {
+        let (x, y) = *spawn.0;
+        match spawn.1 {
+            Some(10) => white_centipede(ecs, x, y),
+            Some(11) => red_ant(ecs, x, y),
+            Some(12) => ghost(ecs, x, y),
+            Some(13) => grey_mould(ecs, x, y),
+            Some(2000) => health_potion(ecs, x, y),
+            Some(2100) => magic_missile_scroll(ecs, x, y),
+            Some(2101) => dragon_breath_potion(ecs, x, y),
+            Some(2102) => acid_rain_potion(ecs, x, y),
+            Some(2103) => confusion_scroll(ecs, x, y),
+            _ => {},
+        }
     }
 }
 
