@@ -36,24 +36,24 @@ pub fn player(ecs: &mut World, x: i32, y: i32) -> Entity {
         .build()
 }
 
-fn map_table() -> RandomTable {
+fn map_table(depth: i32) -> RandomTable {
     RandomTable::new()
         .add(10, 10)
-        .add(11, 9)
-        .add(12, 8)
-        .add(13, 7)
-        .add(2000, 6)
+        .add(11, 5)
+        .add(12, 5)
+        .add(13, 1 + depth)
+        .add(2000, 8)
         .add(2100, 5)
-        .add(2101, 4)
-        .add(2102, 3)
-        .add(2103, 2)
+        .add(2101, 2 + depth)
+        .add(2102, 2 + depth)
+        .add(2103, 1 + depth)
 }
 
 const MAX_MONSTERS : i32 = 10;
 
 pub fn spawn_map(map: &mut Map, ecs: &mut World) {
     map.create_temp_walls();
-    let spawn_table = map_table();
+    let spawn_table = map_table(map.depth);
     let mut spawn_points = HashMap::new();
 
     {
