@@ -273,6 +273,8 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
     gs.ecs.register::<WantsToPickupItem>(); 
     gs.ecs.register::<WantsToDropItem>(); 
     gs.ecs.register::<WantsToUseItem>(); 
+    gs.ecs.register::<Equippable>(); 
+    gs.ecs.register::<Equipped>(); 
 
     let px = 10;
     let py = 10;
@@ -331,20 +333,31 @@ fn entities_to_remove_on_level_change(ecs: &mut World) -> Vec<Entity> {
     let player = ecs.read_storage::<Player>();
     let inventory = ecs.read_storage::<InInventory>();
     let player_entity = ecs.fetch::<Entity>();
+    let equipped = ecs.read_storage::<Equipped>();
 
     let mut to_delete : Vec<Entity> = Vec::new();
     for entity in entities.join() {
         let mut should_delete = true;
+
         let p = player.get(entity);
         if let Some(_p) = p {
             should_delete = false;
         }
+
         let bp = inventory.get(entity);
         if let Some(bp) = bp {
             if bp.owner == *player_entity {
                 should_delete = false;
             }
         }
+
+        let eq = equipped.get(entity);
+        if let Some(eq) = eq {
+            if eq.owner == *player_entity {
+                should_delete = false;
+            }
+        }
+
         if should_delete { 
             to_delete.push(entity);
         }

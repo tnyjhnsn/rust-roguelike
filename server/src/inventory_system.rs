@@ -13,6 +13,8 @@ use super::{
     InflictsDamage,
     AreaOfEffect,
     Confusion,
+    Equippable,
+    Equipped,
     SufferDamage,
     HealthStats,
     RunState,
@@ -103,15 +105,20 @@ impl<'a> System<'a> for UseItemSystem {
                         WriteStorage<'a, HealthStats>,
                         ReadStorage<'a, AreaOfEffect>,
                         WriteStorage<'a, Confusion>,
+                        ReadStorage<'a, Equippable>,
+                        WriteStorage<'a, Equipped>,
+                        WriteStorage<'a, InInventory>,
                         WriteExpect<'a, RunState>,
                       );
 
     fn run(&mut self, data: Self::SystemData) {
         let (player, mut gamelog, map, entities, mut wants_use, codes, consumeables,
              healing, inflict_damage, mut suffer_damage, mut health_stats, aoe,
-             mut confused, mut state) = data;
+             mut confused, equippable, mut equipped, mut inventory, mut state) = data;
 
         for (entity, use_item) in (&entities, &wants_use).join() {
+
+            let item_code = codes.get(use_item.item).unwrap().code;
 
             let mut targets = Vec::new();
             match use_item.target {
@@ -140,6 +147,38 @@ impl<'a> System<'a> for UseItemSystem {
                 None => targets.push(*player),
             }
 
+            let item_equippable = equippable.get(use_item.item);
+            match item_equippable {
+                None => {}
+                Some(can_equip) => {
+                    let target_slot = can_equip.slot;
+                    let target = targets[0];
+
+                    let mut to_unequip = Vec::new();
+                    for (item, already_equipped) in (&entities, &equipped).join() {
+                        if already_equipped.owner == target && already_equipped.slot == target_slot {
+                            to_unequip.push(item);
+                            if target == *player {
+                                gamelog.add_log(vec![LogType::Unequip as i32, 0, item_code]);
+                                state.add_state(INVENTORY_CHANGE);
+                            }
+                        }
+                    }
+                    for item in to_unequip.iter() {
+                        equipped.remove(*item);
+                        inventory.insert(*item, InInventory { owner: target })
+                            .expect("Unable to insert inventory entry");
+                    }
+                    equipped.insert(use_item.item, Equipped { owner: target, slot: target_slot })
+                        .expect("Unable to insert equipped component");
+                    inventory.remove(use_item.item);
+                    if target == *player {
+                        gamelog.add_log(vec![LogType::Equip as i32, 0, item_code]);
+                        state.add_state(INVENTORY_CHANGE);
+                    }
+                }
+            }
+
             let item_heals = healing.get(use_item.item);
             match item_heals {
                 Some(item) => {
@@ -148,7 +187,6 @@ impl<'a> System<'a> for UseItemSystem {
                         if let Some(stats) = stats {
                             stats.hp = i32::min(stats.max_hp, stats.hp + item.heal);
                             if entity == *player {
-                                let item_code = codes.get(use_item.item).unwrap().code;
                                 gamelog.add_log(vec![LogType::Drink as i32, 0, item_code, item.heal]);
                             }
                         }
@@ -164,7 +202,6 @@ impl<'a> System<'a> for UseItemSystem {
                         SufferDamage::new_damage(&mut suffer_damage, *mob, item.damage);
                         if entity == *player {
                             let mob_code = codes.get(*mob).unwrap().code;
-                            let item_code = codes.get(use_item.item).unwrap().code;
                             gamelog.add_log(vec![LogType::UseItem as i32, 0, item_code, mob_code, item.damage]);
                         }
                     }
@@ -181,7 +218,6 @@ impl<'a> System<'a> for UseItemSystem {
                             add_confusion.push((*mob, confusion.turns));
                             if entity == *player {
                                 let mob_code = codes.get(*mob).unwrap().code;
-                                let item_code = codes.get(use_item.item).unwrap().code;
                                 gamelog.add_log(vec![LogType::Confusion as i32, 0, item_code, mob_code]);
                             }
                         }

@@ -134,7 +134,7 @@ impl Component for Inventory {
                             match self.list_items {
                                 Some(_) => {
                                     let (item, idx) = self.props.inventory.items[self.selected_item as usize];
-                                    if item < 2100 {
+                                    if item < 2100 || item >= 3000 {
                                         self.props.item_action_signal.emit((e, idx, -1));
                                     } else {
                                         self.targeting = true;

@@ -17,6 +17,8 @@ use super::{
     BlocksTile,
     Map,
     RandomTable,
+    Equippable,
+    ArmourSlot,
 };
 use rand::Rng;
 use std::collections::HashMap;
@@ -47,6 +49,8 @@ fn map_table(depth: i32) -> RandomTable {
         .add(2101, 2 + depth)
         .add(2102, 2 + depth)
         .add(2103, 1 + depth)
+        .add(3000, 300)
+        .add(3100, 300)
 }
 
 const MAX_MONSTERS : i32 = 10;
@@ -86,6 +90,8 @@ pub fn spawn_map(map: &mut Map, ecs: &mut World) {
             Some(2101) => dragon_breath_potion(ecs, x, y),
             Some(2102) => acid_rain_potion(ecs, x, y),
             Some(2103) => confusion_scroll(ecs, x, y),
+            Some(3000) => dagger(ecs, x, y),
+            Some(3100) => shield(ecs, x, y),
             _ => {},
         }
     }
@@ -192,6 +198,26 @@ pub fn confusion_scroll(ecs: &mut World, x: i32, y: i32) {
         .with(Consumeable{})
         .with(Ranged{ range: 6 })
         .with(Confusion{ turns: 3 })
+        .with(HealthStats{ max_hp: 1, hp: 1 })
+        .build();
+}
+
+pub fn dagger(ecs: &mut World, x: i32, y: i32) {
+    ecs.create_entity()
+        .with(Code { code: 3000 })
+        .with(Position{ x, y })
+        .with(Item{})
+        .with(Equippable{ slot: ArmourSlot::Melee })
+        .with(HealthStats{ max_hp: 1, hp: 1 })
+        .build();
+}
+
+pub fn shield(ecs: &mut World, x: i32, y: i32) {
+    ecs.create_entity()
+        .with(Code { code: 3100 })
+        .with(Position{ x, y })
+        .with(Item{})
+        .with(Equippable{ slot: ArmourSlot::Shield })
         .with(HealthStats{ max_hp: 1, hp: 1 })
         .build();
 }

@@ -78,6 +78,8 @@ pub enum LogType {
     UseItem = 6,
     Destroyed = 7,
     Confusion = 8,
+    Unequip = 9,
+    Equip = 10,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

@@ -86,6 +86,35 @@ pub struct Confusion {
     pub turns: i32,
 }
 
+#[derive(PartialEq, Debug, Copy, Clone)]
+#[repr(u8)]
+pub enum ArmourSlot {
+    Melee = 1,
+    Shield = 2,
+    Helmet = 3,
+    Body = 4,
+    Boots = 5,
+    Gloves = 6,
+    Pendant = 7,
+    Ring1 = 8,
+    Ring2 = 9,
+    Ring3 = 10,
+    Ring4 = 11,
+    Ring5 = 12,
+    Ring6 = 13,
+}
+
+#[derive(Component, Debug, Clone)]
+pub struct Equippable {
+    pub slot: ArmourSlot,
+}
+
+#[derive(Component, Debug, Clone)]
+pub struct Equipped {
+    pub owner: Entity,
+    pub slot: ArmourSlot,
+}
+
 // Component for each intent
 
 #[derive(Component, Debug, Clone)]

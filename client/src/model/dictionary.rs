@@ -19,6 +19,8 @@ impl Dictionary {
         dict.insert(2101, (String::from("Dragon Breath"), String::from("dragon-breath")));
         dict.insert(2102, (String::from("Acid Rain"), String::from("acid-rain")));
         dict.insert(2103, (String::from("Scroll of Confusion"), String::from("scroll-unlock")));
+        dict.insert(3000, (String::from("Dagger"), String::from("dagger")));
+        dict.insert(3100, (String::from("Shield"), String::from("shield")));
 
         Self { dict }
     }
