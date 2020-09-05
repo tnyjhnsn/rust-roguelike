@@ -20,7 +20,7 @@ impl MGame {
         Self {
             title: String::from("Rogue"),
             stats: String::from("Stats"),
-            armour: String::from("Armour & Weapons"),
+            armour: String::from("Using Armour & Weapons"),
             inventory: MInventory::new(),
             minimap: String::from("Mini Map"),
             log: MLog::new(),

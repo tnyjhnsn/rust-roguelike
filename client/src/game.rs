@@ -48,6 +48,7 @@ impl Component for Game {
                     <Armour
                         armour=&self.props.game.armour
                         dict=&self.props.game.dict
+                        change_panel_signal=&self.props.change_panel_signal
                     />
                     <Inventory
                         inventory=&self.props.game.inventory

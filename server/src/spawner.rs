@@ -19,6 +19,8 @@ use super::{
     RandomTable,
     Equippable,
     ArmourSlot,
+    MeleePowerBonus,
+    DefenseBonus,
 };
 use rand::Rng;
 use std::collections::HashMap;
@@ -49,8 +51,8 @@ fn map_table(depth: i32) -> RandomTable {
         .add(2101, 2 + depth)
         .add(2102, 2 + depth)
         .add(2103, 1 + depth)
-        .add(3000, 300)
-        .add(3100, 300)
+        .add(3000, 3)
+        .add(3100, 3)
 }
 
 const MAX_MONSTERS : i32 = 10;
@@ -209,6 +211,7 @@ pub fn dagger(ecs: &mut World, x: i32, y: i32) {
         .with(Item{})
         .with(Equippable{ slot: ArmourSlot::Melee })
         .with(HealthStats{ max_hp: 1, hp: 1 })
+        .with(MeleePowerBonus{ power: 2 })
         .build();
 }
 
@@ -219,6 +222,7 @@ pub fn shield(ecs: &mut World, x: i32, y: i32) {
         .with(Item{})
         .with(Equippable{ slot: ArmourSlot::Shield })
         .with(HealthStats{ max_hp: 1, hp: 1 })
+        .with(DefenseBonus{ defense: 1 })
         .build();
 }
 

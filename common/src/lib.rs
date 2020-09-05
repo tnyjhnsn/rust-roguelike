@@ -18,6 +18,7 @@ pub const INVENTORY_CHANGE: i32 = 4;
 // sections
 pub const KEY_ESC: u32 = 27;
 pub const KEY_I: u32 = 73;
+pub const KEY_A: u32 = 65;
 // movement
 pub const KEY_LEFT: u32 = 37;
 pub const KEY_UP: u32 = 38;

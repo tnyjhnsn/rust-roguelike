@@ -50,7 +50,7 @@ impl Component for Map {
         match msg {
             Msg::Pressed(e) => {
                 match e.key_code() {
-                    KEY_I => self.props.change_panel_signal.emit(e),
+                    KEY_I|KEY_A => self.props.change_panel_signal.emit(e),
                     _ => self.props.map_action_signal.emit(e),
                 }
             }

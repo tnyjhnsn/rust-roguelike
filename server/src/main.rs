@@ -275,6 +275,8 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
     gs.ecs.register::<WantsToUseItem>(); 
     gs.ecs.register::<Equippable>(); 
     gs.ecs.register::<Equipped>(); 
+    gs.ecs.register::<MeleePowerBonus>(); 
+    gs.ecs.register::<DefenseBonus>(); 
 
     let px = 10;
     let py = 10;

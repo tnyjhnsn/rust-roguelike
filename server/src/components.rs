@@ -115,6 +115,16 @@ pub struct Equipped {
     pub slot: ArmourSlot,
 }
 
+#[derive(Component, Clone)]
+pub struct MeleePowerBonus {
+    pub power: i32,
+}
+
+#[derive(Component, Clone)]
+pub struct DefenseBonus {
+    pub defense: i32,
+}
+
 // Component for each intent
 
 #[derive(Component, Debug, Clone)]

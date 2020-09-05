@@ -186,6 +186,7 @@ impl Component for Model {
                 match e.key_code() {
                     KEY_ESC => { set_focus("map"); false },
                     KEY_I => { set_focus("inventory"); false },
+                    KEY_A => { set_focus("armour"); false },
                     _ => false,
                 }
             }

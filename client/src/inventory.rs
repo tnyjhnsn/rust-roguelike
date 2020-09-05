@@ -115,8 +115,7 @@ impl Component for Inventory {
             match msg {
                 Msg::Pressed(e) => {
                     match e.key_code() {
-                        KEY_ESC => {
-                            //self.set_selected_item(self.selected_item, "");
+                        KEY_ESC|KEY_A => {
                             self.props.change_panel_signal.emit(e);
                         },
                         KEY_DOWN =>  self.cycle_list(1),
