@@ -13,6 +13,7 @@ pub const WAITING: i32 = 0;
 pub const FOV_CHANGE: i32 = 1;
 pub const CONTENTS_CHANGE: i32 = 2;
 pub const INVENTORY_CHANGE: i32 = 4;
+pub const ARMOUR_CHANGE: i32 = 8;
 
 // key codes
 // sections
@@ -31,6 +32,7 @@ pub const KEY_N: u32 = 78;
 pub const KEY_G: u32 = 71;
 // actions
 pub const KEY_D: u32 = 68;
+pub const KEY_R: u32 = 82;
 pub const KEY_ENTER: u32 = 13;
 // stairs
 pub const KEY_GT: u32 = 190;
@@ -81,6 +83,7 @@ pub enum LogType {
     Confusion = 8,
     Unequip = 9,
     Equip = 10,
+    Remove = 11,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

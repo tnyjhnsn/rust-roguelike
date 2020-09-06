@@ -70,6 +70,7 @@ impl GameSocket {
         let positions = self.ecs.read_storage::<Position>();
         let codes = self.ecs.read_storage::<Code>();
         let inventory = self.ecs.read_storage::<InInventory>();
+        let equipped = self.ecs.read_storage::<Equipped>();
         let map = self.ecs.fetch::<Map>();
         let ppos = self.ecs.fetch::<PlayerPosition>();
         let mut state = self.ecs.fetch_mut::<RunState>();
@@ -138,6 +139,18 @@ impl GameSocket {
             state.remove_state(INVENTORY_CHANGE);
         }
 
+        if state.check_state(ARMOUR_CHANGE) {
+            let mut body = Vec::new();
+            for (_inv, code, entity) in (&equipped, &codes, &entities)
+                .join()
+                .filter(|item| item.0.owner == *player_entity) {
+                    body.push((code.code, entity.id()));
+                }
+            let p = serde_json::to_value(body).unwrap();
+            hm.entry(String::from("ARMOUR")).or_insert(p);
+            state.remove_state(ARMOUR_CHANGE);
+        }
+
         if hm.len() > 0 {
             let gm = GameMsg {
                 data: json!(hm),
@@ -169,6 +182,8 @@ impl GameSocket {
         use_item.run_now(&self.ecs);
         let mut drop_item = DropItemSystem{};
         drop_item.run_now(&self.ecs);
+        let mut remove_item = RemoveItemSystem{};
+        remove_item.run_now(&self.ecs);
         self.ecs.maintain();
     }
     
@@ -189,7 +204,7 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for GameSocket {
         msg: Result<ws::Message, ws::ProtocolError>,
         ctx: &mut Self::Context,
     ) {
-        //println!("MSG {:?}", msg);
+        println!("MSG {:?}", msg);
         match msg {
             Ok(ws::Message::Ping(m)) => ctx.pong(&m),
             Ok(ws::Message::Text(txt)) => {
@@ -220,6 +235,9 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for GameSocket {
                         match chunks[0] {
                             "/drop" => {
                                 drop_item(idx, &mut self.ecs);
+                            }
+                            "/remove" => {
+                                remove_item(idx, &mut self.ecs);
                             }
                             "/use" => {
                                 let t = chunks[2].parse::<i32>().unwrap();
@@ -273,6 +291,7 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
     gs.ecs.register::<WantsToPickupItem>(); 
     gs.ecs.register::<WantsToDropItem>(); 
     gs.ecs.register::<WantsToUseItem>(); 
+    gs.ecs.register::<WantsToRemoveItem>(); 
     gs.ecs.register::<Equippable>(); 
     gs.ecs.register::<Equipped>(); 
     gs.ecs.register::<MeleePowerBonus>(); 

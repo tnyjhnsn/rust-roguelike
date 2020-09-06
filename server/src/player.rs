@@ -9,6 +9,8 @@ use super::{
     WantsToDropItem,
     WantsToUseItem,
     InInventory,
+    Equipped,
+    WantsToRemoveItem,
     RunState,
 };
 use std::cmp::{min, max};
@@ -117,6 +119,18 @@ pub fn drop_item(idx: u64, ecs: &mut World) {
         let mut intent = ecs.write_storage::<WantsToDropItem>();
         intent.insert(*player,
             WantsToDropItem{ item: entity }).expect("Unable to insert wants to drop");
+    }
+}
+
+pub fn remove_item(idx: u64, ecs: &mut World) {
+    let player = ecs.fetch::<Entity>();
+    let equipped = ecs.read_storage::<Equipped>();
+    let entities = ecs.entities();
+
+    for (entity, _i) in (&entities, &equipped).join().filter(|item| item.0.id() as u64 == idx) {
+        let mut intent = ecs.write_storage::<WantsToRemoveItem>();
+        intent.insert(*player,
+            WantsToRemoveItem{ item: entity }).expect("Unable to insert wants to remove");
     }
 }
 

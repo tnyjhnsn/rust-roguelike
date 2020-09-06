@@ -169,6 +169,9 @@ impl Component for Model {
                         "INVENTORY" => {
                             self.game.inventory.set_items(d);
                         }
+                        "ARMOUR" => {
+                            self.game.armour.set_items(d);
+                        }
                         _ => {
                             //ConsoleService::info(&format!("{:?}", gm.d));
                             return false;
@@ -210,6 +213,7 @@ impl Component for Model {
                 let event = match e.key_code() {
                     KEY_D => "/drop",
                     KEY_U => "/use",
+                    KEY_R => "/remove",
                     _ => "",
                 };
                 let action = format!("{} {} {}", event, idx.to_string(), target.to_string());

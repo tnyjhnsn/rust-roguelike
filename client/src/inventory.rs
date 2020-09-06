@@ -17,7 +17,6 @@ pub struct Inventory {
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
     pub inventory: MInventory,
-    pub fov: Vec<usize>,
     pub dict: Dictionary,
     pub change_panel_signal: Callback<KeyboardEvent>,
     pub item_action_signal: Callback<(KeyboardEvent, u64, i32)>,
@@ -46,7 +45,7 @@ impl Inventory {
 
     fn get_list_items(&self) -> HtmlCollection {
         document()
-            .get_elements_by_class_name("selectable-list")
+            .get_elements_by_class_name("inventory-list")
             .get_with_index(0)
             .unwrap()
             .dyn_into::<HtmlElement>()
@@ -117,7 +116,7 @@ impl Component for Inventory {
                     match e.key_code() {
                         KEY_ESC|KEY_A => {
                             self.props.change_panel_signal.emit(e);
-                        },
+                        }
                         KEY_DOWN =>  self.cycle_list(1),
                         KEY_UP => self.cycle_list(-1),
                         KEY_D => {
@@ -126,7 +125,7 @@ impl Component for Inventory {
                                     let idx = self.props.inventory.items[self.selected_item as usize].1;
                                     self.props.item_action_signal.emit((e, idx, -1));
                                 }
-                                None => (),
+                                None => ()
                             }
                         }
                         KEY_U => {
@@ -140,10 +139,10 @@ impl Component for Inventory {
                                         self.props.target_indicator_signal.emit((None, Some(0)));
                                     }
                                 }
-                                None => (),
+                                None => ()
                             }
                         }
-                        _ => (),
+                        _ => ()
                     }
                 }
                 Msg::GotFocus(_e) => {
@@ -182,7 +181,7 @@ impl Component for Inventory {
                 onfocus= self.link.callback(Msg::GotFocus)
             >
                 <h3>{ "Inventory" }</h3>
-                <ul class="selectable-list">
+                <ul class="inventory-list">
                 { for self.props.inventory.items
                     .iter()
                     .map(render_items) }

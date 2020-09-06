@@ -64,6 +64,12 @@ impl Log {
         format!("The {} equips the {}", entity_name, item_name)
     }
 
+    fn get_removes_msg(&self, entity: i32, item: i32) -> String {
+        let entity_name = self.props.dict.get_name(entity);
+        let item_name = self.props.dict.get_name(item);
+        format!("The {} removes the {}", entity_name, item_name)
+    }
+
     fn get_drink_msg(&self, entity: i32, item: i32, amount: i32) -> String {
         let entity_name = self.props.dict.get_name(entity);
         let item_name = self.props.dict.get_name(item);
@@ -130,6 +136,7 @@ impl Component for Log {
                             8 => html! { self.get_confused_msg(log[1], log[2], log[3]) },
                             9 => html! { self.get_unequips_msg(log[1], log[2]) },
                             10 => html! { self.get_equips_msg(log[1], log[2]) },
+                            11 => html! { self.get_removes_msg(log[1], log[2]) },
                             _ => html! { "Unknown log message" },
                         }
                     }

@@ -51,8 +51,8 @@ fn map_table(depth: i32) -> RandomTable {
         .add(2101, 2 + depth)
         .add(2102, 2 + depth)
         .add(2103, 1 + depth)
-        .add(3000, 3)
-        .add(3100, 3)
+        .add(3000, 5)
+        .add(3100, 5)
 }
 
 const MAX_MONSTERS : i32 = 10;

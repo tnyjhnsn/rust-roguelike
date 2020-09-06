@@ -3,6 +3,7 @@ use super::{
     WantsToPickupItem,
     WantsToDropItem,
     WantsToUseItem,
+    WantsToRemoveItem,
     Code,
     Map,
     InInventory,
@@ -160,6 +161,7 @@ impl<'a> System<'a> for UseItemSystem {
                             to_unequip.push(item);
                             if target == *player {
                                 gamelog.add_log(vec![LogType::Unequip as i32, 0, item_code]);
+                                state.add_state(ARMOUR_CHANGE);
                                 state.add_state(INVENTORY_CHANGE);
                             }
                         }
@@ -174,6 +176,7 @@ impl<'a> System<'a> for UseItemSystem {
                     inventory.remove(use_item.item);
                     if target == *player {
                         gamelog.add_log(vec![LogType::Equip as i32, 0, item_code]);
+                        state.add_state(ARMOUR_CHANGE);
                         state.add_state(INVENTORY_CHANGE);
                     }
                 }
@@ -239,5 +242,38 @@ impl<'a> System<'a> for UseItemSystem {
             }
         }
         wants_use.clear();
+    }
+}
+
+pub struct RemoveItemSystem {}
+
+impl<'a> System<'a> for RemoveItemSystem {
+    type SystemData = ( ReadExpect<'a, Entity>,
+                        Entities<'a>,
+                        WriteExpect<'a, GameLog>,
+                        ReadStorage<'a, Code>,
+                        WriteStorage<'a, WantsToRemoveItem>,
+                        WriteStorage<'a, Equipped>,
+                        WriteStorage<'a, InInventory>,
+                        WriteExpect<'a, RunState>,
+                      );
+
+    fn run(&mut self, data: Self::SystemData) {
+        let (player, entities, mut gamelog, codes, mut wants_remove, mut equipped,
+             mut inventory, mut state) = data;
+
+        for (entity, to_remove) in (&entities, &wants_remove).join() {
+            equipped.remove(to_remove.item);
+            inventory.insert(to_remove.item, InInventory { owner: entity }).expect("Unable to insert inventory");
+            
+            if entity == *player {
+                let item_code = codes.get(to_remove.item).unwrap().code;
+                gamelog.add_log(vec![LogType::Remove as i32, 0, item_code]);
+                state.add_state(ARMOUR_CHANGE);
+                state.add_state(INVENTORY_CHANGE);
+            }
+        }
+
+        wants_remove.clear();
     }
 }
