@@ -126,10 +126,10 @@ impl<'a> System<'a> for UseItemSystem {
                 Some(_t) => {
                     let area_effect = aoe.get(use_item.item);
                     match area_effect {
-                        Some(_a) => {
+                        Some(area) => {
                             let idx = use_item.target.unwrap();
                             let mut aoe = vec![idx];
-                            map.get_area_of_effect(&mut aoe, 3);
+                            map.get_area_of_effect(&mut aoe, area.radius);
                             let aoe_tiles: HashSet<i32> = HashSet::from_iter(aoe);
                             for tile in aoe_tiles.iter() {
                                 for mob in map.contents[*tile as usize].iter() {
