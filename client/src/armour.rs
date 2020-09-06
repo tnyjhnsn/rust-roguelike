@@ -5,6 +5,7 @@ use roguelike_common::*;
 use web_sys::{HtmlElement, HtmlCollection};
 use yew::utils::document;
 use wasm_bindgen::JsCast;
+use std::cmp::{max};
 
 pub struct Armour {
     link: ComponentLink<Self>,
@@ -120,23 +121,33 @@ impl Component for Armour {
                         KEY_DOWN =>  self.cycle_list(1),
                         KEY_UP => self.cycle_list(-1),
                         KEY_R => {
-                            match self.list_items {
-                                Some(_) => {
+                            match &self.list_items {
+                                Some(items) => {
                                     let idx = self.props.armour.items[self.selected_item as usize].1;
                                     self.props.item_action_signal.emit((e, idx, -1));
+                                    // TODO Ugly fix - needs better
+                                    self.selected_item = max(0, self.selected_item - 1);
+                                    if items.length() - 1 == 0 {
+                                        self.list_items = None;
+                                    }
                                 }
                                 None => (),
                             }
                         }
                         KEY_U => {
-                            match self.list_items {
-                                Some(_) => {
+                            match &self.list_items {
+                                Some(items) => {
                                     let (item, idx) = self.props.armour.items[self.selected_item as usize];
                                     if item < 2100 || item >= 3000 {
                                         self.props.item_action_signal.emit((e, idx, -1));
                                     } else {
                                         self.targeting = true;
                                         self.props.target_indicator_signal.emit((None, Some(0)));
+                                    }
+                                    // TODO Ugly fix - needs better
+                                    self.selected_item = max(0, self.selected_item - 1);
+                                    if items.length() - 1 == 0 {
+                                        self.list_items = None;
                                     }
                                 }
                                 None => (),
