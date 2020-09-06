@@ -52,6 +52,8 @@ fn map_table(depth: i32) -> RandomTable {
         .add(2102, 2 + depth)
         .add(2103, 1 + depth)
         .add(3000, 5)
+        .add(3001, 5)
+        .add(3002, 5)
         .add(3100, 5)
 }
 
@@ -93,22 +95,24 @@ pub fn spawn_map(map: &mut Map, ecs: &mut World) {
             Some(2102) => acid_rain_potion(ecs, x, y),
             Some(2103) => confusion_scroll(ecs, x, y),
             Some(3000) => dagger(ecs, x, y),
+            Some(3001) => short_sword(ecs, x, y),
+            Some(3002) => long_sword(ecs, x, y),
             Some(3100) => shield(ecs, x, y),
             _ => {},
         }
     }
 }
 
-pub fn random_monster(ecs: &mut World, x: i32, y: i32) {
-    let mut rng = rand::thread_rng();
-    let roll = rng.gen_range(1, 5);
-    match roll {
-        1 => { white_centipede(ecs, x, y) }
-        2 => { red_ant(ecs, x, y) }
-        3 => { ghost(ecs, x, y) }
-        _ => { grey_mould(ecs, x, y) }
-    }
-}
+//pub fn random_monster(ecs: &mut World, x: i32, y: i32) {
+    //let mut rng = rand::thread_rng();
+    //let roll = rng.gen_range(1, 5);
+    //match roll {
+        //1 => { white_centipede(ecs, x, y) }
+        //2 => { red_ant(ecs, x, y) }
+        //3 => { ghost(ecs, x, y) }
+        //_ => { grey_mould(ecs, x, y) }
+    //}
+//}
 
 fn white_centipede(ecs: &mut World, x: i32, y: i32) { monster(ecs, 10, x, y); }
 fn red_ant(ecs: &mut World, x: i32, y: i32) { monster(ecs, 11, x, y); }
@@ -131,17 +135,17 @@ pub fn monster(ecs: &mut World, code: i32, x: i32, y: i32) {
         .build();
 }
 
-pub fn random_item(ecs: &mut World, x: i32, y: i32) {
-    let mut rng = rand::thread_rng();
-    let roll = rng.gen_range(1, 6);
-    match roll {
-        1 => { health_potion(ecs, x, y) }
-        2 => { magic_missile_scroll(ecs, x, y) }
-        3 => { acid_rain_potion(ecs, x, y) }
-        4 => { dragon_breath_potion(ecs, x, y) }
-        _ => { confusion_scroll(ecs, x, y) }
-    }
-}
+//pub fn random_item(ecs: &mut World, x: i32, y: i32) {
+    //let mut rng = rand::thread_rng();
+    //let roll = rng.gen_range(1, 6);
+    //match roll {
+        //1 => { health_potion(ecs, x, y) }
+        //2 => { magic_missile_scroll(ecs, x, y) }
+        //3 => { acid_rain_potion(ecs, x, y) }
+        //4 => { dragon_breath_potion(ecs, x, y) }
+        //_ => { confusion_scroll(ecs, x, y) }
+    //}
+//}
 
 pub fn health_potion(ecs: &mut World, x: i32, y: i32) {
     ecs.create_entity()
@@ -212,6 +216,28 @@ pub fn dagger(ecs: &mut World, x: i32, y: i32) {
         .with(Equippable{ slot: ArmourSlot::Melee })
         .with(HealthStats{ max_hp: 1, hp: 1 })
         .with(MeleePowerBonus{ power: 2 })
+        .build();
+}
+
+pub fn short_sword(ecs: &mut World, x: i32, y: i32) {
+    ecs.create_entity()
+        .with(Code { code: 3001 })
+        .with(Position{ x, y })
+        .with(Item{})
+        .with(Equippable{ slot: ArmourSlot::Melee })
+        .with(HealthStats{ max_hp: 1, hp: 1 })
+        .with(MeleePowerBonus{ power: 4 })
+        .build();
+}
+
+pub fn long_sword(ecs: &mut World, x: i32, y: i32) {
+    ecs.create_entity()
+        .with(Code { code: 3002 })
+        .with(Position{ x, y })
+        .with(Item{})
+        .with(Equippable{ slot: ArmourSlot::Melee })
+        .with(HealthStats{ max_hp: 1, hp: 1 })
+        .with(MeleePowerBonus{ power: 6 })
         .build();
 }
 

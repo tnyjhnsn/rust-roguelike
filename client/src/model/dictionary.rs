@@ -20,6 +20,8 @@ impl Dictionary {
         dict.insert(2102, (String::from("Acid Rain"), String::from("acid-rain")));
         dict.insert(2103, (String::from("Scroll of Confusion"), String::from("scroll-unlock")));
         dict.insert(3000, (String::from("Dagger"), String::from("dagger")));
+        dict.insert(3001, (String::from("Short Sword"), String::from("short-sword")));
+        dict.insert(3002, (String::from("Long Sword"), String::from("long-sword")));
         dict.insert(3100, (String::from("Shield"), String::from("shield")));
 
         Self { dict }
