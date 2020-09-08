@@ -9,9 +9,11 @@ use std::iter::FromIterator;
 pub struct VisibilitySystem {}
 
 impl<'a> System<'a> for VisibilitySystem {
-    type SystemData = ( ReadExpect<'a, Map>,
-                        WriteStorage<'a, FieldOfView>, 
-                        ReadStorage<'a, Position>);
+    type SystemData = (
+        ReadExpect<'a, Map>,
+        WriteStorage<'a, FieldOfView>, 
+        ReadStorage<'a, Position>,
+    );
 
     fn run(&mut self, (map, mut fov, pos): Self::SystemData) {
         for (fov, pos) in (&mut fov, &pos).join() {

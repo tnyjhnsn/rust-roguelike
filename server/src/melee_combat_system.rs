@@ -15,17 +15,18 @@ use roguelike_common::*;
 pub struct MeleeCombatSystem {}
 
 impl<'a> System<'a> for MeleeCombatSystem {
-    type SystemData = ( Entities<'a>,
-                        WriteStorage<'a, WantsToMelee>,
-                        ReadStorage<'a, Code>,
-                        ReadStorage<'a, CombatStats>,
-                        ReadStorage<'a, HealthStats>,
-                        WriteStorage<'a, SufferDamage>,
-                        ReadStorage<'a, MeleePowerBonus>,
-                        ReadStorage<'a, DefenseBonus>,
-                        ReadStorage<'a, Equipped>,
-                        WriteExpect<'a, GameLog>,
-                        );
+    type SystemData = (
+        Entities<'a>,
+        WriteStorage<'a, WantsToMelee>,
+        ReadStorage<'a, Code>,
+        ReadStorage<'a, CombatStats>,
+        ReadStorage<'a, HealthStats>,
+        WriteStorage<'a, SufferDamage>,
+        ReadStorage<'a, MeleePowerBonus>,
+        ReadStorage<'a, DefenseBonus>,
+        ReadStorage<'a, Equipped>,
+        WriteExpect<'a, GameLog>,
+    );
 
     fn run(&mut self, data: Self::SystemData) {
         let (entities, mut wants_melee, codes, combat_stats, health_stats,

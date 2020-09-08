@@ -11,9 +11,10 @@ use roguelike_common::*;
 pub struct DamageSystem {}
 
 impl<'a> System<'a> for DamageSystem {
-    type SystemData = ( WriteStorage<'a, HealthStats>,
-                        WriteStorage<'a, SufferDamage>,
-                        );
+    type SystemData = (
+        WriteStorage<'a, HealthStats>,
+        WriteStorage<'a, SufferDamage>,
+    );
 
     fn run(&mut self, data: Self::SystemData) {
         let (mut stats, mut damage) = data;

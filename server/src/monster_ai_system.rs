@@ -5,17 +5,18 @@ use super::*;
 pub struct MonsterAISystem {}
 
 impl<'a> System<'a> for MonsterAISystem {
-    type SystemData = ( WriteExpect<'a, PlayerPosition>,
-                        ReadStorage<'a, FieldOfView>, 
-                        WriteExpect<'a, Map>, 
-                        WriteExpect<'a, RunState>, 
-                        ReadStorage<'a, Monster>,
-                        WriteStorage<'a, Position>,
-                        ReadExpect<'a, Entity>,
-                        Entities<'a>,
-                        WriteStorage<'a, WantsToMelee>,
-                        WriteStorage<'a, Confusion>,
-                        );
+    type SystemData = (
+        WriteExpect<'a, PlayerPosition>,
+        ReadStorage<'a, FieldOfView>, 
+        WriteExpect<'a, Map>, 
+        WriteExpect<'a, RunState>, 
+        ReadStorage<'a, Monster>,
+        WriteStorage<'a, Position>,
+        ReadExpect<'a, Entity>,
+        Entities<'a>,
+        WriteStorage<'a, WantsToMelee>,
+        WriteStorage<'a, Confusion>,
+    );
 
     fn run(&mut self, data: Self::SystemData) {
         let (ppos, fov, mut map, mut state, monster, mut mpos, player_entity,

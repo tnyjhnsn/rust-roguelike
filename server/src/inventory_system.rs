@@ -27,14 +27,15 @@ use std::iter::FromIterator;
 pub struct PickupItemSystem {}
 
 impl<'a> System<'a> for PickupItemSystem {
-    type SystemData = (ReadExpect<'a, Entity>,
-                       WriteExpect<'a, GameLog>,
-                       WriteStorage<'a, WantsToPickupItem>,
-                       WriteStorage<'a, Position>,
-                       ReadStorage<'a, Code>,
-                       WriteStorage<'a, InInventory>,
-                       WriteExpect<'a, RunState>,
-                       );
+    type SystemData = (
+        ReadExpect<'a, Entity>,
+        WriteExpect<'a, GameLog>,
+        WriteStorage<'a, WantsToPickupItem>,
+        WriteStorage<'a, Position>,
+        ReadStorage<'a, Code>,
+        WriteStorage<'a, InInventory>,
+        WriteExpect<'a, RunState>,
+    );
 
     fn run(&mut self, data: Self::SystemData) {
         let (player, mut gamelog, mut wants_pickup, mut positions, codes, mut inventory, mut state) = data;
@@ -57,15 +58,16 @@ impl<'a> System<'a> for PickupItemSystem {
 pub struct DropItemSystem {}
 
 impl<'a> System<'a> for DropItemSystem {
-    type SystemData = ( ReadExpect<'a, Entity>,
-                        WriteExpect<'a, GameLog>,
-                        Entities<'a>,
-                        WriteStorage<'a, WantsToDropItem>,
-                        ReadStorage<'a, Code>,
-                        WriteStorage<'a, Position>,
-                        WriteStorage<'a, InInventory>,
-                        WriteExpect<'a, RunState>,
-                      );
+    type SystemData = (
+        ReadExpect<'a, Entity>,
+        WriteExpect<'a, GameLog>,
+        Entities<'a>,
+        WriteStorage<'a, WantsToDropItem>,
+        ReadStorage<'a, Code>,
+        WriteStorage<'a, Position>,
+        WriteStorage<'a, InInventory>,
+        WriteExpect<'a, RunState>,
+    );
 
     fn run(&mut self, data: Self::SystemData) {
         let (player, mut gamelog, entities, mut wants_drop, codes, mut positions, mut inventory, mut state) = data;
@@ -93,24 +95,25 @@ impl<'a> System<'a> for DropItemSystem {
 pub struct UseItemSystem {}
 
 impl<'a> System<'a> for UseItemSystem {
-    type SystemData = ( ReadExpect<'a, Entity>,
-                        WriteExpect<'a, GameLog>,
-                        ReadExpect<'a, Map>,
-                        Entities<'a>,
-                        WriteStorage<'a, WantsToUseItem>,
-                        ReadStorage<'a, Code>,
-                        ReadStorage<'a, Consumeable>,
-                        ReadStorage<'a, ProvidesHealing>,
-                        ReadStorage<'a, InflictsDamage>,
-                        WriteStorage<'a, SufferDamage>,
-                        WriteStorage<'a, HealthStats>,
-                        ReadStorage<'a, AreaOfEffect>,
-                        WriteStorage<'a, Confusion>,
-                        ReadStorage<'a, Equippable>,
-                        WriteStorage<'a, Equipped>,
-                        WriteStorage<'a, InInventory>,
-                        WriteExpect<'a, RunState>,
-                      );
+    type SystemData = (
+        ReadExpect<'a, Entity>,
+        WriteExpect<'a, GameLog>,
+        ReadExpect<'a, Map>,
+        Entities<'a>,
+        WriteStorage<'a, WantsToUseItem>,
+        ReadStorage<'a, Code>,
+        ReadStorage<'a, Consumeable>,
+        ReadStorage<'a, ProvidesHealing>,
+        ReadStorage<'a, InflictsDamage>,
+        WriteStorage<'a, SufferDamage>,
+        WriteStorage<'a, HealthStats>,
+        ReadStorage<'a, AreaOfEffect>,
+        WriteStorage<'a, Confusion>,
+        ReadStorage<'a, Equippable>,
+        WriteStorage<'a, Equipped>,
+        WriteStorage<'a, InInventory>,
+        WriteExpect<'a, RunState>,
+    );
 
     fn run(&mut self, data: Self::SystemData) {
         let (player, mut gamelog, map, entities, mut wants_use, codes, consumeables,
@@ -248,15 +251,16 @@ impl<'a> System<'a> for UseItemSystem {
 pub struct RemoveItemSystem {}
 
 impl<'a> System<'a> for RemoveItemSystem {
-    type SystemData = ( ReadExpect<'a, Entity>,
-                        Entities<'a>,
-                        WriteExpect<'a, GameLog>,
-                        ReadStorage<'a, Code>,
-                        WriteStorage<'a, WantsToRemoveItem>,
-                        WriteStorage<'a, Equipped>,
-                        WriteStorage<'a, InInventory>,
-                        WriteExpect<'a, RunState>,
-                      );
+    type SystemData = (
+        ReadExpect<'a, Entity>,
+        Entities<'a>,
+        WriteExpect<'a, GameLog>,
+        ReadStorage<'a, Code>,
+        WriteStorage<'a, WantsToRemoveItem>,
+        WriteStorage<'a, Equipped>,
+        WriteStorage<'a, InInventory>,
+        WriteExpect<'a, RunState>,
+    );
 
     fn run(&mut self, data: Self::SystemData) {
         let (player, entities, mut gamelog, codes, mut wants_remove, mut equipped,
