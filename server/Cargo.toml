@@ -18,3 +18,4 @@ serde_repr = "0.1"
 roguelike_common = { path = "../common" }
 num-integer = "0.1"
 rand = "0.7"
+line_drawing = "0.8"

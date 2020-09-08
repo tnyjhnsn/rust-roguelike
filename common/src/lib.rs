@@ -44,7 +44,7 @@ pub struct Position {
     pub y: i32,
 }
 
-#[derive(Debug, PartialEq, Copy, Clone)]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 pub struct Point {
     pub x: i32,
     pub y: i32,
