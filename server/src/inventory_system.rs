@@ -131,7 +131,7 @@ impl<'a> System<'a> for UseItemSystem {
                             let mut aoe = vec![idx];
                             map.get_area_of_effect(&mut aoe, area.radius);
                             let aoe_tiles: HashSet<i32> = HashSet::from_iter(aoe);
-                            for tile in aoe_tiles.iter() {
+                            for tile in &aoe_tiles {
                                 for mob in map.contents[*tile as usize].iter() {
                                     targets.push(*mob);
                                 }
@@ -166,7 +166,7 @@ impl<'a> System<'a> for UseItemSystem {
                             }
                         }
                     }
-                    for item in to_unequip.iter() {
+                    for item in &to_unequip {
                         equipped.remove(*item);
                         inventory.insert(*item, InInventory { owner: target })
                             .expect("Unable to insert inventory entry");
@@ -185,7 +185,7 @@ impl<'a> System<'a> for UseItemSystem {
             let item_heals = healing.get(use_item.item);
             match item_heals {
                 Some(item) => {
-                    for target in targets.iter() {
+                    for target in &targets {
                         let stats = health_stats.get_mut(*target);
                         if let Some(stats) = stats {
                             stats.hp = i32::min(stats.max_hp, stats.hp + item.heal);
@@ -201,7 +201,7 @@ impl<'a> System<'a> for UseItemSystem {
             let item_damages = inflict_damage.get(use_item.item);
             match item_damages {
                 Some(item) => {
-                    for mob in targets.iter() {
+                    for mob in &targets {
                         SufferDamage::new_damage(&mut suffer_damage, *mob, item.damage);
                         if entity == *player {
                             let mob_code = codes.get(*mob).unwrap().code;
@@ -217,7 +217,7 @@ impl<'a> System<'a> for UseItemSystem {
                 let causes_confusion = confused.get(use_item.item);
                 match causes_confusion {
                     Some(confusion) => {
-                        for mob in targets.iter() {
+                        for mob in &targets {
                             add_confusion.push((*mob, confusion.turns));
                             if entity == *player {
                                 let mob_code = codes.get(*mob).unwrap().code;
@@ -228,7 +228,7 @@ impl<'a> System<'a> for UseItemSystem {
                     None => {}
                 }
             }
-            for mob in add_confusion.iter() {
+            for mob in &add_confusion {
                 confused.insert(mob.0, Confusion { turns: mob.1 }).expect("Unable to insert confusion status");
             }
 

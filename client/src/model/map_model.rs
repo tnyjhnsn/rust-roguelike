@@ -56,7 +56,7 @@ impl MMap {
         self.ppos = serde_json::from_value(data[0].clone()).unwrap();
         let fov: Fov = serde_json::from_value(data[1].clone()).unwrap();
         self.set_viewport();
-        for (tile, indexes) in fov.iter() {
+        for (tile, indexes) in &fov {
             for idx in indexes.iter() {
                 self.tiles[*idx] = *tile;
                 self.status[*idx] |= VISIBLE;
@@ -75,7 +75,7 @@ impl MMap {
     pub fn set_contents(&mut self, data: Value) {
         let contents: Vec<(usize, Vec<i32>)> = serde_json::from_value(data).unwrap();
         self.contents = vec![Vec::new(); self.get_dim()];
-        for (idx, c) in contents.iter() {
+        for (idx, c) in &contents {
             self.contents[*idx] = c.to_vec();
         }
     }

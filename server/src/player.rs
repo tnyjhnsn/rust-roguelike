@@ -45,7 +45,7 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
             || pos.y + delta_y < 1 || pos.y + delta_y > map.height - 1 { return; }
         let dest_idx = map.xy_idx(pos.x + delta_x, pos.y + delta_y);
 
-        for potential_target in map.contents[dest_idx].iter() {
+        for potential_target in &map.contents[dest_idx] {
             let t = combat_stats.get(*potential_target);
             match t {
                 Some(_t) => {
