@@ -16,7 +16,8 @@ impl<'a> System<'a> for VisibilitySystem {
     fn run(&mut self, (map, mut fov, pos): Self::SystemData) {
         for (fov, pos) in (&mut fov, &pos).join() {
             fov.visible_tiles.clear();
-            let possible_fov = get_possible_fov(pos.x, pos.y, fov.range, map.width, map.height);
+            let mut possible_fov = get_possible_fov(pos.x, pos.y, fov.range);
+            possible_fov.retain(|p| p.x >= 0 && p.x < map.width && p.y >= 0 && p.y < map.height);
             let mut set: HashSet<Point> = HashSet::new();
             for point in &possible_fov {
                 for (x, y) in Bresenham::new((pos.x, pos.y), (point.x, point.y)) {
@@ -32,10 +33,9 @@ impl<'a> System<'a> for VisibilitySystem {
     }
 }
 
-fn get_possible_fov(x: i32, y: i32, r: i32, w: i32, h: i32) -> Vec<Point> {
+fn get_possible_fov(x: i32, y: i32, r: i32) -> Vec<Point> {
     let mut v = Vec::new();
     for i in r * -1..r + 1 {
-        if x + i < 0 || x + i >= w { continue; }
         let mut n = (((r*r - i*i) as f64).sqrt()) as i32;
         n = match i {
             -1 | 1 => n + 1,
@@ -43,7 +43,6 @@ fn get_possible_fov(x: i32, y: i32, r: i32, w: i32, h: i32) -> Vec<Point> {
         };
         n = if n == 0 { 1 } else { n };
         for j in n * -1..n + 1 {
-            if y + j < 0 || y + j >= h { continue; }
             v.push(Point { x: x + i, y: y + j })
         }
     }
