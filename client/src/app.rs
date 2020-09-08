@@ -139,7 +139,7 @@ impl Component for Model {
     		Msg::GetGame => {
     			match self.ws {
     				Some(ref mut task) => {
-    					task.send(Ok("/game".to_string()));
+    					task.send(Ok(String::from("/game")));
     					false
     				}
     				None => {
