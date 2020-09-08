@@ -3,6 +3,8 @@ use roguelike_common::*;
 use super::components::*;
 use super::map::*;
 use line_drawing::Bresenham;
+use std::collections::HashSet;
+use std::iter::FromIterator;
 
 pub struct VisibilitySystem {}
 
@@ -15,18 +17,17 @@ impl<'a> System<'a> for VisibilitySystem {
         for (fov, pos) in (&mut fov, &pos).join() {
             fov.visible_tiles.clear();
             let possible_fov = get_possible_fov(pos.x, pos.y, fov.range, map.width, map.height);
+            let mut set: HashSet<Point> = HashSet::new();
             for point in &possible_fov {
                 for (x, y) in Bresenham::new((pos.x, pos.y), (point.x, point.y)) {
-                    let p = Point::new(x, y);
-                    if !fov.visible_tiles.contains(&p) {
-                        fov.visible_tiles.push(p);
-                    }
+                    set.insert(Point::new(x, y));
                     let idx = map.xy_idx(x, y);
                     if map.tiles[idx] == TileType::Wall {
                         break;
                     }
                 }
             }
+            fov.visible_tiles = Vec::from_iter(set);
         }
     }
 }
