@@ -49,6 +49,10 @@ body {
   }
 }
 
+.status {
+  background-image: url('desert-temple.jpg');
+}
+
 .status,
 .contents,
 .tiles {
@@ -99,7 +103,7 @@ body {
 }
 
 .targeted {
-  box-shadow:inset 0px 0px 0px 3px #8b0000;
+  box-shadow: inset 0px 0px 0px 3px #8b0000;
   //background: red;
   //border-radius: 50%;
 }

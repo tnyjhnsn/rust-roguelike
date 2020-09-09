@@ -7,7 +7,7 @@ pub struct Status {
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
-    pub status: i32
+    pub status: i32,
 }
 
 impl Component for Status {

@@ -6,8 +6,8 @@ use std::collections::HashMap;
 use super::*;
 
 const DIJKSTRA_MAX: i32 = 1000;
-const WIDTH: i32 = 40;
-const HEIGHT: i32 = 40;
+const WIDTH: i32 = 50;
+const HEIGHT: i32 = 50;
 
 #[derive(Debug, Clone)]
 pub struct Map {
@@ -147,9 +147,9 @@ impl Map {
             let x = rng.gen_range(1, self.width - 1);
             let y = rng.gen_range(1, self.height - 1);
             let idx = self.xy_idx(x, y);
-            if idx != self.xy_idx(10, 10) {
-                self.tiles[idx] = TileType::Wall;
-            }
+            //if idx != self.xy_idx(10, 10) {
+                //self.tiles[idx] = TileType::Wall;
+            //}
         }
         self.tiles[100] = TileType::DownStairs;
     }

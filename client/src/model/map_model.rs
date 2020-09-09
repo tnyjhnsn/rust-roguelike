@@ -144,11 +144,11 @@ impl MMap {
         }
     }
 
-    fn xy_idx(&self, x: i32, y: i32) -> i32 {
+    pub fn xy_idx(&self, x: i32, y: i32) -> i32 {
         (y * self.width) + x
     }
 
-    fn idx_xy(&self, idx: i32) -> Point {
+    pub fn idx_xy(&self, idx: i32) -> Point {
         Point::new(idx % self.width, idx / self.width)
     }
 }

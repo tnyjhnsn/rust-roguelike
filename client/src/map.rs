@@ -8,6 +8,7 @@ use super::contents_map::*;
 use super::status_map::*;
 
 use roguelike_common::*;
+use yew::services::ConsoleService;
 
 pub struct Map {
     link: ComponentLink<Self>,
@@ -59,18 +60,33 @@ impl Component for Map {
     }
 
     fn view(&self) -> Html {
+        let mut background = String::new();
+        if self.props.map.viewport.len() > 0 {
+            let p = self.props.map.idx_xy(self.props.map.viewport[0]);
+            ConsoleService::info(&format!("p = {:?}", p));
+            background = format!("background-position: -{}px -{}px;", p.x * 32, p.y * 32);
+            ConsoleService::info(&format!("{}", background));
+        }
         html! { 
             <div
                 class="map"
                 tabindex="0"
                 onkeydown=self.link.callback(Msg::Pressed)
             >
-                <TileMap tiles=&self.props.map.tiles viewport=&self.props.map.viewport />
-                <StatusMap status=&self.props.map.status viewport=&self.props.map.viewport />
+                <TileMap
+                    tiles=&self.props.map.tiles
+                    viewport=&self.props.map.viewport
+                />
+                <StatusMap
+                    status=&self.props.map.status
+                    viewport=&self.props.map.viewport
+                    background=background
+                />
                 <ContentsMap
                     contents=&self.props.map.contents
                     dict=&self.props.dict
-                    viewport=&self.props.map.viewport />
+                    viewport=&self.props.map.viewport
+                />
             </div>
         }
     }
