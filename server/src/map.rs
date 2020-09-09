@@ -27,7 +27,8 @@ impl Map {
         let width = WIDTH;
         let height = HEIGHT;
         let dim = (width * height) as usize;
-        let tiles = vec![TileType::Floor; dim];
+        //let tiles = vec![TileType::Floor; dim];
+        let tiles = Vec::new();
         let blocked = vec![false; dim];
         let neighbours = vec![Vec::new(); dim];
         let dijkstra_values = Vec::new();
@@ -128,30 +129,36 @@ impl Map {
     }
 
     pub fn create_temp_walls(&mut self) {
-        let mut rng = rand::thread_rng();
+        //let mut rng = rand::thread_rng();
+        //for x in 0..self.width {
+            //let mut idx = self.xy_idx(x, 0);
+            //self.tiles[idx] = TileType::Wall;
+            //idx = self.xy_idx(x, self.height - 1);
+            //self.tiles[idx] = TileType::Wall;
+        //}
+        //for y in 0..self.height {
+            //let mut idx = self.xy_idx(0, y);
+            //self.tiles[idx] = TileType::Wall;
+            //idx = self.xy_idx(self.width - 1, y);
+            //self.tiles[idx] = TileType::Wall;
+        //}
+        //for _i in 0..200 {
+            //let x = rng.gen_range(1, self.width - 1);
+            //let y = rng.gen_range(1, self.height - 1);
+            //let idx = self.xy_idx(x, y);
+            //if idx != self.xy_idx(10, 10) {
+                //self.tiles[idx] = TileType::Wall;
+            //}
+        //}
 
-        for x in 0..self.width {
-            let mut idx = self.xy_idx(x, 0);
-            self.tiles[idx] = TileType::Wall;
-            idx = self.xy_idx(x, self.height - 1);
-            self.tiles[idx] = TileType::Wall;
-        }
-        for y in 0..self.height {
-            let mut idx = self.xy_idx(0, y);
-            self.tiles[idx] = TileType::Wall;
-            idx = self.xy_idx(self.width - 1, y);
-            self.tiles[idx] = TileType::Wall;
-        }
-
-        for _i in 0..200 {
-            let x = rng.gen_range(1, self.width - 1);
-            let y = rng.gen_range(1, self.height - 1);
-            let idx = self.xy_idx(x, y);
-            if idx != self.xy_idx(10, 10) {
-                self.tiles[idx] = TileType::Wall;
+        for i in &DESERT_TEMPLE {
+            match i {
+                1 => self.tiles.push(TileType::Wall),
+                0 => self.tiles.push(TileType::Floor),
+                _ => {},
             }
         }
-        self.tiles[110] = TileType::DownStairs;
+        self.tiles[109] = TileType::DownStairs;
     }
 
     pub fn draw_game(&self) -> String {

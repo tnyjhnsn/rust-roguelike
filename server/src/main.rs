@@ -33,6 +33,8 @@ mod dungeon;
 pub use dungeon::*;
 mod random_table;
 pub use random_table::*;
+mod desert_temple;
+pub use desert_temple::*;
 
 #[derive(PartialEq, Copy, Clone)]
 pub struct RunState {
