@@ -10,6 +10,7 @@ pub struct TileMap {
 pub struct Props {
     pub tiles: Vec<TileType>,
     pub viewport: Vec<i32>,
+    pub background: String,
 }
 
 impl Component for TileMap {
@@ -40,7 +41,7 @@ impl Component for TileMap {
             }
         };
         html! {
-            <div class="tiles">
+            <div class="tiles" style=&self.props.background>
                 { for self.props.viewport
                     .iter()
                     .map(|i| render_tile(&self.props.tiles[*i as usize])) }

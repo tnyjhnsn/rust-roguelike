@@ -63,9 +63,7 @@ impl Component for Map {
         let mut background = String::new();
         if self.props.map.viewport.len() > 0 {
             let p = self.props.map.idx_xy(self.props.map.viewport[0]);
-            ConsoleService::info(&format!("p = {:?}", p));
             background = format!("background-position: -{}px -{}px;", p.x * 32, p.y * 32);
-            ConsoleService::info(&format!("{}", background));
         }
         html! { 
             <div
@@ -76,11 +74,11 @@ impl Component for Map {
                 <TileMap
                     tiles=&self.props.map.tiles
                     viewport=&self.props.map.viewport
+                    background=&background
                 />
                 <StatusMap
                     status=&self.props.map.status
                     viewport=&self.props.map.viewport
-                    background=background
                 />
                 <ContentsMap
                     contents=&self.props.map.contents

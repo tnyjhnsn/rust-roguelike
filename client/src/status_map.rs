@@ -9,7 +9,6 @@ pub struct StatusMap {
 pub struct Props {
     pub status: Vec<i32>,
     pub viewport: Vec<i32>,
-    pub background: String,
 }
 
 impl Component for StatusMap {
@@ -40,7 +39,7 @@ impl Component for StatusMap {
             }
         };
         html! {
-            <div class="status" style=&self.props.background>
+            <div class="status">
                 { for self.props.viewport
                     .iter()
                     .map(|i| render_tile(&self.props.status[*i as usize])) }

@@ -33,8 +33,8 @@ impl Component for Tile {
 
     fn view(&self) -> Html {
         let tile = match self.props.tile {
-            TileType::Wall => "wall",
-            TileType::Floor => "floor",
+            TileType::Wall => "",
+            TileType::Floor => "",
             TileType::DownStairs => "stairs-down",
         };
         html! {

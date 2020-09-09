@@ -147,11 +147,11 @@ impl Map {
             let x = rng.gen_range(1, self.width - 1);
             let y = rng.gen_range(1, self.height - 1);
             let idx = self.xy_idx(x, y);
-            //if idx != self.xy_idx(10, 10) {
-                //self.tiles[idx] = TileType::Wall;
-            //}
+            if idx != self.xy_idx(10, 10) {
+                self.tiles[idx] = TileType::Wall;
+            }
         }
-        self.tiles[100] = TileType::DownStairs;
+        self.tiles[110] = TileType::DownStairs;
     }
 
     pub fn draw_game(&self) -> String {
