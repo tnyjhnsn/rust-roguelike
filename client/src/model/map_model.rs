@@ -12,6 +12,7 @@ pub struct MMap {
     pub fov: Vec<usize>,
     pub viewport: Vec<i32>,
     pub ppos: i32,
+    pub target: i32,
 }
 
 pub const VP_W: i32 = 20;
@@ -29,6 +30,7 @@ impl MMap {
             fov: Vec::new(),
             viewport: Vec::new(),
             ppos: 0,
+            target: 0,
         }
     }
 
@@ -63,13 +65,6 @@ impl MMap {
                 self.fov.push(*idx);
             }
         }
-    }
-
-    pub fn set_single_target(&mut self, target: usize) {
-        for idx in self.fov.iter() {
-            self.status[*idx] &= !TARGETED;
-        }
-        self.status[target] |= TARGETED;
     }
 
     pub fn set_contents(&mut self, data: Value) {
@@ -109,6 +104,52 @@ impl MMap {
             v.retain(|n| n >= &0 && n < &dim);
         };
         self.viewport = v;
+    }
+
+    pub fn reset_targeter(&mut self) {
+        self.target = self.ppos;
+    }
+
+    pub fn set_single_target(&mut self, target: usize) {
+        for idx in self.fov.iter() {
+            self.status[*idx] &= !TARGETED;
+        }
+        self.status[target] |= TARGETED;
+    }
+
+
+    fn move_target(&mut self, x: i32, y: i32) -> Option<i32> {
+        let pos = self.idx_xy(self.target);
+        let new_pos = self.xy_idx(pos.x + x, pos.y + y);
+        let p = new_pos as usize;
+        if self.fov.contains(&p) {
+            self.target = new_pos;
+            Some(new_pos)
+        } else {
+            None
+        }
+    }
+
+    pub fn try_move(&mut self, key_code: u32) -> Option<i32> {
+        match key_code {
+            KEY_LEFT => self.move_target(-1, 0),
+            KEY_RIGHT => self.move_target(1, 0),
+            KEY_UP => self.move_target(0, -1),
+            KEY_DOWN => self.move_target(0, 1),
+            KEY_Y => self.move_target(-1, -1),
+            KEY_U => self.move_target(1, -1),
+            KEY_N => self.move_target(1, 1),
+            KEY_B => self.move_target(-1, 1),
+            _ => None
+        }
+    }
+
+    fn xy_idx(&self, x: i32, y: i32) -> i32 {
+        (y * self.width) + x
+    }
+
+    fn idx_xy(&self, idx: i32) -> Point {
+        Point::new(idx % self.width, idx / self.width)
     }
 }
 

@@ -14,70 +14,11 @@ use wasm_bindgen::JsCast;
 use super::model::game_model::*;
 use super::game::*;
 
-pub struct Targeter {
-    pub fov: Vec<usize>,
-    pub idx: i32,
-    pub width: i32,
-}
-
-impl Targeter {
-    // TODO idx is current ppos from MMap
-    pub fn new() -> Self {
-        Self {
-            fov: Vec::new(),
-            idx: 0,
-            width: 0,
-        }
-    }
-
-    pub fn create(&mut self, fov: &Vec<usize>, idx: i32, width: i32) {
-        self.fov = fov.to_vec();
-        self.idx = idx;
-        self.width = width;
-    }
-
-    fn move_target(&mut self, x: i32, y: i32) -> Option<i32> {
-        let pos = self.idx_xy(self.idx);
-        let new_pos = self.xy_idx(pos.x + x, pos.y + y);
-        let p = new_pos as usize;
-        if self.fov.contains(&p) {
-            self.idx = new_pos;
-            Some(new_pos)
-        } else {
-            None
-        }
-    }
-
-    pub fn try_move(&mut self, e: KeyboardEvent) -> Option<i32> {
-        match e.key_code() {
-            KEY_LEFT => self.move_target(-1, 0),
-            KEY_RIGHT => self.move_target(1, 0),
-            KEY_UP => self.move_target(0, -1),
-            KEY_DOWN => self.move_target(0, 1),
-            KEY_Y => self.move_target(-1, -1),
-            KEY_U => self.move_target(1, -1),
-            KEY_N => self.move_target(1, 1),
-            KEY_B => self.move_target(-1, 1),
-            _ => None
-        }
-    }
-
-    fn xy_idx(&self, x: i32, y: i32) -> i32 {
-        (y * self.width) + x
-    }
-
-    fn idx_xy(&self, idx: i32) -> Point {
-        Point::new(idx % self.width, idx / self.width)
-    }
-
-}
-
 pub struct Model {
     ws: Option<WebSocketTask>,
     link: ComponentLink<Model>,
     #[allow(dead_code)]
     game: MGame,
-    targeter: Targeter,
 }
 
 pub enum Msg {
@@ -106,7 +47,6 @@ impl Component for Model {
             ws: None,
             link: link,
             game: MGame::new(),
-            targeter: Targeter::new(),
     	}
     }
 
@@ -228,18 +168,17 @@ impl Component for Model {
             Msg::TargetIndicator((e, n)) => {
                 match (e, n) {
                     (None, Some(0)) => {
-                        self.targeter.create(
-                            &self.game.map.fov, self.game.map.ppos, self.game.map.width);
+                        self.game.map.reset_targeter();
                         self.game.map.set_single_target(self.game.map.ppos as usize);
                     }
                     (Some(e), None) => {
-                        match self.targeter.try_move(e) {
+                        match self.game.map.try_move(e.key_code()) {
                             Some(n) => self.game.map.set_single_target(n as usize),
                             None => ()
                         }
                     } 
                     (Some(_e), Some(n)) if n >= 0 => {
-                        let idx = self.targeter.idx;
+                        let idx = self.game.map.target;
                         let action = format!("/use {} {}", n.to_string(), idx.to_string());
                         match self.ws {
                             Some(ref mut task) => {
