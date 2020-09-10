@@ -135,14 +135,14 @@ impl<'a> System<'a> for UseItemSystem {
                             map.get_area_of_effect(&mut aoe, area.radius);
                             let aoe_tiles: HashSet<i32> = HashSet::from_iter(aoe);
                             for tile in &aoe_tiles {
-                                for mob in map.contents[*tile as usize].iter() {
+                                for mob in &map.contents[*tile as usize] {
                                     targets.push(*mob);
                                 }
                             }
                         }
                         None => {
                             let idx = use_item.target.unwrap();
-                            for mob in map.contents[idx as usize].iter() {
+                            for mob in &map.contents[idx as usize] {
                                 targets.push(*mob);
                             }
                         }

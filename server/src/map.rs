@@ -64,7 +64,7 @@ impl Map {
         }
         let mut v = Vec::new();
         for idx in area.iter() {
-            for n in self.neighbours[*idx as usize].iter() {
+            for n in &self.neighbours[*idx as usize] {
                 v.push(*n as i32);
             }
         }
@@ -77,7 +77,7 @@ impl Map {
         self.dijkstra_values[dijkstra_map[0]] = 0;
         for i in dijkstra_map.iter() {
             let dv = self.dijkstra_values[*i]; 
-            for n in self.neighbours[*i].iter() {
+            for n in &self.neighbours[*i] {
                 if self.blocked[*n] == false && self.dijkstra_values[*n] == DIJKSTRA_MAX {
                     self.dijkstra_values[*n] = dv + 1;
                 };

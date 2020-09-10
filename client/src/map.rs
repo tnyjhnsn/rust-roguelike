@@ -8,7 +8,6 @@ use super::contents_map::*;
 use super::status_map::*;
 
 use roguelike_common::*;
-use yew::services::ConsoleService;
 
 pub struct Map {
     link: ComponentLink<Self>,
