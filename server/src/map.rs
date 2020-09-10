@@ -27,8 +27,7 @@ impl Map {
         let width = WIDTH;
         let height = HEIGHT;
         let dim = (width * height) as usize;
-        //let tiles = vec![TileType::Floor; dim];
-        let tiles = Vec::new();
+        let tiles = Vec::with_capacity(dim);
         let blocked = vec![false; dim];
         let neighbours = vec![Vec::new(); dim];
         let dijkstra_values = Vec::new();
@@ -87,16 +86,11 @@ impl Map {
 
         let idx = self.xy_idx(x, y);
         let dv = self.dijkstra_values[idx];
-        let mut v = Vec::new();
-        let mut rng = rand::thread_rng();
-        for n in self.neighbours[idx].iter() {
-            if self.blocked[*n] == false {
-                if self.dijkstra_values[*n] < dv {
-                    v.push(n);
-                }
-            };
-        };
+        let v: Vec<&usize> = self.neighbours[idx].iter()
+            .filter(|n| self.blocked[**n as usize] == false && self.dijkstra_values[**n as usize] < dv)
+            .collect();
 
+        let mut rng = rand::thread_rng();
         if v.len() > 0 {
             let n = rng.gen_range(0, v.len());
             return Position { x: *v[n] as i32 % WIDTH, y: *v[n] as i32 / WIDTH };
@@ -153,8 +147,8 @@ impl Map {
 
         for i in &DESERT_TEMPLE {
             match i {
-                1 => self.tiles.push(TileType::Wall),
                 0 => self.tiles.push(TileType::Floor),
+                1 => self.tiles.push(TileType::Wall),
                 _ => {},
             }
         }
