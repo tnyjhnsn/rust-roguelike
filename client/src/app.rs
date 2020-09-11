@@ -12,11 +12,14 @@ use yew::utils::document;
 use wasm_bindgen::JsCast;
 
 use super::model::game_model::*;
-use super::game::*;
+use super::armour::*;
+use super::inventory::*;
+use super::map::*;
+use super::logs::*;
 
-pub struct Model {
+pub struct Game {
     ws: Option<WebSocketTask>,
-    link: ComponentLink<Model>,
+    link: ComponentLink<Self>,
     #[allow(dead_code)]
     game: MGame,
 }
@@ -38,7 +41,7 @@ struct WsRequest {
     value: String,
 }
 
-impl Component for Model {
+impl Component for Game {
     type Message = Msg;
     type Properties = ();
 
@@ -198,29 +201,48 @@ impl Component for Model {
         false
     }
 
-    //fn rendered(&mut self, first_render: bool) {
-        //if first_render {
-            //ConsoleService::info("first render");
-            //self.link.send_message(Msg::Connect);
-            //self.link.send_message(Msg::GetGame);
-        //}
-    //}
-
     fn view(&self) -> Html {
-    	html! {
-            <>
-                <button onclick=self.link.callback(|_| Msg::Connect)>{ "Connect" }</button>
-                <span style="color: white">{ "Connected: " } { !self.ws.is_none() }</span>
-                <button onclick=self.link.callback(|_| Msg::GetGame)>{ "Get Game Dimensions" }</button>
-                <Game
-                    game=&self.game
+        let level_str = format!("Level {}", self.game.map.depth);
+        html! { 
+            <div class="game">
+                <div class="holding left-panel">
+                    <Armour
+                        armour=&self.game.armour
+                        dict=&self.game.dict
+                        change_panel_signal=self.link.callback(Msg::ChangePanel)
+                        item_action_signal=self.link.callback(Msg::ItemAction)
+                        target_indicator_signal=self.link.callback(Msg::TargetIndicator)
+                    />
+                    <Inventory
+                        inventory=&self.game.inventory
+                        dict=&self.game.dict
+                        change_panel_signal=self.link.callback(Msg::ChangePanel)
+                        item_action_signal=self.link.callback(Msg::ItemAction)
+                        target_indicator_signal=self.link.callback(Msg::TargetIndicator)
+                    />
+                </div>
+                <div class="holding top-panel">
+                    <h1 class="title">{ &self.game.title }</h1>
+                </div>
+                <Map
+                    map=&self.game.map
+                    dict=&self.game.dict
                     change_panel_signal=self.link.callback(Msg::ChangePanel)
                     map_action_signal=self.link.callback(Msg::MapAction)
-                    item_action_signal=self.link.callback(Msg::ItemAction)
-                    target_indicator_signal=self.link.callback(Msg::TargetIndicator)
                 />
-            </>
-    	}
+                <div class="holding right-panel">
+                    <button onclick=self.link.callback(|_| Msg::Connect)>{ "Connect" }</button>
+                    <span style="color: white">{ " Connected: " } { !self.ws.is_none() }</span>
+                    <button onclick=self.link.callback(|_| Msg::GetGame)>{ "Get Game Dimensions" }</button>
+                    <h3>{ level_str }</h3>
+                    <Logs
+                        logs=&self.game.log
+                        dict=&self.game.dict
+                    />
+                </div>
+                <div class="holding bottom-panel">{ "Bottom Panel" }</div>
+            </div>
+        }
     }
 }
 

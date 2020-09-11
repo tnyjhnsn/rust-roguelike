@@ -7,8 +7,6 @@ mod model;
 
 mod app;
 pub use app::*;
-mod game;
-pub use game::*;
 mod map;
 pub use map::*;
 mod tile_map;
@@ -38,6 +36,6 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 #[wasm_bindgen]
 pub fn run_app() -> Result<(), JsValue> {
-    yew::start_app::<app::Model>();
+    yew::start_app::<app::Game>();
     Ok(())
 }
