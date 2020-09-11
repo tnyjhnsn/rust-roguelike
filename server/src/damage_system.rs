@@ -4,7 +4,8 @@ use super::{
     SufferDamage,
     Player,
     GameLog,
-    Code
+    Code,
+    RunState,
 };
 use roguelike_common::*;
 
@@ -35,6 +36,7 @@ pub fn delete_the_dead(ecs : &mut World) {
         let codes = ecs.read_storage::<Code>();
         let entities = ecs.entities();
         let mut log = ecs.fetch_mut::<GameLog>();
+        let mut state = ecs.fetch_mut::<RunState>();
         for (entity, stats) in (&entities, &health_stats).join() {
             if stats.hp < 1 { 
                 let player = players.get(entity);
@@ -49,12 +51,13 @@ pub fn delete_the_dead(ecs : &mut World) {
                     } else {
                         log.add_log(vec![LogType::Destroyed as i32, victim.code]);
                     }
+                    state.add_state(CONTENTS_CHANGE);
                 }
             }
         }
     }
 
-    for victim in dead {
-        ecs.delete_entity(victim).expect("Unable to delete");
+    for victim in &dead {
+        ecs.delete_entity(*victim).expect("Unable to delete");
     }    
 }
