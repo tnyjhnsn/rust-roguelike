@@ -157,7 +157,8 @@ impl Map {
 
     pub fn draw_game(&self) -> String {
         let mut map = HashMap::new();
-        map.entry(String::from("GAME")).or_insert((self.width, self.height, self.depth));
+        map.entry(String::from("GAME"))
+            .or_insert((self.width, self.height, self.depth, &self.tiles));
         let gm = GameMsg {
             data: json!(map),
         };

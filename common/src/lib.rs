@@ -44,6 +44,12 @@ pub struct Position {
     pub y: i32,
 }
 
+impl Position {
+    pub fn to_point(&self) -> Point {
+        Point { x: self.x, y: self.y }
+    }
+}
+
 #[derive(Debug, Hash, Eq, PartialEq, Copy, Clone)]
 pub struct Point {
     pub x: i32,
@@ -90,6 +96,4 @@ pub enum LogType {
 pub struct GameMsg {
     pub data: Value,
 }
-
-pub type Fov = Vec<(TileType, Vec<usize>)>;
 

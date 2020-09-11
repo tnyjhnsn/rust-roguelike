@@ -39,11 +39,11 @@ impl MMap {
     }
 
     pub fn set_map(&mut self, data: Value) {
-        let game: (i32, i32, i32) = serde_json::from_value(data).unwrap();
+        let game: (i32, i32, i32, Vec<TileType>) = serde_json::from_value(data).unwrap();
         self.width = game.0;
         self.height = game.1;
         self.depth = game.2;
-        self.tiles = vec![TileType::Floor; self.get_dim()];
+        self.tiles = game.3;
         self.contents = vec![Vec::new(); self.get_dim()];
         self.status = vec![0; self.get_dim()];
     }
@@ -56,14 +56,11 @@ impl MMap {
         }
         self.fov.clear();
         self.ppos = serde_json::from_value(data[0].clone()).unwrap();
-        let fov: Fov = serde_json::from_value(data[1].clone()).unwrap();
+        let fov: Vec<usize> = serde_json::from_value(data[1].clone()).unwrap();
         self.set_viewport();
-        for (tile, indexes) in &fov {
-            for idx in indexes.iter() {
-                self.tiles[*idx] = *tile;
-                self.status[*idx] |= VISIBLE;
-                self.fov.push(*idx);
-            }
+        for idx in &fov {
+            self.status[*idx] |= VISIBLE;
+            self.fov.push(*idx);
         }
     }
 

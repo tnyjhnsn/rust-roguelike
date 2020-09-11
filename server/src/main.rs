@@ -78,35 +78,20 @@ impl GameSocket {
         let mut state = self.ecs.fetch_mut::<RunState>();
         let entities = self.ecs.entities();
 
-        let mut fov_tiles = Vec::new();
-        let mut player_fov = Vec::new();
-
-        for (_p, fov) in (&player, &fov).join() {
-            let mut wall: Vec<usize> = Vec::new();
-            let mut floor: Vec<usize> = Vec::new();
-            let mut stairs: Vec<usize> = Vec::new();
-            for t in &fov.visible_tiles {
-                let idx = map.xy_idx(t.x, t.y);
-                match map.tiles[idx] {
-                    TileType::Floor => floor.push(idx),
-                    TileType::Wall => wall.push(idx),
-                    TileType::DownStairs => stairs.push(idx),
-                }
-                player_fov.push(idx);
-            }
-            fov_tiles.push((TileType::Wall, wall));
-            fov_tiles.push((TileType::Floor, floor));
-            fov_tiles.push((TileType::DownStairs, stairs));
-        }
-
         let mut hm = HashMap::new();
 
         if state.check_state(FOV_CHANGE) {
             let idx = map.xy_idx(ppos.position.x, ppos.position.y);
             let p = serde_json::to_value(idx).unwrap();
-            let f = serde_json::to_value(fov_tiles).unwrap();
-            let mut v = Vec::new();
-            v.push(p);
+            let mut v = vec![p];
+            let mut player_fov = Vec::new();
+            for (_p, fov) in (&player, &fov).join() {
+                for t in &fov.visible_tiles {
+                    let idx = map.xy_idx(t.x, t.y);
+                    player_fov.push(idx);
+                }
+            }
+            let f = serde_json::to_value(player_fov).unwrap();
             v.push(f);
             hm.entry(String::from("FOV")).or_insert(serde_json::to_value(v).unwrap());
             state.remove_state(FOV_CHANGE);
@@ -114,12 +99,14 @@ impl GameSocket {
 
         if state.check_state(CONTENTS_CHANGE) {
             let mut tree: HashMap<usize, Vec<i32>> = HashMap::new();
-            for (pos, code) in (&positions, &codes).join() {
-                let idx = map.xy_idx(pos.x, pos.y);
-                if player_fov.contains(&idx) {
-                    tree.entry(idx).or_insert(Vec::new()).push(code.code);
+            for (_p, fov) in (&player, &fov).join() {
+                for (pos, code) in (&positions, &codes).join() {
+                    if fov.visible_tiles.contains(&pos.to_point()) {
+                        let idx = map.xy_idx(pos.x, pos.y);
+                        tree.entry(idx).or_insert(Vec::new()).push(code.code);
+                    }
                 }
-            };
+            }
             let mut v = Vec::new();
             for (idx, content) in tree {
                 v.push((idx, content));
@@ -215,14 +202,14 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for GameSocket {
                     1 => {
                         match chunks[0] {
                             "/game" => {
-                                get_game(&mut self.ecs, ctx);
+                                draw_game(&mut self.ecs, ctx);
                             }
                             "g"|"G" => {
                                 get_item(&mut self.ecs);
                             }
                             ">" => {
-                                get_downstairs(&mut self.ecs);
-                                get_game(&mut self.ecs, ctx);
+                                go_downstairs(&mut self.ecs);
+                                draw_game(&mut self.ecs, ctx);
                             }
                             _ => {
                                 player_input(txt, &mut self.ecs);
@@ -300,26 +287,30 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
     gs.ecs.register::<MeleePowerBonus>(); 
     gs.ecs.register::<DefenseBonus>(); 
 
-    let px = 10;
-    let py = 48;
-    let player = player(&mut gs.ecs, px, py);
-    gs.ecs.insert(player);
-    gs.ecs.insert(PlayerPosition::new(px, py));
-
-    let mut map = Map::new(0);
-    spawn_map(&mut map, &mut gs.ecs);
-    gs.ecs.insert(map);
-    
-    gs.ecs.insert(GameLog::new());
-    gs.ecs.insert(RunState::new(WAITING));
-    gs.ecs.insert(Dungeon::new());
+    new_game(&mut gs.ecs);
 
     let res = ws::start(gs, &req, stream);
     println!("{:?}", res);
     res
 }
 
-fn get_game(ecs: &mut World, ctx: &mut ws::WebsocketContext<GameSocket>) {
+fn new_game(mut ecs: &mut World) {
+    let px = 10;
+    let py = 48;
+    let player = player(&mut ecs, px, py);
+    ecs.insert(player);
+    ecs.insert(PlayerPosition::new(px, py));
+
+    let mut map = Map::new(0);
+    spawn_map(&mut map, &mut ecs);
+    ecs.insert(map);
+    
+    ecs.insert(GameLog::new());
+    ecs.insert(RunState::new(WAITING));
+    ecs.insert(Dungeon::new());
+}
+
+fn draw_game(ecs: &mut World, ctx: &mut ws::WebsocketContext<GameSocket>) {
     let map = ecs.fetch::<Map>();
     ctx.text(map.draw_game());
     let mut state = ecs.fetch_mut::<RunState>();
@@ -327,11 +318,11 @@ fn get_game(ecs: &mut World, ctx: &mut ws::WebsocketContext<GameSocket>) {
     state.add_state(CONTENTS_CHANGE);
 }
 
-fn get_downstairs(ecs: &mut World) {
+fn go_downstairs(ecs: &mut World) {
     if !try_next_level(ecs) { return; };
     let to_delete = entities_to_remove_on_level_change(ecs);
-    for target in to_delete {
-        ecs.delete_entity(target).expect("Unable to delete entity");
+    for target in &to_delete {
+        ecs.delete_entity(*target).expect("Unable to delete entity");
     }
     let mut new_map = down_stairs(ecs);
     spawn_map(&mut new_map, ecs);
@@ -359,7 +350,7 @@ fn entities_to_remove_on_level_change(ecs: &mut World) -> Vec<Entity> {
     let player_entity = ecs.fetch::<Entity>();
     let equipped = ecs.read_storage::<Equipped>();
 
-    let mut to_delete : Vec<Entity> = Vec::new();
+    let mut to_delete: Vec<Entity> = Vec::new();
     for entity in entities.join() {
         let mut should_delete = true;
 
