@@ -28,7 +28,7 @@ pub enum Msg {
     Connect,
     Disconnected,
     Ignore,
-    GetGame,
+    GetMap,
     Received(Result<Value, Error>),
     ChangePanel(KeyboardEvent),
     MapAction(KeyboardEvent),
@@ -79,10 +79,10 @@ impl Component for Game {
     		Msg::Ignore => {
     			false
     		}
-    		Msg::GetGame => {
+    		Msg::GetMap => {
     			match self.ws {
     				Some(ref mut task) => {
-    					task.send(Ok(String::from("/game")));
+    					task.send(Ok(String::from("/map")));
     					false
     				}
     				None => {
@@ -97,7 +97,7 @@ impl Component for Game {
                 for (msg, v) in &data {
                     let d = serde_json::from_value(v.clone()).unwrap(); 
                     match msg.trim() {
-                        "GAME" => {
+                        "MAP" => {
                             self.game.map.set_map(d);
                         }
                         "FOV" => {
@@ -233,7 +233,7 @@ impl Component for Game {
                 <div class="holding right-panel">
                     <button onclick=self.link.callback(|_| Msg::Connect)>{ "Connect" }</button>
                     <span style="color: white">{ " Connected: " } { !self.ws.is_none() }</span>
-                    <button onclick=self.link.callback(|_| Msg::GetGame)>{ "Get Game Dimensions" }</button>
+                    <button onclick=self.link.callback(|_| Msg::GetMap)>{ "Get Map" }</button>
                     <h3>{ level_str }</h3>
                     <Logs
                         logs=&self.game.log

@@ -1,6 +1,5 @@
-use serde_json::json;
+use serde_json::Value;
 use roguelike_common::*;
-use std::collections::HashMap;
 
 pub struct GameLog {
     pub logs: Vec<Vec<i32>>,
@@ -20,18 +19,12 @@ impl GameLog {
         self.has_log = true;
     }
 
-    pub fn draw_gamelog(&mut self) -> Option<String> {
+    pub fn get_logs(&mut self) -> Option<Value> {
         if self.has_log {
-            let mut map = HashMap::new();
-            map.entry(String::from("LOG")).or_insert(&self.logs);
-            let gm = GameMsg {
-                data: json!(map),
-            };
-            let s = serde_json::to_string(&gm).unwrap();
-            //println!("GAMELOG {}", s);
+            let logs = serde_json::to_value(&self.logs).unwrap();
             self.logs.clear();
             self.has_log = false;
-            Some(s)
+            Some(logs)
         } else {
             None
         }

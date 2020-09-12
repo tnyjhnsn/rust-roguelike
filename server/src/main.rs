@@ -64,7 +64,7 @@ struct GameSocket {
 }
 
 impl GameSocket {
-    fn tick(&mut self,  ctx: &mut ws::WebsocketContext<Self>) {
+    fn tick(&mut self) -> Option<String> {
 
         let fov = self.ecs.read_storage::<FieldOfView>();
         let player = self.ecs.read_storage::<Player>();
@@ -108,7 +108,7 @@ impl GameSocket {
                 }
             }
             let mut v = Vec::new();
-            for (idx, content) in tree {
+            for (idx, content) in &tree {
                 v.push((idx, content));
             }
             let contents = serde_json::to_value(v).unwrap();
@@ -140,20 +140,22 @@ impl GameSocket {
             state.remove_state(ARMOUR_CHANGE);
         }
 
+        let mut gl = self.ecs.write_resource::<GameLog>();
+        if let Some(logs) = gl.get_logs() {
+            hm.entry(String::from("LOG")).or_insert(logs);
+        }
+
         if hm.len() > 0 {
             let gm = GameMsg {
                 data: json!(hm),
             };
             let s = serde_json::to_string(&gm).unwrap();
             //println!("{}", s);
-            ctx.text(s);
+            Some(s)
+        } else {
+            None
         }
 
-        let mut gl = self.ecs.write_resource::<GameLog>();
-        match gl.draw_gamelog() {
-            Some(log) => ctx.text(log),
-            _ => (),
-        }
     }
 
     fn run_systems(&mut self) {
@@ -201,15 +203,15 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for GameSocket {
                 match chunks.len() {
                     1 => {
                         match chunks[0] {
-                            "/game" => {
-                                draw_game(&mut self.ecs, ctx);
+                            "/map" => {
+                                ctx.text(draw_map(&mut self.ecs));
                             }
                             "g"|"G" => {
                                 get_item(&mut self.ecs);
                             }
                             ">" => {
                                 go_downstairs(&mut self.ecs);
-                                draw_game(&mut self.ecs, ctx);
+                                ctx.text(draw_map(&mut self.ecs));
                             }
                             _ => {
                                 player_input(txt, &mut self.ecs);
@@ -217,7 +219,9 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for GameSocket {
                             }
                         }
                         self.run_systems();
-                        self.tick(ctx);
+                        if let Some(s) = self.tick() {
+                            ctx.text(s);
+                        }
                     }
                     _ => {
                         let idx = chunks[1].parse::<u64>().unwrap();
@@ -237,7 +241,9 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for GameSocket {
                             _ => ()
                         }
                         self.run_systems();
-                        self.tick(ctx);
+                        if let Some(s) = self.tick() {
+                            ctx.text(s);
+                        }
                     }
                 }
             }
@@ -250,7 +256,9 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for GameSocket {
         self.run_systems_ai();
         delete_the_dead(&mut self.ecs);
         self.run_systems();
-        self.tick(ctx);
+        if let Some(s) = self.tick() {
+            ctx.text(s);
+        }
     }
 }
 
@@ -310,12 +318,12 @@ fn new_game(mut ecs: &mut World) {
     ecs.insert(Dungeon::new());
 }
 
-fn draw_game(ecs: &mut World, ctx: &mut ws::WebsocketContext<GameSocket>) {
+fn draw_map(ecs: &mut World) -> String {
     let map = ecs.fetch::<Map>();
-    ctx.text(map.draw_game());
     let mut state = ecs.fetch_mut::<RunState>();
     state.add_state(FOV_CHANGE);
     state.add_state(CONTENTS_CHANGE);
+    map.draw_map()
 }
 
 fn go_downstairs(ecs: &mut World) {

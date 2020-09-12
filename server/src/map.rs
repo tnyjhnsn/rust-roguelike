@@ -155,9 +155,9 @@ impl Map {
         self.tiles[109] = TileType::DownStairs;
     }
 
-    pub fn draw_game(&self) -> String {
+    pub fn draw_map(&self) -> String {
         let mut map = HashMap::new();
-        map.entry(String::from("GAME"))
+        map.entry(String::from("MAP"))
             .or_insert((self.width, self.height, self.depth, &self.tiles));
         let gm = GameMsg {
             data: json!(map),
