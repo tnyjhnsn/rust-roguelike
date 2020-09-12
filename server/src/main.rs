@@ -33,6 +33,8 @@ mod dungeon;
 pub use dungeon::*;
 mod random_table;
 pub use random_table::*;
+mod level_change;
+pub use level_change::*;
 mod desert_temple;
 pub use desert_temple::*;
 
@@ -59,13 +61,64 @@ impl RunState {
     }
 }
 
-struct GameSocket {
+pub struct GameSocket {
     ecs: World,
 }
 
 impl GameSocket {
-    fn tick(&mut self) -> Option<String> {
 
+    fn new() -> Self {
+        let mut gs = GameSocket {
+            ecs: World::new(),
+        };
+        gs.ecs.register::<Position>(); 
+        gs.ecs.register::<Code>(); 
+        gs.ecs.register::<Player>(); 
+        gs.ecs.register::<FieldOfView>(); 
+        gs.ecs.register::<Monster>(); 
+        gs.ecs.register::<Code>(); 
+        gs.ecs.register::<BlocksTile>(); 
+        gs.ecs.register::<CombatStats>(); 
+        gs.ecs.register::<HealthStats>(); 
+        gs.ecs.register::<SufferDamage>(); 
+        gs.ecs.register::<WantsToMelee>(); 
+        gs.ecs.register::<Item>(); 
+        gs.ecs.register::<Consumeable>(); 
+        gs.ecs.register::<Ranged>(); 
+        gs.ecs.register::<AreaOfEffect>(); 
+        gs.ecs.register::<ProvidesHealing>(); 
+        gs.ecs.register::<Confusion>(); 
+        gs.ecs.register::<InflictsDamage>(); 
+        gs.ecs.register::<InInventory>(); 
+        gs.ecs.register::<WantsToPickupItem>(); 
+        gs.ecs.register::<WantsToDropItem>(); 
+        gs.ecs.register::<WantsToUseItem>(); 
+        gs.ecs.register::<WantsToRemoveItem>(); 
+        gs.ecs.register::<Equippable>(); 
+        gs.ecs.register::<Equipped>(); 
+        gs.ecs.register::<MeleePowerBonus>(); 
+        gs.ecs.register::<DefenseBonus>(); 
+        gs.new_game();
+        gs
+    }
+
+    fn new_game(&mut self) {
+        let px = 10;
+        let py = 48;
+        let player = player(&mut self.ecs, px, py);
+        self.ecs.insert(player);
+        self.ecs.insert(PlayerPosition::new(px, py));
+
+        let mut map = Map::new(0);
+        spawn_map(&mut map, &mut self.ecs);
+        self.ecs.insert(map);
+        
+        self.ecs.insert(GameLog::new());
+        self.ecs.insert(RunState::new(WAITING));
+        self.ecs.insert(Dungeon::new());
+    }
+
+    fn tick(&mut self) -> Option<String> {
         let fov = self.ecs.read_storage::<FieldOfView>();
         let player = self.ecs.read_storage::<Player>();
         let player_entity = self.ecs.fetch::<Entity>();
@@ -155,7 +208,6 @@ impl GameSocket {
         } else {
             None
         }
-
     }
 
     fn run_systems(&mut self) {
@@ -183,6 +235,14 @@ impl GameSocket {
         mob.run_now(&self.ecs);
         self.ecs.maintain();
     }
+
+    fn draw_map(&self) -> String {
+        let map = self.ecs.fetch::<Map>();
+        let mut state = self.ecs.fetch_mut::<RunState>();
+        state.add_state(FOV_CHANGE);
+        state.add_state(CONTENTS_CHANGE);
+        map.draw_map()
+    }
 }
 
 impl Actor for GameSocket {
@@ -204,14 +264,16 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for GameSocket {
                     1 => {
                         match chunks[0] {
                             "/map" => {
-                                ctx.text(draw_map(&mut self.ecs));
+                                ctx.text(self.draw_map());
                             }
                             "g"|"G" => {
                                 get_item(&mut self.ecs);
                             }
                             ">" => {
-                                go_downstairs(&mut self.ecs);
-                                ctx.text(draw_map(&mut self.ecs));
+                                if try_next_level(&mut self.ecs) {
+                                    self.go_downstairs();
+                                    ctx.text(self.draw_map());
+                                }
                             }
                             _ => {
                                 player_input(txt, &mut self.ecs);
@@ -263,129 +325,9 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for GameSocket {
 }
 
 async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, Error> {
-    let mut gs = GameSocket {
-        ecs: World::new(),
-    };
-
-    gs.ecs.register::<Position>(); 
-    gs.ecs.register::<Code>(); 
-    gs.ecs.register::<Player>(); 
-    gs.ecs.register::<FieldOfView>(); 
-    gs.ecs.register::<Monster>(); 
-    gs.ecs.register::<Code>(); 
-    gs.ecs.register::<BlocksTile>(); 
-    gs.ecs.register::<CombatStats>(); 
-    gs.ecs.register::<HealthStats>(); 
-    gs.ecs.register::<SufferDamage>(); 
-    gs.ecs.register::<WantsToMelee>(); 
-    gs.ecs.register::<Item>(); 
-    gs.ecs.register::<Consumeable>(); 
-    gs.ecs.register::<Ranged>(); 
-    gs.ecs.register::<AreaOfEffect>(); 
-    gs.ecs.register::<ProvidesHealing>(); 
-    gs.ecs.register::<Confusion>(); 
-    gs.ecs.register::<InflictsDamage>(); 
-    gs.ecs.register::<InInventory>(); 
-    gs.ecs.register::<WantsToPickupItem>(); 
-    gs.ecs.register::<WantsToDropItem>(); 
-    gs.ecs.register::<WantsToUseItem>(); 
-    gs.ecs.register::<WantsToRemoveItem>(); 
-    gs.ecs.register::<Equippable>(); 
-    gs.ecs.register::<Equipped>(); 
-    gs.ecs.register::<MeleePowerBonus>(); 
-    gs.ecs.register::<DefenseBonus>(); 
-
-    new_game(&mut gs.ecs);
-
-    let res = ws::start(gs, &req, stream);
+    let res = ws::start(GameSocket::new(), &req, stream);
     println!("{:?}", res);
     res
-}
-
-fn new_game(mut ecs: &mut World) {
-    let px = 10;
-    let py = 48;
-    let player = player(&mut ecs, px, py);
-    ecs.insert(player);
-    ecs.insert(PlayerPosition::new(px, py));
-
-    let mut map = Map::new(0);
-    spawn_map(&mut map, &mut ecs);
-    ecs.insert(map);
-    
-    ecs.insert(GameLog::new());
-    ecs.insert(RunState::new(WAITING));
-    ecs.insert(Dungeon::new());
-}
-
-fn draw_map(ecs: &mut World) -> String {
-    let map = ecs.fetch::<Map>();
-    let mut state = ecs.fetch_mut::<RunState>();
-    state.add_state(FOV_CHANGE);
-    state.add_state(CONTENTS_CHANGE);
-    map.draw_map()
-}
-
-fn go_downstairs(ecs: &mut World) {
-    if !try_next_level(ecs) { return; };
-    let to_delete = entities_to_remove_on_level_change(ecs);
-    for target in &to_delete {
-        ecs.delete_entity(*target).expect("Unable to delete entity");
-    }
-    let mut new_map = down_stairs(ecs);
-    spawn_map(&mut new_map, ecs);
-    ecs.insert(new_map);
-}
-
-fn try_next_level(ecs: &mut World) -> bool {
-    let ppos = ecs.fetch::<PlayerPosition>();
-    let map = ecs.fetch::<Map>();
-    let ppos_idx = map.xy_idx(ppos.position.x, ppos.position.y);
-
-    if map.tiles[ppos_idx] == TileType::DownStairs {
-        true
-    } else {
-        let mut gamelog = ecs.fetch_mut::<GameLog>();
-        gamelog.add_log(vec![LogType::System as i32, 2]);
-        false
-    }
-}
-
-fn entities_to_remove_on_level_change(ecs: &mut World) -> Vec<Entity> {
-    let entities = ecs.entities();
-    let player = ecs.read_storage::<Player>();
-    let inventory = ecs.read_storage::<InInventory>();
-    let player_entity = ecs.fetch::<Entity>();
-    let equipped = ecs.read_storage::<Equipped>();
-
-    let mut to_delete: Vec<Entity> = Vec::new();
-    for entity in entities.join() {
-        let mut should_delete = true;
-
-        let p = player.get(entity);
-        if let Some(_p) = p {
-            should_delete = false;
-        }
-
-        let bp = inventory.get(entity);
-        if let Some(bp) = bp {
-            if bp.owner == *player_entity {
-                should_delete = false;
-            }
-        }
-
-        let eq = equipped.get(entity);
-        if let Some(eq) = eq {
-            if eq.owner == *player_entity {
-                should_delete = false;
-            }
-        }
-
-        if should_delete { 
-            to_delete.push(entity);
-        }
-    }
-    to_delete
 }
 
 #[actix_rt::main]

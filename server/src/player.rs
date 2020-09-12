@@ -69,6 +69,20 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
     }
 }
 
+pub fn try_next_level(ecs: &mut World) -> bool {
+    let ppos = ecs.fetch::<PlayerPosition>();
+    let map = ecs.fetch::<Map>();
+    let ppos_idx = map.xy_idx(ppos.position.x, ppos.position.y);
+
+    if map.tiles[ppos_idx] == TileType::DownStairs {
+        true
+    } else {
+        let mut gamelog = ecs.fetch_mut::<GameLog>();
+        gamelog.add_log(vec![LogType::System as i32, 2]);
+        false
+    }
+}
+
 pub fn player_input(txt: String, ecs: &mut World) {
     match txt.trim() {
         "ArrowLeft" => try_move_player(-1, 0, ecs),
