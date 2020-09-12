@@ -97,7 +97,7 @@ pub fn player_input(txt: String, ecs: &mut World) {
     }
 }
 
-pub fn get_item(ecs: &mut World) {
+pub fn pickup_item(ecs: &mut World) {
 
     let ppos = ecs.fetch::<PlayerPosition>();
     let player = ecs.fetch::<Entity>();
@@ -118,7 +118,7 @@ pub fn get_item(ecs: &mut World) {
             let mut intent = ecs.write_storage::<WantsToPickupItem>();
             intent.insert(*player,
                 WantsToPickupItem{ collected_by: *player, item })
-                    .expect("Unable to insert wants to pickup");
+                    .expect("Unable to insert wants to pickup item");
         }
         None => gamelog.add_log(vec![LogType::System as i32, 1]),
     }
@@ -132,7 +132,7 @@ pub fn drop_item(idx: u64, ecs: &mut World) {
     for (entity, _i) in (&entities, &inventory).join().filter(|item| item.0.id() as u64 == idx) {
         let mut intent = ecs.write_storage::<WantsToDropItem>();
         intent.insert(*player,
-            WantsToDropItem{ item: entity }).expect("Unable to insert wants to drop");
+            WantsToDropItem{ item: entity }).expect("Unable to insert wants to drop item");
     }
 }
 
@@ -144,7 +144,7 @@ pub fn remove_item(idx: u64, ecs: &mut World) {
     for (entity, _i) in (&entities, &equipped).join().filter(|item| item.0.id() as u64 == idx) {
         let mut intent = ecs.write_storage::<WantsToRemoveItem>();
         intent.insert(*player,
-            WantsToRemoveItem{ item: entity }).expect("Unable to insert wants to remove");
+            WantsToRemoveItem{ item: entity }).expect("Unable to insert wants to remove item");
     }
 }
 

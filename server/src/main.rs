@@ -217,8 +217,6 @@ impl GameSocket {
         mapindex.run_now(&self.ecs);
         let mut melee = MeleeCombatSystem{};
         melee.run_now(&self.ecs);
-        let mut damage = DamageSystem{};
-        damage.run_now(&self.ecs);
         let mut pickup_item = PickupItemSystem{};
         pickup_item.run_now(&self.ecs);
         let mut use_item = UseItemSystem{};
@@ -227,6 +225,8 @@ impl GameSocket {
         drop_item.run_now(&self.ecs);
         let mut remove_item = RemoveItemSystem{};
         remove_item.run_now(&self.ecs);
+        let mut damage = DamageSystem{};
+        damage.run_now(&self.ecs);
         self.ecs.maintain();
     }
     
@@ -267,7 +267,7 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for GameSocket {
                                 ctx.text(self.draw_map());
                             }
                             "g"|"G" => {
-                                get_item(&mut self.ecs);
+                                pickup_item(&mut self.ecs);
                             }
                             ">" => {
                                 if try_next_level(&mut self.ecs) {
