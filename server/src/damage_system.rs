@@ -42,7 +42,7 @@ pub fn delete_the_dead(ecs : &mut World) {
                 let player = players.get(entity);
                 match player {
                     None => { dead.push(entity) }
-                    Some(_) => {}
+                    Some(_) =>  { state.add_state(GAME_OVER) }
                 }
                 let victim = codes.get(entity);
                 if let Some(victim) = victim {

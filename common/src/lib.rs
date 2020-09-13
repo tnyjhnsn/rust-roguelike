@@ -14,6 +14,7 @@ pub const FOV_CHANGE: i32 = 1;
 pub const CONTENTS_CHANGE: i32 = 2;
 pub const INVENTORY_CHANGE: i32 = 4;
 pub const ARMOUR_CHANGE: i32 = 8;
+pub const GAME_OVER: i32 = 16;
 
 // key codes
 // sections

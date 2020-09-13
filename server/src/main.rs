@@ -118,7 +118,18 @@ impl GameSocket {
         self.ecs.insert(Dungeon::new());
     }
 
-    fn tick(&mut self) -> Option<String> {
+    fn game_over(&mut self) {
+        let mut to_delete = Vec::new();
+        for e in self.ecs.entities().join() {
+            to_delete.push(e);
+        }
+        for del in to_delete.iter() {
+            self.ecs.delete_entity(*del).expect("Delete everything failed");
+        }
+        self.ecs.maintain();
+    }
+
+    fn tick(&self) -> Option<String> {
         let fov = self.ecs.read_storage::<FieldOfView>();
         let player = self.ecs.read_storage::<Player>();
         let player_entity = self.ecs.fetch::<Entity>();
@@ -161,7 +172,8 @@ impl GameSocket {
                 }
             }
             let mut v = Vec::new();
-            for (idx, content) in &tree {
+            for (idx, mut content) in tree {
+                content.sort();
                 v.push((idx, content));
             }
             let contents = serde_json::to_value(v).unwrap();
@@ -280,10 +292,6 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for GameSocket {
                                 delete_the_dead(&mut self.ecs);
                             }
                         }
-                        self.run_systems();
-                        if let Some(s) = self.tick() {
-                            ctx.text(s);
-                        }
                     }
                     _ => {
                         let idx = chunks[1].parse::<u64>().unwrap();
@@ -302,11 +310,11 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for GameSocket {
                             }
                             _ => ()
                         }
-                        self.run_systems();
-                        if let Some(s) = self.tick() {
-                            ctx.text(s);
-                        }
                     }
+                }
+                self.run_systems();
+                if let Some(s) = self.tick() {
+                    ctx.text(s);
                 }
             }
             Ok(ws::Message::Binary(bin)) => {
@@ -320,6 +328,20 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for GameSocket {
         self.run_systems();
         if let Some(s) = self.tick() {
             ctx.text(s);
+        }
+        let state;
+        {
+            let s = self.ecs.fetch::<RunState>();
+            state = *s;
+        }
+        if state.check_state(GAME_OVER) {
+            self.game_over();
+            self.new_game();
+            ctx.text(self.draw_map());
+            self.run_systems();
+            if let Some(s) = self.tick() {
+                ctx.text(s);
+            }
         }
     }
 }

@@ -46,6 +46,7 @@ impl MMap {
         self.tiles = game.3;
         self.contents = vec![Vec::new(); self.get_dim()];
         self.status = vec![0; self.get_dim()];
+        self.fov = Vec::new();
     }
 
     pub fn set_fov(&mut self, data: Value) {
