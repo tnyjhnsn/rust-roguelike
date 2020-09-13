@@ -35,8 +35,8 @@ mod random_table;
 pub use random_table::*;
 mod level_change;
 pub use level_change::*;
-mod desert_temple;
-pub use desert_temple::*;
+mod dwarven_mines_gate;
+pub use dwarven_mines_gate::*;
 
 #[derive(PartialEq, Copy, Clone)]
 pub struct RunState {

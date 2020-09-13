@@ -6,8 +6,8 @@ use std::collections::HashMap;
 use super::*;
 
 const DIJKSTRA_MAX: i32 = 1000;
-const WIDTH: i32 = 50;
-const HEIGHT: i32 = 50;
+const WIDTH: i32 = 30;
+const HEIGHT: i32 = 61;
 
 #[derive(Debug, Clone)]
 pub struct Map {
@@ -145,7 +145,7 @@ impl Map {
             //}
         //}
 
-        for i in &DESERT_TEMPLE {
+        for i in &DWARVEN_MINES_GATE {
             match i {
                 0 => self.tiles.push(TileType::Floor),
                 1 => self.tiles.push(TileType::Wall),
