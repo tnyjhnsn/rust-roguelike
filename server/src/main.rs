@@ -37,6 +37,8 @@ mod level_change;
 pub use level_change::*;
 mod dwarven_mines_gate;
 pub use dwarven_mines_gate::*;
+mod dwarven_mines_hall;
+pub use dwarven_mines_hall::*;
 
 #[derive(PartialEq, Copy, Clone)]
 pub struct RunState {
@@ -103,8 +105,8 @@ impl GameSocket {
     }
 
     fn new_game(&mut self) {
-        let px = 15;
-        let py = 59;
+        let px = 23;
+        let py = 48;
         let player = player(&mut self.ecs, px, py);
         self.ecs.insert(player);
         self.ecs.insert(PlayerPosition::new(px, py));

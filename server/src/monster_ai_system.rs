@@ -53,7 +53,7 @@ impl<'a> System<'a> for MonsterAISystem {
     }
 }
 
-const DIJKSTRA_RANGE: i32 = 7;
+const DIJKSTRA_RANGE: i32 = 8;
 
 fn create_dijkstra_map(x: i32, y: i32, map: &Map) -> Vec<usize> {
     let mut v = Vec::new();

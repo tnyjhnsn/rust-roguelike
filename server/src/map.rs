@@ -6,8 +6,8 @@ use std::collections::HashMap;
 use super::*;
 
 const DIJKSTRA_MAX: i32 = 1000;
-const WIDTH: i32 = 30;
-const HEIGHT: i32 = 61;
+const WIDTH: i32 = 50;
+const HEIGHT: i32 = 50;
 
 #[derive(Debug, Clone)]
 pub struct Map {
@@ -117,16 +117,16 @@ impl Map {
     }
 
     pub fn populate_blocked(&mut self) {
-        for (idx, i) in DWARVEN_MINES_GATE.iter().enumerate() {
-            match i {
-                1|3 => self.blocked[idx] = true,
-                _ => self.blocked[idx] = false,
+        for (idx, i) in DWARVEN_MINES_HALL.iter().enumerate() {
+            self.blocked[idx] = match i {
+                1|3 => true,
+                _ => false,
             }
         }
     }
 
     pub fn create_temp_walls(&mut self) {
-        for (idx, i) in DWARVEN_MINES_GATE.iter().enumerate() {
+        for (idx, i) in DWARVEN_MINES_HALL.iter().enumerate() {
             match i {
                 1 => self.tiles.push(TileType::Wall),
                 3 => {

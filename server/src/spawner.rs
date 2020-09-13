@@ -22,6 +22,7 @@ use super::{
     MeleePowerBonus,
     DefenseBonus,
     dwarven_mines_gate::*,
+    dwarven_mines_hall::*,
 };
 use rand::Rng;
 use std::collections::HashMap;
@@ -103,7 +104,7 @@ pub fn spawn_map(map: &mut Map, ecs: &mut World) {
         }
     }
 
-    for (idx, i) in DWARVEN_MINES_GATE.iter().enumerate() {
+    for (idx, i) in DWARVEN_MINES_HALL.iter().enumerate() {
         match i {
             5000 => {
                 let (x, y) = map.idx_xy(idx as i32);
