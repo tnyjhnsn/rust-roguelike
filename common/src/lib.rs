@@ -71,8 +71,8 @@ impl Point {
 #[derive(Debug, PartialEq, Copy, Clone, Serialize_repr, Deserialize_repr)]
 #[repr(u8)]
 pub enum TileType {
-    Wall = 0,
-    Floor = 1,
+    Floor = 0,
+    Wall = 1,
     DownStairs = 2,
 }
 

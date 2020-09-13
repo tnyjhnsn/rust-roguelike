@@ -117,42 +117,25 @@ impl Map {
     }
 
     pub fn populate_blocked(&mut self) {
-        for (i, tile) in self.tiles.iter_mut().enumerate() {
-            self.blocked[i] = *tile == TileType::Wall;
+        for (idx, i) in DWARVEN_MINES_GATE.iter().enumerate() {
+            match i {
+                1|3 => self.blocked[idx] = true,
+                _ => self.blocked[idx] = false,
+            }
         }
     }
 
     pub fn create_temp_walls(&mut self) {
-        //let mut rng = rand::thread_rng();
-        //for x in 0..self.width {
-            //let mut idx = self.xy_idx(x, 0);
-            //self.tiles[idx] = TileType::Wall;
-            //idx = self.xy_idx(x, self.height - 1);
-            //self.tiles[idx] = TileType::Wall;
-        //}
-        //for y in 0..self.height {
-            //let mut idx = self.xy_idx(0, y);
-            //self.tiles[idx] = TileType::Wall;
-            //idx = self.xy_idx(self.width - 1, y);
-            //self.tiles[idx] = TileType::Wall;
-        //}
-        //for _i in 0..200 {
-            //let x = rng.gen_range(1, self.width - 1);
-            //let y = rng.gen_range(1, self.height - 1);
-            //let idx = self.xy_idx(x, y);
-            //if idx != self.xy_idx(10, 10) {
-                //self.tiles[idx] = TileType::Wall;
-            //}
-        //}
-
-        for i in &DWARVEN_MINES_GATE {
+        for (idx, i) in DWARVEN_MINES_GATE.iter().enumerate() {
             match i {
-                0 => self.tiles.push(TileType::Floor),
                 1 => self.tiles.push(TileType::Wall),
-                _ => {},
+                3 => {
+                    self.tiles.push(TileType::Floor);
+                    self.blocked[idx] = true;
+                }
+                _ => self.tiles.push(TileType::Floor),
             }
         }
-        self.tiles[109] = TileType::DownStairs;
     }
 
     pub fn draw_map(&self) -> String {

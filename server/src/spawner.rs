@@ -21,6 +21,7 @@ use super::{
     ArmourSlot,
     MeleePowerBonus,
     DefenseBonus,
+    dwarven_mines_gate::*,
 };
 use rand::Rng;
 use std::collections::HashMap;
@@ -98,6 +99,16 @@ pub fn spawn_map(map: &mut Map, ecs: &mut World) {
             Some(3001) => short_sword(ecs, x, y),
             Some(3002) => long_sword(ecs, x, y),
             Some(3100) => shield(ecs, x, y),
+            _ => {},
+        }
+    }
+
+    for (idx, i) in DWARVEN_MINES_GATE.iter().enumerate() {
+        match i {
+            5000 => {
+                let (x, y) = map.idx_xy(idx as i32);
+                chasm_trap(ecs, x, y);
+            }
             _ => {},
         }
     }
@@ -226,6 +237,14 @@ pub fn shield(ecs: &mut World, x: i32, y: i32) {
         .with(Equippable{ slot: ArmourSlot::Shield })
         .with(HealthStats{ max_hp: 1, hp: 1 })
         .with(DefenseBonus{ defense: 1 })
+        .build();
+}
+
+pub fn chasm_trap(ecs: &mut World, x: i32, y: i32) {
+    ecs.create_entity()
+        .with(Code { code: 5000 })
+        .with(Position{ x, y })
+        .with(InflictsDamage{ damage: 1000 })
         .build();
 }
 
