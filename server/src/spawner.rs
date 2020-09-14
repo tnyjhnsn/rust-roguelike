@@ -21,11 +21,13 @@ use super::{
     ArmourSlot,
     MeleePowerBonus,
     DefenseBonus,
+    EntryTrigger,
     dwarven_mines_gate::*,
     dwarven_mines_hall::*,
 };
 use rand::Rng;
 use std::collections::HashMap;
+use roguelike_common::*;
 
 pub fn player(ecs: &mut World, x: i32, y: i32) -> Entity {
     ecs
@@ -37,8 +39,8 @@ pub fn player(ecs: &mut World, x: i32, y: i32) -> Entity {
             visible_tiles: Vec::new(),
             range: 5,
         })
-        .with(CombatStats{ defense: 2, power: 5 })
-        .with(HealthStats{ max_hp: 300, hp: 300 })
+        .with(CombatStats { defense: 2, power: 5 })
+        .with(HealthStats { max_hp: 300, hp: 300 })
         .build()
 }
 
@@ -62,7 +64,7 @@ fn map_table(depth: i32) -> RandomTable {
 const MAX_MONSTERS : i32 = 10;
 
 pub fn spawn_map(map: &mut Map, ecs: &mut World) {
-    map.create_temp_walls();
+    map.populate_tiles();
     let spawn_table = map_table(map.depth);
     let mut spawn_points = HashMap::new();
 
@@ -104,11 +106,11 @@ pub fn spawn_map(map: &mut Map, ecs: &mut World) {
         }
     }
 
-    for (idx, i) in DWARVEN_MINES_GATE.iter().enumerate() {
+    for (idx, i) in map.tiles.iter().enumerate() {
         match i {
-            5000 => {
+            TileType::Chasm => {
                 let (x, y) = map.idx_xy(idx as i32);
-                chasm_trap(ecs, x, y);
+                map.contents[idx].push(chasm_trap(ecs, x, y));
             }
             _ => {},
         }
@@ -131,8 +133,8 @@ pub fn monster(ecs: &mut World, code: i32, x: i32, y: i32) {
             range: 8,
         })
         .with(BlocksTile{})
-        .with(CombatStats{ defense: 1, power: 4 })
-        .with(HealthStats{ max_hp: 16, hp: 16 })
+        .with(CombatStats { defense: 1, power: 4 })
+        .with(HealthStats { max_hp: 16, hp: 16 })
         .build();
 }
 
@@ -140,112 +142,112 @@ pub fn health_potion(ecs: &mut World, x: i32, y: i32) {
     ecs.create_entity()
         .with(Code { code: 2000 })
         .with(Position{ x, y })
-        .with(Item{})
-        .with(Consumeable{})
-        .with(ProvidesHealing{ heal: 8 })
-        .with(HealthStats{ max_hp: 1, hp: 1 })
+        .with(Item {})
+        .with(Consumeable {})
+        .with(ProvidesHealing { heal: 8 })
+        .with(HealthStats { max_hp: 1, hp: 1 })
         .build();
 }
 
 pub fn magic_missile_scroll(ecs: &mut World, x: i32, y: i32) {
     ecs.create_entity()
         .with(Code { code: 2100 })
-        .with(Position{ x, y })
-        .with(Item{})
-        .with(Consumeable{})
-        .with(Ranged{ range: 6 })
-        .with(InflictsDamage{ damage: 8 })
-        .with(HealthStats{ max_hp: 1, hp: 1 })
+        .with(Position { x, y })
+        .with(Item {})
+        .with(Consumeable {})
+        .with(Ranged { range: 6 })
+        .with(InflictsDamage { damage: 8 })
+        .with(HealthStats { max_hp: 1, hp: 1 })
         .build();
 }
 
 pub fn dragon_breath_potion(ecs: &mut World, x: i32, y: i32) {
     ecs.create_entity()
         .with(Code { code: 2101 })
-        .with(Position{ x, y })
-        .with(Item{})
-        .with(Consumeable{})
-        .with(Ranged{ range: 6 })
-        .with(InflictsDamage{ damage: 10 })
-        .with(AreaOfEffect{ radius: 2 })
-        .with(HealthStats{ max_hp: 1, hp: 1 })
+        .with(Position { x, y })
+        .with(Item {})
+        .with(Consumeable {})
+        .with(Ranged { range: 6 })
+        .with(InflictsDamage { damage: 10 })
+        .with(AreaOfEffect { radius: 2 })
+        .with(HealthStats { max_hp: 1, hp: 1 })
         .build();
 }
 
 pub fn acid_rain_potion(ecs: &mut World, x: i32, y: i32) {
     ecs.create_entity()
         .with(Code { code: 2102 })
-        .with(Position{ x, y })
-        .with(Item{})
-        .with(Consumeable{})
-        .with(Ranged{ range: 6 })
-        .with(InflictsDamage{ damage: 8 })
-        .with(AreaOfEffect{ radius: 3 })
-        .with(HealthStats{ max_hp: 1, hp: 1 })
+        .with(Position { x, y })
+        .with(Item {})
+        .with(Consumeable {})
+        .with(Ranged { range: 6 })
+        .with(InflictsDamage { damage: 8 })
+        .with(AreaOfEffect { radius: 3 })
+        .with(HealthStats { max_hp: 1, hp: 1 })
         .build();
 }
 
 pub fn confusion_scroll(ecs: &mut World, x: i32, y: i32) {
     ecs.create_entity()
         .with(Code { code: 2103 })
-        .with(Position{ x, y })
-        .with(Item{})
-        .with(Consumeable{})
-        .with(Ranged{ range: 6 })
-        .with(Confusion{ turns: 3 })
-        .with(HealthStats{ max_hp: 1, hp: 1 })
+        .with(Position { x, y })
+        .with(Item {})
+        .with(Consumeable {})
+        .with(Ranged { range: 6 })
+        .with(Confusion { turns: 3 })
+        .with(HealthStats { max_hp: 1, hp: 1 })
         .build();
 }
 
 pub fn dagger(ecs: &mut World, x: i32, y: i32) {
     ecs.create_entity()
         .with(Code { code: 3000 })
-        .with(Position{ x, y })
-        .with(Item{})
-        .with(Equippable{ slot: ArmourSlot::Melee })
-        .with(HealthStats{ max_hp: 1, hp: 1 })
-        .with(MeleePowerBonus{ power: 2 })
+        .with(Position { x, y })
+        .with(Item {})
+        .with(Equippable { slot: ArmourSlot::Melee })
+        .with(HealthStats { max_hp: 1, hp: 1 })
+        .with(MeleePowerBonus { power: 2 })
         .build();
 }
 
 pub fn short_sword(ecs: &mut World, x: i32, y: i32) {
     ecs.create_entity()
         .with(Code { code: 3001 })
-        .with(Position{ x, y })
-        .with(Item{})
-        .with(Equippable{ slot: ArmourSlot::Melee })
-        .with(HealthStats{ max_hp: 1, hp: 1 })
-        .with(MeleePowerBonus{ power: 4 })
+        .with(Position { x, y })
+        .with(Item {})
+        .with(Equippable { slot: ArmourSlot::Melee })
+        .with(HealthStats { max_hp: 1, hp: 1 })
+        .with(MeleePowerBonus { power: 4 })
         .build();
 }
 
 pub fn long_sword(ecs: &mut World, x: i32, y: i32) {
     ecs.create_entity()
         .with(Code { code: 3002 })
-        .with(Position{ x, y })
-        .with(Item{})
-        .with(Equippable{ slot: ArmourSlot::Melee })
-        .with(HealthStats{ max_hp: 1, hp: 1 })
-        .with(MeleePowerBonus{ power: 6 })
+        .with(Position { x, y })
+        .with(Item {})
+        .with(Equippable { slot: ArmourSlot::Melee })
+        .with(HealthStats { max_hp: 1, hp: 1 })
+        .with(MeleePowerBonus { power: 6 })
         .build();
 }
 
 pub fn shield(ecs: &mut World, x: i32, y: i32) {
     ecs.create_entity()
         .with(Code { code: 3100 })
-        .with(Position{ x, y })
-        .with(Item{})
-        .with(Equippable{ slot: ArmourSlot::Shield })
-        .with(HealthStats{ max_hp: 1, hp: 1 })
-        .with(DefenseBonus{ defense: 1 })
+        .with(Position { x, y })
+        .with(Item {})
+        .with(Equippable { slot: ArmourSlot::Shield })
+        .with(HealthStats { max_hp: 1, hp: 1 })
+        .with(DefenseBonus { defense: 1 })
         .build();
 }
 
-pub fn chasm_trap(ecs: &mut World, x: i32, y: i32) {
+pub fn chasm_trap(ecs: &mut World, x: i32, y: i32) -> Entity {
     ecs.create_entity()
         .with(Code { code: 5000 })
-        .with(Position{ x, y })
-        .with(InflictsDamage{ damage: 1000 })
-        .build();
+        .with(Position { x, y })
+        .with(InflictsDamage { damage: 1000 })
+        .build()
 }
 

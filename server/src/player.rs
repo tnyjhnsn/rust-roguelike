@@ -12,6 +12,7 @@ use super::{
     Equipped,
     WantsToRemoveItem,
     RunState,
+    EntryTrigger,
 };
 use std::cmp::{min, max};
 use roguelike_common::*;
@@ -65,6 +66,17 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
             ppos.position.y = pos.y;
             state.add_state(FOV_CHANGE);
             state.add_state(CONTENTS_CHANGE);
+
+            match map.tiles[dest_idx] {
+                TileType::Chasm => {
+                    let player = ecs.fetch::<Entity>();
+                    let mut entry_trigger = ecs.write_storage::<EntryTrigger>();
+                    let entity = &map.contents[dest_idx][0];
+                    entry_trigger.insert(*entity,
+                        EntryTrigger { triggered_by: Some(*player) }).expect("Unable to insert entry trigger");
+                }
+                _ => {}
+            }
         }
     }
 }

@@ -27,6 +27,8 @@ mod damage_system;
 pub use damage_system::*;
 mod inventory_system;
 pub use inventory_system::*;
+mod trigger_system;
+pub use trigger_system::*;
 mod spawner;
 pub use spawner::*;
 mod dungeon;
@@ -100,6 +102,7 @@ impl GameSocket {
         gs.ecs.register::<Equipped>(); 
         gs.ecs.register::<MeleePowerBonus>(); 
         gs.ecs.register::<DefenseBonus>(); 
+        gs.ecs.register::<EntryTrigger>(); 
         gs.new_game();
         gs
     }
@@ -239,6 +242,8 @@ impl GameSocket {
         drop_item.run_now(&self.ecs);
         let mut remove_item = RemoveItemSystem{};
         remove_item.run_now(&self.ecs);
+        let mut trigger = TriggerSystem{};
+        trigger.run_now(&self.ecs);
         let mut damage = DamageSystem{};
         damage.run_now(&self.ecs);
         self.ecs.maintain();

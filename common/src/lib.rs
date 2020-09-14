@@ -69,11 +69,15 @@ impl Point {
 }
 
 #[derive(Debug, PartialEq, Copy, Clone, Serialize_repr, Deserialize_repr)]
-#[repr(u8)]
+#[repr(u32)]
 pub enum TileType {
-    Floor = 0,
-    Wall = 1,
-    DownStairs = 2,
+    Floor = 0, // Can see through, Can traverse
+    Wall = 1, // Cannot see through, Cannot traverse
+    Blocked = 2, // Can see through, Cannot traverse
+    DownStairs = 3,
+    Chasm = 50,
+    DeepWater = 51,
+    Lava = 52,
 }
 
 #[derive(Debug, PartialEq, Copy, Clone, Serialize_repr, Deserialize_repr)]

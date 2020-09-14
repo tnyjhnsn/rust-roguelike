@@ -125,6 +125,11 @@ pub struct DefenseBonus {
     pub defense: i32,
 }
 
+#[derive(Component, Debug, Clone)]
+pub struct EntryTrigger {
+    pub triggered_by: Option<Entity>,
+}
+
 // Component for each intent
 
 #[derive(Component, Debug, Clone)]

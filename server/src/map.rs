@@ -117,22 +117,23 @@ impl Map {
     }
 
     pub fn populate_blocked(&mut self) {
-        for (idx, i) in DWARVEN_MINES_GATE.iter().enumerate() {
-            self.blocked[idx] = match i {
-                1|3 => true,
+        for (idx, tile) in self.tiles.iter().enumerate() {
+            self.blocked[idx] = match tile {
+                TileType::Wall|TileType::Blocked => true,
                 _ => false,
             }
         }
     }
 
-    pub fn create_temp_walls(&mut self) {
+    pub fn populate_tiles(&mut self) {
         for (idx, i) in DWARVEN_MINES_GATE.iter().enumerate() {
             match i {
                 1 => self.tiles.push(TileType::Wall),
-                3 => {
-                    self.tiles.push(TileType::Floor);
+                2 => {
+                    self.tiles.push(TileType::Blocked);
                     self.blocked[idx] = true;
                 }
+                50 => self.tiles.push(TileType::Chasm),
                 _ => self.tiles.push(TileType::Floor),
             }
         }
