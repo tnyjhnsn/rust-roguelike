@@ -6,8 +6,8 @@ use std::collections::HashMap;
 use super::*;
 
 const DIJKSTRA_MAX: i32 = 1000;
-const WIDTH: i32 = 50;
-const HEIGHT: i32 = 50;
+const WIDTH: i32 = 30;
+const HEIGHT: i32 = 61;
 
 #[derive(Debug, Clone)]
 pub struct Map {
@@ -72,13 +72,13 @@ impl Map {
         self.get_area_of_effect(area, radius - 1);
     }
 
-    pub fn populate_dijkstra_values(&mut self, dijkstra_map: &[usize], x: i32, y: i32) -> Position {
+    pub fn populate_dijkstra_values(&mut self, dijkstra_map: &Vec<usize>, x: i32, y: i32) -> Position {
         self.dijkstra_values = vec![DIJKSTRA_MAX; self.get_dim()];
         self.dijkstra_values[dijkstra_map[0]] = 0;
         for i in dijkstra_map.iter() {
             let dv = self.dijkstra_values[*i]; 
             for n in &self.neighbours[*i] {
-                if self.blocked[*n] == false && self.dijkstra_values[*n] == DIJKSTRA_MAX {
+                if self.blocked[*n] == false && self.dijkstra_values[*n] >= DIJKSTRA_MAX {
                     self.dijkstra_values[*n] = dv + 1;
                 };
             };
@@ -100,16 +100,16 @@ impl Map {
     }
 
     fn populate_neighbours(&mut self) {
-        for i in 0..self.get_dim() - 1 {
-            let (row, col) = self.idx_xy(i as i32);
+        for i in 0..self.get_dim() {
+            let (x, y) = self.idx_xy(i as i32);
             let mut neighbours = Vec::new();
-            for r in [-1, 0, 1].iter().cloned() {
-                let rr = row + r;
-                if rr < 0 || rr >= self.height { continue; }
-                for c in [-1, 0, 1].iter().cloned() {
-                    let cc = col + c;
-                    if (r == 0 && c == 0) || cc < 0 || cc >= self.width { continue; }
-                    neighbours.push(self.xy_idx(rr, cc));
+            for c in [-1, 0, 1].iter().cloned() {
+                let xx = x + c;
+                if xx < 0 || xx >= self.width { continue; }
+                for r in [-1, 0, 1].iter().cloned() {
+                    let yy = y + r;
+                    if (c == 0 && r == 0) || yy < 0 || yy >= self.height { continue; }
+                    neighbours.push(self.xy_idx(xx, yy));
                 }
             };
             self.neighbours[i] = neighbours;
@@ -117,7 +117,7 @@ impl Map {
     }
 
     pub fn populate_blocked(&mut self) {
-        for (idx, i) in DWARVEN_MINES_HALL.iter().enumerate() {
+        for (idx, i) in DWARVEN_MINES_GATE.iter().enumerate() {
             self.blocked[idx] = match i {
                 1|3 => true,
                 _ => false,
@@ -126,7 +126,7 @@ impl Map {
     }
 
     pub fn create_temp_walls(&mut self) {
-        for (idx, i) in DWARVEN_MINES_HALL.iter().enumerate() {
+        for (idx, i) in DWARVEN_MINES_GATE.iter().enumerate() {
             match i {
                 1 => self.tiles.push(TileType::Wall),
                 3 => {

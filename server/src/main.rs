@@ -105,8 +105,8 @@ impl GameSocket {
     }
 
     fn new_game(&mut self) {
-        let px = 23;
-        let py = 48;
+        let px = 15;
+        let py = 58;
         let player = player(&mut self.ecs, px, py);
         self.ecs.insert(player);
         self.ecs.insert(PlayerPosition::new(px, py));
