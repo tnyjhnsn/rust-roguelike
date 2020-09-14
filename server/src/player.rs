@@ -71,9 +71,10 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
                 TileType::Chasm => {
                     let player = ecs.fetch::<Entity>();
                     let mut entry_trigger = ecs.write_storage::<EntryTrigger>();
-                    let entity = &map.contents[dest_idx][0];
-                    entry_trigger.insert(*entity,
-                        EntryTrigger { triggered_by: Some(*player) }).expect("Unable to insert entry trigger");
+                    let chasm = &map.contents[dest_idx][0];
+                    if let Some(trap) = entry_trigger.get_mut(*chasm) {
+                        trap.triggered_by = Some(*player);
+                    }
                 }
                 _ => {}
             }

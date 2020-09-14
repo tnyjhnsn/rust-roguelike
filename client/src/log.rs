@@ -80,7 +80,7 @@ impl Log {
         let entity_name = self.props.dict.get_name(entity);
         let item_name = self.props.dict.get_name(item);
         let target_name = self.props.dict.get_name(target);
-        format!("The {} uses the {} on the {} for {} damage", entity_name, item_name, target_name, amount)
+        format!("The {} uses the {} on the {}, causing {} damage", entity_name, item_name, target_name, amount)
     }
 
     fn get_confused_msg(&self, entity: i32, item: i32, target: i32) -> String {
@@ -88,6 +88,12 @@ impl Log {
         let item_name = self.props.dict.get_name(item);
         let target_name = self.props.dict.get_name(target);
         format!("The {} uses the {} on the {}, causing confusion ", entity_name, item_name, target_name)
+    }
+
+    fn get_trap_msg(&self, entity: i32, trap: i32, amount: i32) -> String {
+        let entity_name = self.props.dict.get_name(entity);
+        let trap_name = self.props.dict.get_name(trap);
+        format!("The {} falls into the {}, suffering {} damage", entity_name, trap_name, amount)
     }
 }
 
@@ -137,6 +143,7 @@ impl Component for Log {
                             9 => html! { self.get_unequips_msg(log[1], log[2]) },
                             10 => html! { self.get_equips_msg(log[1], log[2]) },
                             11 => html! { self.get_removes_msg(log[1], log[2]) },
+                            12 => html! { self.get_trap_msg(log[1], log[2], log[3]) },
                             _ => html! { "Unknown log message" },
                         }
                     }

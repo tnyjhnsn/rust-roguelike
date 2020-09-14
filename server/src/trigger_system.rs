@@ -1,21 +1,18 @@
 use specs::prelude::*;
 use super::{
-    Position,
     EntryTrigger,
-    Map,
     Code,
     InflictsDamage,
     SufferDamage,
     GameLog,
+    LogType,
 };
 
 pub struct TriggerSystem {}
 
 impl<'a> System<'a> for TriggerSystem {
     type SystemData = (
-        ReadExpect<'a, Map>,
-        ReadStorage<'a, Position>,
-        ReadStorage<'a, EntryTrigger>,
+        WriteStorage<'a, EntryTrigger>,
         ReadStorage<'a, Code>,
         Entities<'a>,
         WriteExpect<'a, GameLog>,
@@ -24,16 +21,19 @@ impl<'a> System<'a> for TriggerSystem {
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (map, position, entry_trigger, codes, entities, mut gamelog, inflicts_damage,
-            mut inflict_damage) = data;
+        let (mut entry_trigger, codes, entities, mut gamelog, inflict_damage, mut suffer_damage) = data;
 
-        for (entity, trigger) in (&entities, &entry_trigger).join() {
+        for (entity, trigger) in (&entities, &mut entry_trigger).join() {
             match trigger.triggered_by {
                 None => {},
                 Some(e) => {
-                    SufferDamage::new_damage(&mut inflict_damage, e, 1000);
+                    let damage = inflict_damage.get(entity).unwrap().damage;
+                    let code = codes.get(entity).unwrap().code;
+                    SufferDamage::new_damage(&mut suffer_damage, e, 1000);
+                    gamelog.add_log(vec![LogType::Trap as i32, 0, code, damage]);
+                    trigger.triggered_by = None;
                 }
-            }
+            };
         }
     }
 }

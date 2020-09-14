@@ -95,6 +95,7 @@ pub enum LogType {
     Unequip = 9,
     Equip = 10,
     Remove = 11,
+    Trap = 12,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
