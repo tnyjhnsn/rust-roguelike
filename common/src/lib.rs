@@ -39,6 +39,8 @@ pub const KEY_ENTER: u32 = 13;
 pub const KEY_GT: u32 = 190;
 pub const KEY_LT: u32 = 188;
 
+pub type PlayerEntity = Entity;
+
 #[derive(Component, Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct Position {
     pub x: i32,

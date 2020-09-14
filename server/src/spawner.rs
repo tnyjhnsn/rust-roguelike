@@ -27,10 +27,10 @@ use rand::Rng;
 use std::collections::HashMap;
 use roguelike_common::*;
 
-pub fn player(ecs: &mut World, x: i32, y: i32) -> Entity {
+pub fn player(ecs: &mut World, x: i32, y: i32) -> PlayerEntity {
     ecs
         .create_entity()
-        .with(Player{})
+        .with(Player {})
         .with(Code { code: 0 })
         .with(Position { x, y })
         .with(FieldOfView {
@@ -123,14 +123,14 @@ fn grey_mould(ecs: &mut World, x: i32, y: i32) { monster(ecs, 13, x, y); }
 pub fn monster(ecs: &mut World, code: i32, x: i32, y: i32) {
     ecs
         .create_entity()
-        .with(Monster{})
+        .with(Monster {})
         .with(Code { code })
         .with(Position { x, y })
         .with(FieldOfView {
             visible_tiles: Vec::new(),
             range: 8,
         })
-        .with(BlocksTile{})
+        .with(BlocksTile {})
         .with(CombatStats { defense: 1, power: 4 })
         .with(HealthStats { max_hp: 16, hp: 16 })
         .build();
@@ -139,7 +139,7 @@ pub fn monster(ecs: &mut World, code: i32, x: i32, y: i32) {
 pub fn health_potion(ecs: &mut World, x: i32, y: i32) {
     ecs.create_entity()
         .with(Code { code: 2000 })
-        .with(Position{ x, y })
+        .with(Position { x, y })
         .with(Item {})
         .with(Consumeable {})
         .with(ProvidesHealing { heal: 8 })

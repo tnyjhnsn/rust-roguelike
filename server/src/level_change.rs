@@ -7,6 +7,7 @@ use super::{
     map::*,
     spawner::*,
 };
+use roguelike_common::*;
 
 impl GameSocket {
 
@@ -24,7 +25,7 @@ impl GameSocket {
         let entities = self.ecs.entities();
         let player = self.ecs.read_storage::<Player>();
         let inventory = self.ecs.read_storage::<InInventory>();
-        let player_entity = self.ecs.fetch::<Entity>();
+        let player_entity = self.ecs.fetch::<PlayerEntity>();
         let equipped = self.ecs.read_storage::<Equipped>();
 
         let mut to_delete: Vec<Entity> = Vec::new();

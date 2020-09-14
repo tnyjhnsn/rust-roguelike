@@ -69,7 +69,7 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
 
             match map.tiles[dest_idx] {
                 TileType::Chasm => {
-                    let player = ecs.fetch::<Entity>();
+                    let player = ecs.fetch::<PlayerEntity>();
                     let mut entry_trigger = ecs.write_storage::<EntryTrigger>();
                     let chasm = &map.contents[dest_idx][0];
                     if let Some(trap) = entry_trigger.get_mut(*chasm) {
@@ -113,7 +113,7 @@ pub fn player_input(txt: String, ecs: &mut World) {
 pub fn pickup_item(ecs: &mut World) {
 
     let ppos = ecs.fetch::<PlayerPosition>();
-    let player = ecs.fetch::<Entity>();
+    let player = ecs.fetch::<PlayerEntity>();
     let entities = ecs.entities();
     let items = ecs.read_storage::<Item>();
     let positions = ecs.read_storage::<Position>();
@@ -138,7 +138,7 @@ pub fn pickup_item(ecs: &mut World) {
 }
 
 pub fn drop_item(idx: u64, ecs: &mut World) {
-    let player = ecs.fetch::<Entity>();
+    let player = ecs.fetch::<PlayerEntity>();
     let inventory = ecs.read_storage::<InInventory>();
     let entities = ecs.entities();
 
@@ -150,7 +150,7 @@ pub fn drop_item(idx: u64, ecs: &mut World) {
 }
 
 pub fn remove_item(idx: u64, ecs: &mut World) {
-    let player = ecs.fetch::<Entity>();
+    let player = ecs.fetch::<PlayerEntity>();
     let equipped = ecs.read_storage::<Equipped>();
     let entities = ecs.entities();
 
@@ -162,7 +162,7 @@ pub fn remove_item(idx: u64, ecs: &mut World) {
 }
 
 pub fn use_item(idx: u64, target: Option<i32>, ecs: &mut World) {
-    let player = ecs.fetch::<Entity>();
+    let player = ecs.fetch::<PlayerEntity>();
     let inventory = ecs.read_storage::<InInventory>();
     let entities = ecs.entities();
 

@@ -137,7 +137,7 @@ impl GameSocket {
     fn tick(&self) -> Option<String> {
         let fov = self.ecs.read_storage::<FieldOfView>();
         let player = self.ecs.read_storage::<Player>();
-        let player_entity = self.ecs.fetch::<Entity>();
+        let player_entity = self.ecs.fetch::<PlayerEntity>();
         let positions = self.ecs.read_storage::<Position>();
         let codes = self.ecs.read_storage::<Code>();
         let inventory = self.ecs.read_storage::<InInventory>();
