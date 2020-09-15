@@ -67,16 +67,12 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
             state.add_state(FOV_CHANGE);
             state.add_state(CONTENTS_CHANGE);
 
-            match map.tiles[dest_idx] {
-                TileType::Chasm => {
-                    let player = ecs.fetch::<PlayerEntity>();
-                    let mut entry_trigger = ecs.write_storage::<EntryTrigger>();
-                    let chasm = &map.contents[dest_idx][0];
-                    if let Some(trap) = entry_trigger.get_mut(*chasm) {
-                        trap.triggered_by = Some(*player);
-                    }
+            let player = ecs.fetch::<PlayerEntity>();
+            let mut entry_trigger = ecs.write_storage::<EntryTrigger>();
+            for entity_id in map.contents[dest_idx].iter() {
+                if let Some(trap) = entry_trigger.get_mut(*entity_id) {
+                    trap.triggered_by = Some(*player);
                 }
-                _ => {}
             }
         }
     }

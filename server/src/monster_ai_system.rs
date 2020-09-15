@@ -12,17 +12,18 @@ impl<'a> System<'a> for MonsterAISystem {
         WriteExpect<'a, RunState>, 
         ReadStorage<'a, Monster>,
         WriteStorage<'a, Position>,
-        ReadExpect<'a, Entity>,
+        ReadExpect<'a, PlayerEntity>,
         Entities<'a>,
         WriteStorage<'a, WantsToMelee>,
         WriteStorage<'a, Confusion>,
+        WriteStorage<'a, EntryTrigger>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
         let (ppos, fov, mut map, mut state, monster, mut mpos, player_entity,
-             entities, mut wants_to_melee, mut confused) = data;
+             entities, mut wants_to_melee, mut confused, mut entry_trigger) = data;
 
-        for (entity, fov, _monster, mpos) in (&entities, &fov, &monster, &mut mpos).join() {
+        for (entity, fov, _m, mpos) in (&entities, &fov, &monster, &mut mpos).join() {
             let mut can_act = true;
             let is_confused = confused.get_mut(entity);
             if let Some(i_am_confused) = is_confused {
@@ -47,6 +48,12 @@ impl<'a> System<'a> for MonsterAISystem {
                     idx = map.xy_idx(mpos.x, mpos.y);
                     map.blocked[idx] = true;
                     state.add_state(CONTENTS_CHANGE);
+
+                    for entity_id in map.contents[idx].iter() {
+                        if let Some(trap) = entry_trigger.get_mut(*entity_id) {
+                            trap.triggered_by = Some(entity);
+                        }
+                    }
                 }
             }
         }

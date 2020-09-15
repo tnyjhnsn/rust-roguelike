@@ -19,7 +19,7 @@ impl Log {
         let attacker_name = self.props.dict.get_name(attacker);
         let attacker_css = self.props.dict.get_css(attacker);
         let target_name = self.props.dict.get_name(target);
-        let content = format!("{} attacks {} for {} damage", attacker_name, target_name, damage);
+        let content = format!("{} attacks {} causing {} damage", attacker_name, target_name, damage);
         html! {
             <>
                 <div class="tile-box">
@@ -80,20 +80,20 @@ impl Log {
         let entity_name = self.props.dict.get_name(entity);
         let item_name = self.props.dict.get_name(item);
         let target_name = self.props.dict.get_name(target);
-        format!("The {} uses the {} on the {}, causing {} damage", entity_name, item_name, target_name, amount)
+        format!("The {} uses the {} on the {} causing {} damage", entity_name, item_name, target_name, amount)
     }
 
     fn get_confused_msg(&self, entity: i32, item: i32, target: i32) -> String {
         let entity_name = self.props.dict.get_name(entity);
         let item_name = self.props.dict.get_name(item);
         let target_name = self.props.dict.get_name(target);
-        format!("The {} uses the {} on the {}, causing confusion ", entity_name, item_name, target_name)
+        format!("The {} uses the {} on the {}", entity_name, item_name, target_name)
     }
 
     fn get_trap_msg(&self, entity: i32, trap: i32, amount: i32) -> String {
         let entity_name = self.props.dict.get_name(entity);
         let trap_name = self.props.dict.get_name(trap);
-        format!("The {} falls into the {}, suffering {} damage", entity_name, trap_name, amount)
+        format!("The {} falls into the {} suffering {} damage", entity_name, trap_name, amount)
     }
 }
 
