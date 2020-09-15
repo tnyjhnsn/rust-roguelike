@@ -1,7 +1,6 @@
 use specs::prelude::*;
 use roguelike_common::*;
 use serde_json::json;
-use rand::Rng;
 use std::collections::HashMap;
 use super::*;
 
@@ -90,9 +89,9 @@ impl Map {
             .filter(|n| self.blocked[**n as usize] == false && self.dijkstra_values[**n as usize] < dv)
             .collect();
 
-        let mut rng = rand::thread_rng();
+        let mut rng = RandomNumberGenerator::new();
         if v.len() > 0 {
-            let n = rng.gen_range(0, v.len());
+            let n = rng.range(0, v.len());
             return Position { x: *v[n] as i32 % WIDTH, y: *v[n] as i32 / WIDTH };
         }; 
 
@@ -158,11 +157,10 @@ impl Map {
         (idx % self.width, idx / self.width)
     }
 
-    pub fn get_random_space(&self) -> (i32, i32) {
-        let mut rng = rand::thread_rng();
+    pub fn get_random_space(&self, rng: &mut RandomNumberGenerator) -> (i32, i32) {
         loop {
-            let x = rng.gen_range(1, self.width - 1);
-            let y = rng.gen_range(1, self.height - 1);
+            let x = rng.range(1, self.width - 1);
+            let y = rng.range(1, self.height - 1);
             let idx = self.xy_idx(x, y);
             if self.tiles[idx] == TileType::Floor {
                 break (x, y)

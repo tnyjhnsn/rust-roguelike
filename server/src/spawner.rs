@@ -23,7 +23,6 @@ use super::{
     DefenseBonus,
     EntryTrigger,
 };
-use rand::Rng;
 use std::collections::HashMap;
 use roguelike_common::*;
 
@@ -59,21 +58,19 @@ fn map_table(depth: i32) -> RandomTable {
         .add(3100, 5)
 }
 
-const MAX_MONSTERS : i32 = 10;
-
 pub fn spawn_map(map: &mut Map, ecs: &mut World) {
     map.populate_tiles();
     let spawn_table = map_table(map.depth);
     let mut spawn_points = HashMap::new();
 
     {
-        let mut rng = rand::thread_rng();
-        let num_spawns = rng.gen_range(5, MAX_MONSTERS + 1) + (map.depth as f64 * 1.5).floor() as i32;
+        let mut rng = ecs.fetch_mut::<RandomNumberGenerator>();
+        let num_spawns = rng.roll_dice(5, 6, 0) + (map.depth as f64 * 1.5).floor() as i32;
         for _i in 0..num_spawns {
             let mut added = false;
             let mut tries = 0;
             while !added && tries < 20 {
-                let idx = map.get_random_space();
+                let idx = map.get_random_space(&mut rng);
                 if !spawn_points.contains_key(&idx) {
                     spawn_points.insert(idx, spawn_table.roll());
                     added = true;

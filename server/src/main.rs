@@ -108,6 +108,7 @@ impl GameSocket {
     }
 
     fn new_game(&mut self) {
+        self.ecs.insert(RandomNumberGenerator::new());
         let px = 15;
         let py = 58;
         let player = player(&mut self.ecs, px, py);

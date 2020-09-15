@@ -19,7 +19,7 @@ impl Log {
         let attacker_name = self.props.dict.get_name(attacker);
         let attacker_css = self.props.dict.get_css(attacker);
         let target_name = self.props.dict.get_name(target);
-        let content = format!("{} attacks {} causing {} damage", attacker_name, target_name, damage);
+        let content = format!("The {} attacks the {} causing {} damage", attacker_name, target_name, damage);
         html! {
             <>
                 <div class="tile-box">

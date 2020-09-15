@@ -3,6 +3,8 @@ use specs_derive::*;
 use serde::{Serialize, Deserialize};
 use serde_json::Value;
 use serde_repr::*;
+use rand::{Rng, SeedableRng};
+use rand_xorshift::XorShiftRng;
 
 // consts for binary operations
 pub const SEEN: i32 = 1;
@@ -40,6 +42,25 @@ pub const KEY_GT: u32 = 190;
 pub const KEY_LT: u32 = 188;
 
 pub type PlayerEntity = Entity;
+
+pub struct RandomNumberGenerator {
+    rng: XorShiftRng,
+}
+
+impl RandomNumberGenerator {
+    pub fn new() -> Self {
+        let rng: XorShiftRng = SeedableRng::from_entropy();
+        Self { rng }
+    }
+    pub fn roll_dice(&mut self, n: i32, d: i32, m: i32) -> i32 {
+        (0..n).map(|_| self.range(1, d + 1)).sum::<i32>() + m
+    }
+    pub fn range<T>(&mut self, min: T, max: T) -> T
+    where T: rand::distributions::uniform::SampleUniform,
+    {
+        self.rng.gen_range(min, max)
+    }
+}
 
 #[derive(Component, Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct Position {

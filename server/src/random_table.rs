@@ -1,4 +1,4 @@
-use rand::{Rng};
+use roguelike_common::{RandomNumberGenerator};
 
 pub struct RandomEntry {
     code: i32,
@@ -33,8 +33,8 @@ impl RandomTable {
 
     pub fn roll(&self) -> Option<i32> {
         if self.total_weight == 0 { return None; }
-        let mut rng = rand::thread_rng();
-        let mut roll = rng.gen_range(0, self.total_weight);
+        let mut rng = RandomNumberGenerator::new();
+        let mut roll = rng.range(0, self.total_weight);
         let mut idx: usize = 0;
         while roll > 0 {
             if roll < self.entries[idx].weight {
