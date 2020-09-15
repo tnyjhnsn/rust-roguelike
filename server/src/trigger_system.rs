@@ -27,10 +27,11 @@ impl<'a> System<'a> for TriggerSystem {
             match trigger.triggered_by {
                 None => {},
                 Some(e) => {
+                    let triggerer = codes.get(e).unwrap().code;
+                    let the_trigger = codes.get(entity).unwrap().code;
                     let damage = inflict_damage.get(entity).unwrap().damage;
-                    let code = codes.get(entity).unwrap().code;
-                    SufferDamage::new_damage(&mut suffer_damage, e, 1000);
-                    gamelog.add_log(vec![LogType::Trap as i32, 0, code, damage]);
+                    SufferDamage::new_damage(&mut suffer_damage, e, damage);
+                    gamelog.add_log(vec![LogType::Trap as i32, triggerer, the_trigger, damage]);
                     trigger.triggered_by = None;
                 }
             };
