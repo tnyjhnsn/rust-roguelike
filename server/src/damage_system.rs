@@ -44,7 +44,6 @@ pub fn delete_the_dead(ecs : &mut World) {
                 match player {
                     None => {},
                     Some(_) =>  {
-                        println!("added game over state");
                         state.add_state(GAME_OVER);
                     }
                 }
