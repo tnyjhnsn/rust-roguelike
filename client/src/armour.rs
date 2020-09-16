@@ -11,7 +11,6 @@ pub struct Armour {
     link: ComponentLink<Self>,
     list_items: Option<HtmlCollection>,
     selected_item: i32,
-    targeting: bool,
     props: Props,
 }
 
@@ -21,7 +20,6 @@ pub struct Props {
     pub dict: Dictionary,
     pub change_panel_signal: Callback<KeyboardEvent>,
     pub item_action_signal: Callback<(KeyboardEvent, u64, i32)>,
-    pub target_indicator_signal: Callback<(Option<KeyboardEvent>, Option<i32>)>,
 }
 
 pub enum Msg {
@@ -73,7 +71,6 @@ impl Component for Armour {
             link,
             list_items: None,
             selected_item: 0,
-            targeting: false,
             props,
         }
     }
@@ -88,87 +85,43 @@ impl Component for Armour {
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
-        if self.targeting {
-            match msg {
-                Msg::Pressed(e) => {
-                    match e.key_code() {
-                        KEY_ESC => {
-                            //TODO targeter cleanup
-                            self.targeting = false;
+        match msg {
+            Msg::Pressed(e) => {
+                match e.key_code() {
+                    KEY_ESC|KEY_I => {
+                        self.props.change_panel_signal.emit(e);
+                    },
+                    KEY_DOWN =>  self.cycle_list(1),
+                    KEY_UP => self.cycle_list(-1),
+                    KEY_R => {
+                        match &self.list_items {
+                            Some(items) => {
+                                let idx = self.props.armour.items[self.selected_item as usize].1;
+                                self.props.item_action_signal.emit((e, idx, -1));
+                                // TODO Ugly fix - needs better
+                                self.selected_item = max(0, self.selected_item - 1);
+                                if items.length() - 1 == 0 {
+                                    self.list_items = None;
+                                }
+                            }
+                            None => (),
                         }
-                        KEY_ENTER => {
-                            let idx = self.props.armour.items[self.selected_item as usize].1;
-                            self.props.target_indicator_signal.emit((Some(e), Some(idx as i32)));
-                            self.targeting = false;
-                        }
-                        KEY_LEFT|KEY_RIGHT|KEY_UP|KEY_DOWN
-                        |KEY_Y|KEY_U|KEY_B|KEY_N => {
-                            self.props.target_indicator_signal.emit((Some(e), None));
-                        }
-                        _ => ()
                     }
+                    _ => (),
                 }
-                _ => ()
             }
-            false
-        } else {
-            match msg {
-                Msg::Pressed(e) => {
-                    match e.key_code() {
-                        KEY_ESC|KEY_I => {
-                            self.props.change_panel_signal.emit(e);
-                        },
-                        KEY_DOWN =>  self.cycle_list(1),
-                        KEY_UP => self.cycle_list(-1),
-                        KEY_R => {
-                            match &self.list_items {
-                                Some(items) => {
-                                    let idx = self.props.armour.items[self.selected_item as usize].1;
-                                    self.props.item_action_signal.emit((e, idx, -1));
-                                    // TODO Ugly fix - needs better
-                                    self.selected_item = max(0, self.selected_item - 1);
-                                    if items.length() - 1 == 0 {
-                                        self.list_items = None;
-                                    }
-                                }
-                                None => (),
-                            }
-                        }
-                        KEY_U => {
-                            match &self.list_items {
-                                Some(items) => {
-                                    let (item, idx) = self.props.armour.items[self.selected_item as usize];
-                                    if item < 2100 || item >= 3000 {
-                                        self.props.item_action_signal.emit((e, idx, -1));
-                                    } else {
-                                        self.targeting = true;
-                                        self.props.target_indicator_signal.emit((None, Some(0)));
-                                    }
-                                    // TODO Ugly fix - needs better
-                                    self.selected_item = max(0, self.selected_item - 1);
-                                    if items.length() - 1 == 0 {
-                                        self.list_items = None;
-                                    }
-                                }
-                                None => (),
-                            }
-                        }
-                        _ => (),
-                    }
-                }
-                Msg::GotFocus(_e) => {
-                    match self.props.armour.items.len() {
-                        0 => (),
-                        _ => {
-                            self.list_items = Some(self.get_list_items());
-                            self.selected_item = 0;
-                            self.set_selected_item(0, "li-selected");
-                        }
+            Msg::GotFocus(_e) => {
+                match self.props.armour.items.len() {
+                    0 => (),
+                    _ => {
+                        self.list_items = Some(self.get_list_items());
+                        self.selected_item = 0;
+                        self.set_selected_item(0, "li-selected");
                     }
                 }
             }
-            false
         }
+        false
     }
 
     fn view(&self) -> Html {

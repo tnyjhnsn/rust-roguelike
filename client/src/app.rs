@@ -211,7 +211,6 @@ impl Component for Game {
                         dict=&self.game.dict
                         change_panel_signal=self.link.callback(Msg::ChangePanel)
                         item_action_signal=self.link.callback(Msg::ItemAction)
-                        target_indicator_signal=self.link.callback(Msg::TargetIndicator)
                     />
                     <Inventory
                         inventory=&self.game.inventory
