@@ -39,10 +39,14 @@ pub fn delete_the_dead(ecs : &mut World) {
         let mut state = ecs.fetch_mut::<RunState>();
         for (entity, stats) in (&entities, &health_stats).join() {
             if stats.hp < 1 { 
+                dead.push(entity);
                 let player = players.get(entity);
                 match player {
-                    None => { dead.push(entity) }
-                    Some(_) =>  { state.add_state(GAME_OVER) }
+                    None => {},
+                    Some(_) =>  {
+                        println!("added game over state");
+                        state.add_state(GAME_OVER);
+                    }
                 }
                 let victim = codes.get(entity);
                 if let Some(victim) = victim {

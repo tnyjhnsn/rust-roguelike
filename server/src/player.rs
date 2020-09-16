@@ -70,6 +70,7 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
             let mut entry_trigger = ecs.write_storage::<EntryTrigger>();
             for entity_id in map.contents[dest_idx].iter() {
                 if let Some(trap) = entry_trigger.get_mut(*entity_id) {
+                    println!("Player added to trigger");
                     trap.triggered_by = Some(entity);
                 }
             }

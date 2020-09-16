@@ -297,7 +297,6 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for GameSocket {
                             }
                             _ => {
                                 player_input(txt, &mut self.ecs);
-                                delete_the_dead(&mut self.ecs);
                             }
                         }
                     }
@@ -314,15 +313,30 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for GameSocket {
                                 let t = chunks[2].parse::<i32>().unwrap();
                                 let target = if t == -1 { None } else { Some(t) };
                                 use_item(idx, target, &mut self.ecs);
-                                delete_the_dead(&mut self.ecs);
                             }
                             _ => ()
                         }
                     }
                 }
                 self.run_systems();
+                delete_the_dead(&mut self.ecs);
                 if let Some(s) = self.tick() {
                     ctx.text(s);
+                }
+                let state;
+                {
+                    let s = self.ecs.fetch::<RunState>();
+                    state = *s;
+                }
+                if state.check_state(GAME_OVER) {
+                    self.game_over();
+                    self.new_game();
+                    ctx.text(self.draw_map());
+                    self.run_systems();
+                    if let Some(s) = self.tick() {
+                        ctx.text(s);
+                    }
+                    return;
                 }
             }
             Ok(ws::Message::Binary(bin)) => {
@@ -332,24 +346,10 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for GameSocket {
             _ => (),
         }
         self.run_systems_ai();
-        delete_the_dead(&mut self.ecs);
         self.run_systems();
+        delete_the_dead(&mut self.ecs);
         if let Some(s) = self.tick() {
             ctx.text(s);
-        }
-        let state;
-        {
-            let s = self.ecs.fetch::<RunState>();
-            state = *s;
-        }
-        if state.check_state(GAME_OVER) {
-            self.game_over();
-            self.new_game();
-            ctx.text(self.draw_map());
-            self.run_systems();
-            if let Some(s) = self.tick() {
-                ctx.text(s);
-            }
         }
     }
 }
