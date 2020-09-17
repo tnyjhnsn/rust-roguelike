@@ -44,7 +44,6 @@ impl MMap {
         self.height = game.1;
         self.depth = game.2;
         self.tiles = game.3;
-        self.contents = vec![Vec::new(); self.get_dim()];
         self.status = vec![0; self.get_dim()];
         self.fov = Vec::new();
     }
