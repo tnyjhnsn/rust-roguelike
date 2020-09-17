@@ -62,7 +62,7 @@ impl Component for Map {
         let mut background = String::new();
         if self.props.map.viewport.len() > 0 {
             let p = self.props.map.idx_xy(self.props.map.viewport[0]);
-            background = format!("background-position: -{}px -{}px;", p.x * 32, p.y * 32);
+            background = format!("background-position: -{}px -{}px;", p.x * 64, p.y * 64);
         }
         html! { 
             <div

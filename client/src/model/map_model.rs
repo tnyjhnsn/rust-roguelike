@@ -15,8 +15,8 @@ pub struct MMap {
     pub target: i32,
 }
 
-pub const VP_W: i32 = 20;
-pub const VP_H: i32 = 16;
+pub const VP_W: i32 = 10;
+pub const VP_H: i32 = 8;
 
 impl MMap {
     pub fn new() -> Self {

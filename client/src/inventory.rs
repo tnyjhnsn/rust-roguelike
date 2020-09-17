@@ -178,7 +178,9 @@ impl Component for Inventory {
             html! {
                 <li>
                     <div class="flex-wrap">
-                        <div class=("tile", css)></div>
+                        <div class="tile-box">
+                            <div class=("tile", css)></div>
+                        </div>
                         <div class="content">{ name }</div>
                     </div>
                 </li>
