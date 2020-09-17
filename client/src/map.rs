@@ -68,7 +68,8 @@ impl Component for Map {
             <div
                 class="map"
                 tabindex="0"
-                onkeydown=self.link.callback(Msg::Pressed)
+                onkeydown=self.link.callback(
+                    |e: KeyboardEvent| { e.prevent_default(); Msg::Pressed(e) })
             >
                 <TileMap
                     tiles=&self.props.map.tiles
