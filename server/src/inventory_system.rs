@@ -163,7 +163,8 @@ impl<'a> System<'a> for UseItemSystem {
                         if already_equipped.owner == target && already_equipped.slot == target_slot {
                             to_unequip.push(item);
                             if target == *player {
-                                gamelog.add_log(vec![LogType::Unequip as i32, 0, item_code]);
+                                let code = codes.get(item).unwrap().code;
+                                gamelog.add_log(vec![LogType::Unequip as i32, 0, code]);
                                 state.add_state(ARMOUR_CHANGE);
                                 state.add_state(INVENTORY_CHANGE);
                             }
