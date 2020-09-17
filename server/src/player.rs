@@ -12,7 +12,7 @@ use super::{
     Equipped,
     WantsToRemoveItem,
     RunState,
-    EntryTrigger,
+    EntityMoved,
 };
 use std::cmp::{min, max};
 use roguelike_common::*;
@@ -40,6 +40,7 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
     let mut state = ecs.fetch_mut::<RunState>();
     let entities = ecs.entities();
     let mut wants_to_melee = ecs.write_storage::<WantsToMelee>();
+    let mut entity_moved = ecs.write_storage::<EntityMoved>();
 
     for (entity, _player, pos) in (&entities, &mut players, &mut positions).join() {
         if pos.x + delta_x < 1 || pos.x + delta_x > map.width - 1
@@ -64,15 +65,9 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
             let mut ppos = ecs.write_resource::<PlayerPosition>();
             ppos.position.x = pos.x;
             ppos.position.y = pos.y;
+            entity_moved.insert(entity, EntityMoved {}).expect("Unable to insert move");
             state.add_state(FOV_CHANGE);
             state.add_state(CONTENTS_CHANGE);
-
-            let mut entry_trigger = ecs.write_storage::<EntryTrigger>();
-            for entity_id in map.contents[dest_idx].iter() {
-                if let Some(trap) = entry_trigger.get_mut(*entity_id) {
-                    trap.triggered_by = Some(entity);
-                }
-            }
         }
     }
 }

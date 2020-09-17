@@ -242,7 +242,7 @@ pub fn chasm_trap(ecs: &mut World, x: i32, y: i32) -> Entity {
     ecs.create_entity()
         .with(Code { code: 5000 })
         .with(Position { x, y })
-        .with(EntryTrigger { triggered_by: None })
+        .with(EntryTrigger {})
         .with(InflictsDamage { damage: 1000 })
         .build()
 }

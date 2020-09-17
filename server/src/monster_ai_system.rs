@@ -16,12 +16,12 @@ impl<'a> System<'a> for MonsterAISystem {
         Entities<'a>,
         WriteStorage<'a, WantsToMelee>,
         WriteStorage<'a, Confusion>,
-        WriteStorage<'a, EntryTrigger>,
+        WriteStorage<'a, EntityMoved>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
         let (ppos, fov, mut map, mut state, monster, mut mpos, player_entity,
-             entities, mut wants_to_melee, mut confused, mut entry_trigger) = data;
+             entities, mut wants_to_melee, mut confused, mut entity_moved) = data;
 
         for (entity, fov, _m, mpos) in (&entities, &fov, &monster, &mut mpos).join() {
             let mut can_act = true;
@@ -45,15 +45,10 @@ impl<'a> System<'a> for MonsterAISystem {
                     let new_pos = map.populate_dijkstra_values(&dijkstra_map, mpos.x, mpos.y);
                     mpos.x = new_pos.x;
                     mpos.y = new_pos.y;
+                    entity_moved.insert(entity, EntityMoved {}).expect("Unable to insert move");
                     idx = map.xy_idx(mpos.x, mpos.y);
                     map.blocked[idx] = true;
                     state.add_state(CONTENTS_CHANGE);
-
-                    for entity_id in map.contents[idx].iter() {
-                        if let Some(trap) = entry_trigger.get_mut(*entity_id) {
-                            trap.triggered_by = Some(entity);
-                        }
-                    }
                 }
             }
         }

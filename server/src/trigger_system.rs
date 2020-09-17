@@ -1,6 +1,9 @@
 use specs::prelude::*;
 use super::{
+    Map,
     EntryTrigger,
+    EntityMoved,
+    Position,
     Code,
     InflictsDamage,
     SufferDamage,
@@ -12,7 +15,10 @@ pub struct TriggerSystem {}
 
 impl<'a> System<'a> for TriggerSystem {
     type SystemData = (
-        WriteStorage<'a, EntryTrigger>,
+        ReadExpect<'a, Map>,
+        ReadStorage<'a, EntryTrigger>,
+        ReadStorage<'a, EntityMoved>,
+        ReadStorage<'a, Position>,
         ReadStorage<'a, Code>,
         Entities<'a>,
         WriteExpect<'a, GameLog>,
@@ -21,20 +27,25 @@ impl<'a> System<'a> for TriggerSystem {
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (mut entry_trigger, codes, entities, mut gamelog, inflict_damage, mut suffer_damage) = data;
+        let (map, entry_trigger, entity_moved, position, codes, entities,
+             mut gamelog, inflict_damage, mut suffer_damage) = data;
 
-        for (entity, trigger) in (&entities, &mut entry_trigger).join() {
-            match trigger.triggered_by {
-                None => {},
-                Some(e) => {
-                    let triggerer = codes.get(e).unwrap().code;
-                    let the_trigger = codes.get(entity).unwrap().code;
-                    let damage = inflict_damage.get(entity).unwrap().damage;
-                    SufferDamage::new_damage(&mut suffer_damage, e, damage);
-                    gamelog.add_log(vec![LogType::Trap as i32, triggerer, the_trigger, damage]);
-                    trigger.triggered_by = None;
+        for (entity, _entity_moved, pos) in (&entities, &entity_moved, &position).join() {
+            let idx = map.xy_idx(pos.x, pos.y);
+            for entity_id in map.contents[idx].iter() {
+                if entity != *entity_id {
+                    let trigger = entry_trigger.get(*entity_id);
+                    if let Some(_t) = trigger {
+                        let triggerer = codes.get(entity).unwrap().code;
+                        let the_trigger = codes.get(*entity_id).unwrap().code;
+                        let damage = inflict_damage.get(*entity_id);
+                        if let Some(damage) = damage {
+                            SufferDamage::new_damage(&mut suffer_damage, entity, damage.damage);
+                            gamelog.add_log(vec![LogType::Trap as i32, triggerer, the_trigger, damage.damage]);
+                        }
+                    }
                 }
-            };
+            }
         }
     }
 }

@@ -103,6 +103,7 @@ impl GameSocket {
         gs.ecs.register::<MeleePowerBonus>(); 
         gs.ecs.register::<DefenseBonus>(); 
         gs.ecs.register::<EntryTrigger>(); 
+        gs.ecs.register::<EntityMoved>(); 
         gs.new_game();
         gs
     }

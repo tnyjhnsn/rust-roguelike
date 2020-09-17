@@ -126,9 +126,10 @@ pub struct DefenseBonus {
 }
 
 #[derive(Component, Debug, Clone)]
-pub struct EntryTrigger {
-    pub triggered_by: Option<Entity>,
-}
+pub struct EntryTrigger {}
+
+#[derive(Component, Debug, Clone)]
+pub struct EntityMoved {}
 
 // Component for each intent
 
