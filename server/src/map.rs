@@ -2,11 +2,8 @@ use specs::prelude::*;
 use roguelike_common::*;
 use serde_json::json;
 use std::collections::HashMap;
-use super::*;
 
 const DIJKSTRA_MAX: i32 = 1000;
-const WIDTH: i32 = 30;
-const HEIGHT: i32 = 61;
 
 #[derive(Debug, Clone)]
 pub struct Map {
@@ -17,14 +14,17 @@ pub struct Map {
     pub neighbours: Vec<Vec<usize>>,
     pub dijkstra_values: Vec<i32>,
     pub contents: Vec<Vec<Entity>>,
-    pub depth: i32,
+    pub difficulty: i32,
+    pub background: &'static str,
 }
 
 impl Map {
 
-    pub fn new(depth: i32) -> Self {
-        let width = WIDTH;
-        let height = HEIGHT;
+    pub fn new( w: i32, h: i32, new_tiles: &[i32],
+        difficulty: i32, background: &'static str
+    ) -> Self { 
+        let width = w;
+        let height = h;
         let dim = (width * height) as usize;
         let tiles = Vec::with_capacity(dim);
         let blocked = vec![false; dim];
@@ -40,9 +40,11 @@ impl Map {
             neighbours,
             dijkstra_values,
             contents,
-            depth,
+            difficulty,
+            background,
         };
 
+        map.populate_tiles(new_tiles);
         map.populate_neighbours();
         map
     }
@@ -92,7 +94,7 @@ impl Map {
         let mut rng = RandomNumberGenerator::new();
         if v.len() > 0 {
             let n = rng.range(0, v.len());
-            return Position { x: *v[n] as i32 % WIDTH, y: *v[n] as i32 / WIDTH };
+            return Position { x: *v[n] as i32 % self.width, y: *v[n] as i32 / self.width };
         }; 
 
         Position { x, y }
@@ -124,8 +126,8 @@ impl Map {
         }
     }
 
-    pub fn populate_tiles(&mut self) {
-        for (idx, i) in DWARVEN_MINES_GATE.iter().enumerate() {
+    pub fn populate_tiles(&mut self, tiles: &[i32]) {
+        for (idx, i) in tiles.iter().enumerate() {
             match i {
                 1 => self.tiles.push(TileType::Wall),
                 2 => {
@@ -141,7 +143,7 @@ impl Map {
     pub fn draw_map(&self) -> String {
         let mut map = HashMap::new();
         map.entry(String::from("MAP"))
-            .or_insert((self.width, self.height, self.depth, &self.tiles));
+            .or_insert((self.width, self.height, self.background, &self.tiles));
         let gm = GameMsg {
             data: json!(map),
         };
@@ -167,11 +169,4 @@ impl Map {
             }
         }
     }
-}
-
-pub fn down_stairs(ecs: &mut World) -> Map {
-    let mut dungeon = ecs.fetch_mut::<Dungeon>();
-    let map = ecs.fetch::<Map>();
-    dungeon.store_map(&map);
-    Map::new(map.depth + 1)
 }

@@ -41,17 +41,17 @@ pub fn player(ecs: &mut World, x: i32, y: i32) -> PlayerEntity {
         .build()
 }
 
-fn map_table(depth: i32) -> RandomTable {
+fn map_table(difficulty: i32) -> RandomTable {
     RandomTable::new()
         .add(10, 10)
         .add(11, 5)
         .add(12, 5)
-        .add(13, 1 + depth)
+        .add(13, 1 + difficulty)
         .add(2000, 8)
         .add(2100, 5)
-        .add(2101, 2 + depth)
-        .add(2102, 2 + depth)
-        .add(2103, 1 + depth)
+        .add(2101, 2 + difficulty)
+        .add(2102, 2 + difficulty)
+        .add(2103, 1 + difficulty)
         .add(3000, 5)
         .add(3001, 5)
         .add(3002, 5)
@@ -59,13 +59,12 @@ fn map_table(depth: i32) -> RandomTable {
 }
 
 pub fn spawn_map(map: &mut Map, ecs: &mut World) {
-    map.populate_tiles();
-    let spawn_table = map_table(map.depth);
+    let spawn_table = map_table(map.difficulty);
     let mut spawn_points = HashMap::new();
 
     {
         let mut rng = ecs.fetch_mut::<RandomNumberGenerator>();
-        let num_spawns = rng.roll_dice(5, 6, 0) + (map.depth as f64 * 1.5).floor() as i32;
+        let num_spawns = rng.roll_dice(5, 6, 0) + (map.difficulty as f64 * 1.5).floor() as i32;
         for _i in 0..num_spawns {
             let mut added = false;
             let mut tries = 0;

@@ -7,6 +7,9 @@ use serde_json::json;
 use specs::prelude::*;
 use roguelike_common::*;
 
+mod maps;
+pub use maps::*;
+
 mod components;
 pub use components::*;
 mod map;
@@ -31,16 +34,10 @@ mod trigger_system;
 pub use trigger_system::*;
 mod spawner;
 pub use spawner::*;
-mod dungeon;
-pub use dungeon::*;
 mod random_table;
 pub use random_table::*;
 mod level_change;
 pub use level_change::*;
-mod dwarven_mines_gate;
-pub use dwarven_mines_gate::*;
-mod dwarven_mines_hall;
-pub use dwarven_mines_hall::*;
 
 #[derive(PartialEq, Copy, Clone)]
 pub struct RunState {
@@ -110,19 +107,21 @@ impl GameSocket {
 
     fn new_game(&mut self) {
         self.ecs.insert(RandomNumberGenerator::new());
-        let px = 15;
-        let py = 58;
+        //let px = 15;
+        //let py = 58;
+        let px = 23;
+        let py = 48;
         let player = player(&mut self.ecs, px, py);
         self.ecs.insert(player);
         self.ecs.insert(PlayerPosition::new(px, py));
 
-        let mut map = Map::new(0);
+        //let mut map = dm_gate::dwarven_mines_gate();
+        let mut map = dm_hall::dwarven_mines_hall();
         spawn_map(&mut map, &mut self.ecs);
         self.ecs.insert(map);
         
         self.ecs.insert(GameLog::new());
         self.ecs.insert(RunState::new(WAITING));
-        self.ecs.insert(Dungeon::new());
     }
 
     fn game_over(&mut self) {
@@ -289,12 +288,6 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for GameSocket {
                             }
                             "g"|"G" => {
                                 pickup_item(&mut self.ecs);
-                            }
-                            ">" => {
-                                if try_next_level(&mut self.ecs) {
-                                    self.go_downstairs();
-                                    ctx.text(self.draw_map());
-                                }
                             }
                             _ => {
                                 player_input(txt, &mut self.ecs);

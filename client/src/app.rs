@@ -202,7 +202,6 @@ impl Component for Game {
     }
 
     fn view(&self) -> Html {
-        let level_str = format!("Level {}", self.game.map.depth);
         html! { 
             <div class="game">
                 <div class="holding left-panel">
@@ -233,7 +232,6 @@ impl Component for Game {
                     <button onclick=self.link.callback(|_| Msg::Connect)>{ "Connect" }</button>
                     <span style="color: white">{ " Connected: " } { !self.ws.is_none() }</span>
                     <button onclick=self.link.callback(|_| Msg::GetMap)>{ "Get Map" }</button>
-                    <h3>{ level_str }</h3>
                     <Logs
                         logs=&self.game.log
                         dict=&self.game.dict

@@ -50,8 +50,6 @@ body {
 }
 
 .tiles {
-  background-image: url("dwarven-mines-gate.jpg");
-  background-size: 1920px;
 }
 
 .status,
@@ -60,7 +58,7 @@ body {
   grid-column: 2;
   grid-row: 2;
   display: grid;
-  grid-template-columns: repeat(10, 1fr);
+  grid-template-columns: repeat(20, 1fr);
   position: absolute;
 }
 
@@ -85,8 +83,9 @@ body {
 }
 
 .tile {
-  width: 64;
-  height: 64;
+  width: 32;
+  height: 32;
+  background-size: 100%;
 }
 
 .visible {
