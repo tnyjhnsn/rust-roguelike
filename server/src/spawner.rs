@@ -27,8 +27,7 @@ use std::collections::HashMap;
 use roguelike_common::*;
 
 pub fn player(ecs: &mut World, x: i32, y: i32) -> PlayerEntity {
-    ecs
-        .create_entity()
+    ecs.create_entity()
         .with(Player {})
         .with(Code { code: 0 })
         .with(Position { x, y })
@@ -117,8 +116,7 @@ fn ghost(ecs: &mut World, x: i32, y: i32) { monster(ecs, 12, x, y); }
 fn grey_mould(ecs: &mut World, x: i32, y: i32) { monster(ecs, 13, x, y); }
 
 pub fn monster(ecs: &mut World, code: i32, x: i32, y: i32) {
-    ecs
-        .create_entity()
+    ecs.create_entity()
         .with(Monster {})
         .with(Code { code })
         .with(Position { x, y })

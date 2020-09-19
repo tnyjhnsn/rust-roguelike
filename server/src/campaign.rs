@@ -47,12 +47,13 @@ impl Campaign {
         }
     }
 
+    pub fn get_active_map(&mut self) -> &mut Map {
+        &mut self.maps.get_mut(&self.active_map).unwrap().0
+    }
+
     pub fn get_player_start(&self) -> Point {
         self.maps.get(&self.active_map).unwrap().1
     }
 
-    pub fn get_active_map(&mut self) -> &mut Map {
-        &mut self.maps.get_mut(&self.active_map).unwrap().0
-    }
 }
 
