@@ -20,26 +20,19 @@ pub struct Map {
 
 impl Map {
 
-    pub fn new( w: i32, h: i32, new_tiles: &[i32],
+    pub fn new( width: i32, height: i32, new_tiles: &[i32],
         difficulty: i32, background: &'static str
     ) -> Self { 
-        let width = w;
-        let height = h;
-        let dim = (width * height) as usize;
-        let tiles = Vec::with_capacity(dim);
-        let blocked = vec![false; dim];
-        let neighbours = vec![Vec::new(); dim];
-        let dijkstra_values = Vec::new();
-        let contents = vec![Vec::new(); dim];
 
+        let dim = (width * height) as usize;
         let mut map = Map {
             width,
             height,
-            tiles,
-            blocked,
-            neighbours,
-            dijkstra_values,
-            contents,
+            tiles: Vec::with_capacity(dim),
+            blocked: vec![false; dim],
+            neighbours: vec![Vec::new(); dim],
+            dijkstra_values: Vec::new(),
+            contents: vec![Vec::new(); dim],
             difficulty,
             background,
         };

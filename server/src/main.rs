@@ -108,29 +108,21 @@ impl GameSocket {
     }
 
     fn new_game(&mut self) {
+
         self.ecs.insert(RandomNumberGenerator::new());
 
         let mut campaign = Campaign::new();
         let mut map = campaign.get_active_map();
-
-        //let mut map = dm_gate::dwarven_mines_gate();
-        //let px = 15;
-        //let py = 58;
-        //let mut map = dm_hall::dwarven_mines_hall();
-        let px = 23;
-        let py = 48;
-
-        let player = player(&mut self.ecs, px, py);
-        self.ecs.insert(player);
-        self.ecs.insert(PlayerPosition::new(px, py));
-
         spawn_map(&mut map, &mut self.ecs);
-        //self.ecs.insert(map);
-        self.ecs.insert(campaign);
         
+        let p_start = campaign.get_player_start();
+        let player = player(&mut self.ecs, p_start.x, p_start.y);
+        self.ecs.insert(player);
+        self.ecs.insert(PlayerPosition::new(p_start));
+
+        self.ecs.insert(campaign);
         self.ecs.insert(GameLog::new());
         self.ecs.insert(RunState::new(WAITING));
-
     }
 
     fn game_over(&mut self) {
