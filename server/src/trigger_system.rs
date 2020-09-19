@@ -1,6 +1,6 @@
 use specs::prelude::*;
 use super::{
-    Map,
+    Campaign,
     EntryTrigger,
     EntityMoved,
     Position,
@@ -15,7 +15,7 @@ pub struct TriggerSystem {}
 
 impl<'a> System<'a> for TriggerSystem {
     type SystemData = (
-        ReadExpect<'a, Map>,
+        WriteExpect<'a, Campaign>,
         ReadStorage<'a, EntryTrigger>,
         ReadStorage<'a, EntityMoved>,
         ReadStorage<'a, Position>,
@@ -27,8 +27,10 @@ impl<'a> System<'a> for TriggerSystem {
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (map, entry_trigger, entity_moved, position, codes, entities,
+        let (mut campaign, entry_trigger, entity_moved, position, codes, entities,
              mut gamelog, inflict_damage, mut suffer_damage) = data;
+
+        let map = campaign.get_active_map();
 
         for (entity, _entity_moved, pos) in (&entities, &entity_moved, &position).join() {
             let idx = map.xy_idx(pos.x, pos.y);

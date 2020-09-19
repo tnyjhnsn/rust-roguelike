@@ -8,7 +8,7 @@ impl<'a> System<'a> for MonsterAISystem {
     type SystemData = (
         WriteExpect<'a, PlayerPosition>,
         ReadStorage<'a, FieldOfView>, 
-        WriteExpect<'a, Map>, 
+        WriteExpect<'a, Campaign>, 
         WriteExpect<'a, RunState>, 
         ReadStorage<'a, Monster>,
         WriteStorage<'a, Position>,
@@ -20,8 +20,10 @@ impl<'a> System<'a> for MonsterAISystem {
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (ppos, fov, mut map, mut state, monster, mut mpos, player_entity,
+        let (ppos, fov, mut campaign, mut state, monster, mut mpos, player_entity,
              entities, mut wants_to_melee, mut confused, mut entity_moved) = data;
+
+        let map = campaign.get_active_map();
 
         for (entity, fov, _m, mpos) in (&entities, &fov, &monster, &mut mpos).join() {
             let mut can_act = true;

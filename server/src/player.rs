@@ -13,11 +13,10 @@ use super::{
     WantsToRemoveItem,
     RunState,
     EntityMoved,
+    Campaign,
 };
 use std::cmp::{min, max};
 use roguelike_common::*;
-
-use super::map::*;
 
 #[derive(Debug)]
 pub struct PlayerPosition {
@@ -36,7 +35,8 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
     let mut positions = ecs.write_storage::<Position>();
     let mut players = ecs.write_storage::<Player>();
     let combat_stats = ecs.read_storage::<CombatStats>();
-    let map = ecs.fetch::<Map>();
+    let mut campaign = ecs.fetch_mut::<Campaign>();
+    let map = campaign.get_active_map();
     let mut state = ecs.fetch_mut::<RunState>();
     let entities = ecs.entities();
     let mut wants_to_melee = ecs.write_storage::<WantsToMelee>();
@@ -74,7 +74,8 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
 
 pub fn try_next_level(ecs: &mut World) -> bool {
     let ppos = ecs.fetch::<PlayerPosition>();
-    let map = ecs.fetch::<Map>();
+    let mut campaign = ecs.fetch_mut::<Campaign>();
+    let map = campaign.get_active_map();
     let ppos_idx = map.xy_idx(ppos.position.x, ppos.position.y);
 
     if map.tiles[ppos_idx] == TileType::DownStairs {
