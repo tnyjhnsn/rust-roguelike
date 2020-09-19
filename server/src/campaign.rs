@@ -42,7 +42,7 @@ impl Campaign {
             Exits::new(Position::new(23, 48), "dm_gate".to_string(), Position::new(15, 2))
         ));
         Self {
-            active_map: "dm_hall".to_string(),
+            active_map: "dm_gate".to_string(),
             maps,
         }
     }
