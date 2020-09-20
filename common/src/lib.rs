@@ -72,24 +72,7 @@ impl Position {
     pub fn new(x: i32, y: i32) -> Self {
         Self { x, y }
     }
-
-    pub fn to_point(&self) -> Point {
-        Point { x: self.x, y: self.y }
-    }
-}
-
-#[derive(Debug, Hash, Eq, PartialEq, Copy, Clone)]
-pub struct Point {
-    pub x: i32,
-    pub y: i32,
-}
-
-impl Point {
-    pub fn new(x: i32, y: i32) -> Self {
-        Point { x, y }
-    }
-
-    pub fn distance(&self, other: Point) -> f64 {
+    pub fn distance(&self, other: Position) -> f64 {
         let d = ((other.x - self.x).pow(2) + (other.y - self.y).pow(2)) as f64;
         d.sqrt()
     }

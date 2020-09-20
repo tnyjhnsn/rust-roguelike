@@ -145,8 +145,8 @@ impl MMap {
         (y * self.width) + x
     }
 
-    pub fn idx_xy(&self, idx: i32) -> Point {
-        Point::new(idx % self.width, idx / self.width)
+    pub fn idx_xy(&self, idx: i32) -> Position {
+        Position::new(idx % self.width, idx / self.width)
     }
 }
 

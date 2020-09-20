@@ -13,7 +13,7 @@ pub struct Monster {}
 
 #[derive(Component, Debug)]
 pub struct FieldOfView {
-    pub visible_tiles: Vec<Point>,
+    pub visible_tiles: Vec<Position>,
     pub range: i32,
 }
 

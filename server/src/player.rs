@@ -20,11 +20,11 @@ use roguelike_common::*;
 
 #[derive(Debug)]
 pub struct PlayerPosition {
-    pub position: Point,
+    pub position: Position,
 }
 
 impl PlayerPosition {
-    pub fn new(position: Point) -> Self {
+    pub fn new(position: Position) -> Self {
         Self { position }
     }
 }

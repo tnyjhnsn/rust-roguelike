@@ -37,7 +37,7 @@ impl<'a> System<'a> for MonsterAISystem {
             }
 
             if can_act {
-                let distance = ppos.position.distance(Point::new(mpos.x, mpos.y));
+                let distance = ppos.position.distance(Position::new(mpos.x, mpos.y));
                 if distance < 1.5 {
                     wants_to_melee.insert(entity, WantsToMelee{ target: *player_entity }).expect("Unable to insert attack");
                 } else if fov.visible_tiles.contains(&ppos.position) {

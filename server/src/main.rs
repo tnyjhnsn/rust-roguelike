@@ -188,7 +188,7 @@ impl GameSocket {
             let mut tree: HashMap<usize, Vec<i32>> = HashMap::new();
             for (_p, fov) in (&player, &fov).join() {
                 for (pos, code) in (&positions, &codes).join() {
-                    if fov.visible_tiles.contains(&pos.to_point()) {
+                    if fov.visible_tiles.contains(&pos) {
                         let idx = map.xy_idx(pos.x, pos.y);
                         tree.entry(idx).or_insert(Vec::new()).push(code.code);
                     }
