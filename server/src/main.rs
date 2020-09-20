@@ -1,6 +1,16 @@
 use std::collections::{HashMap};
-use actix::{Actor, StreamHandler};
-use actix_web::{web, App, Error, HttpRequest, HttpResponse, HttpServer};
+use actix::{
+    Actor,
+    StreamHandler,
+};
+use actix_web::{
+    web,
+    App,
+    Error,
+    HttpRequest,
+    HttpResponse,
+    HttpServer,
+};
 use actix_web_actors::ws;
 use serde_json::json;
 
@@ -121,8 +131,13 @@ impl GameSocket {
         self.ecs.insert(PlayerPosition::new(p_start));
 
         self.ecs.insert(campaign);
+
+        let mut state = RunState::new(WAITING);
+        state.add_state(INVENTORY_CHANGE);
+        state.add_state(ARMOUR_CHANGE);
+
         self.ecs.insert(GameLog::new());
-        self.ecs.insert(RunState::new(WAITING));
+        self.ecs.insert(state);
     }
 
     fn game_over(&mut self) {

@@ -45,6 +45,8 @@ pub fn delete_the_dead(ecs : &mut World) {
                     None => {},
                     Some(_) =>  {
                         state.add_state(GAME_OVER);
+                        state.add_state(INVENTORY_CHANGE);
+                        state.add_state(ARMOUR_CHANGE);
                     }
                 }
                 let victim = codes.get(entity);
