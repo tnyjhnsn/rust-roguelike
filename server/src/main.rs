@@ -151,7 +151,7 @@ impl GameSocket {
         self.ecs.maintain();
     }
 
-    fn tick(&self) -> Option<String> {
+    fn gui_tick(&self) -> Option<String> {
         let fov = self.ecs.read_storage::<FieldOfView>();
         let player = self.ecs.read_storage::<Player>();
         let player_entity = self.ecs.fetch::<PlayerEntity>();
@@ -330,26 +330,6 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for GameSocket {
                         }
                     }
                 }
-                self.run_systems();
-                delete_the_dead(&mut self.ecs);
-                if let Some(s) = self.tick() {
-                    ctx.text(s);
-                }
-                let state;
-                {
-                    let s = self.ecs.fetch::<RunState>();
-                    state = *s;
-                }
-                if state.check_state(GAME_OVER) {
-                    self.game_over();
-                    self.new_game();
-                    ctx.text(self.draw_map());
-                    self.run_systems();
-                    if let Some(s) = self.tick() {
-                        ctx.text(s);
-                    }
-                    return;
-                }
             }
             Ok(ws::Message::Binary(bin)) => {
                 println!("Bin {:?}", bin);
@@ -357,10 +337,30 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for GameSocket {
             }
             _ => (),
         }
+        self.run_systems();
+        delete_the_dead(&mut self.ecs);
+        if let Some(s) = self.gui_tick() {
+            ctx.text(s);
+        }
+        let state;
+        {
+            let s = self.ecs.fetch::<RunState>();
+            state = *s;
+        }
+        if state.check_state(GAME_OVER) {
+            self.game_over();
+            self.new_game();
+            ctx.text(self.draw_map());
+            self.run_systems();
+            if let Some(s) = self.gui_tick() {
+                ctx.text(s);
+            }
+            return;
+        }
         self.run_systems_ai();
         self.run_systems();
         delete_the_dead(&mut self.ecs);
-        if let Some(s) = self.tick() {
+        if let Some(s) = self.gui_tick() {
             ctx.text(s);
         }
     }
