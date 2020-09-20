@@ -245,6 +245,35 @@ impl GameSocket {
         }
     }
 
+    fn game_tick(&mut self, ctx: &mut <Self as Actor>::Context) {
+        self.run_systems();
+        delete_the_dead(&mut self.ecs);
+        if let Some(s) = self.gui_tick() {
+            ctx.text(s);
+        }
+        let state;
+        {
+            let s = self.ecs.fetch::<RunState>();
+            state = *s;
+        }
+        if state.check_state(GAME_OVER) {
+            self.game_over();
+            self.new_game();
+            ctx.text(self.draw_map());
+            self.run_systems();
+            if let Some(s) = self.gui_tick() {
+                ctx.text(s);
+            }
+            return;
+        }
+        self.run_systems_ai();
+        self.run_systems();
+        delete_the_dead(&mut self.ecs);
+        if let Some(s) = self.gui_tick() {
+            ctx.text(s);
+        }
+    }
+
     fn run_systems(&mut self) {
         let mut vis = VisibilitySystem{};
         vis.run_now(&self.ecs);
@@ -337,32 +366,7 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for GameSocket {
             }
             _ => (),
         }
-        self.run_systems();
-        delete_the_dead(&mut self.ecs);
-        if let Some(s) = self.gui_tick() {
-            ctx.text(s);
-        }
-        let state;
-        {
-            let s = self.ecs.fetch::<RunState>();
-            state = *s;
-        }
-        if state.check_state(GAME_OVER) {
-            self.game_over();
-            self.new_game();
-            ctx.text(self.draw_map());
-            self.run_systems();
-            if let Some(s) = self.gui_tick() {
-                ctx.text(s);
-            }
-            return;
-        }
-        self.run_systems_ai();
-        self.run_systems();
-        delete_the_dead(&mut self.ecs);
-        if let Some(s) = self.gui_tick() {
-            ctx.text(s);
-        }
+        self.game_tick(ctx)
     }
 }
 
