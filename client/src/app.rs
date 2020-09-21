@@ -70,7 +70,7 @@ impl Component for Game {
                                                          cbout, cbnot.into());
     				self.ws = Some(task.unwrap());
     			}
-    			false
+    			true
     		}
     		Msg::Disconnected => {
     			self.ws = None;

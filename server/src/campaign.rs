@@ -23,36 +23,41 @@ impl Exits {
 
 #[derive(Debug)]
 pub struct Campaign {
-    active_map: String,
-    maps: HashMap<String, (Map, Position, Exits)>,
+    name: &'static str,
+    start_position: Position,
+    active_map_key: String,
+    maps: HashMap<String, (Map, Exits)>,
 }
 
 impl Campaign {
     pub fn new() -> Self {
         let mut maps = HashMap::new();
-        maps.entry("dm_gate".to_string()).or_insert((
+        maps.entry(String::from("dm_gate")).or_insert((
             dm_gate::dwarven_mines_gate(),
-            Position::new(15, 58),
-            Exits::new(Position::new(15, 2), "dm_hall".to_string(), Position::new(23, 48))
+            Exits::new(Position::new(15, 2), String::from("dm_hall"), Position::new(23, 48))
         ));
-        maps.entry("dm_hall".to_string()).or_insert((
+        maps.entry(String::from("dm_hall")).or_insert((
             dm_hall::dwarven_mines_hall(),
-            Position::new(23, 48),
-            Exits::new(Position::new(23, 48), "dm_gate".to_string(), Position::new(15, 2))
+            Exits::new(Position::new(23, 48), String::from("dm_gate"), Position::new(15, 2))
         ));
         Self {
-            active_map: "dm_gate".to_string(),
+            name: "The Dwarven Mines",
+            start_position: Position::new(15, 58),
+            active_map_key: String::from("dm_gate"),
             maps,
         }
     }
 
+    pub fn get_name(&self) -> String {
+        self.name.to_string()
+    }
+
     pub fn get_active_map(&mut self) -> &mut Map {
-        &mut self.maps.get_mut(&self.active_map).unwrap().0
+        &mut self.maps.get_mut(&self.active_map_key).unwrap().0
     }
 
     pub fn get_player_start(&self) -> Position {
-        self.maps.get(&self.active_map).unwrap().1
+        self.start_position
     }
-
 }
 
