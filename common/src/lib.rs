@@ -16,7 +16,8 @@ pub const FOV_CHANGE: i32 = 1;
 pub const CONTENTS_CHANGE: i32 = 2;
 pub const INVENTORY_CHANGE: i32 = 4;
 pub const ARMOUR_CHANGE: i32 = 8;
-pub const GAME_OVER: i32 = 16;
+pub const EXIT_MAP: i32 = 16;
+pub const GAME_OVER: i32 = 32;
 
 // key codes
 // sections
@@ -85,6 +86,7 @@ pub enum TileType {
     Wall = 1, // Cannot see through, Cannot traverse
     Blocked = 2, // Can see through, Cannot traverse
     DownStairs = 3,
+    ExitMap = 49, 
     Chasm = 50,
     DeepWater = 51,
     Lava = 52,

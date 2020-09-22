@@ -100,10 +100,14 @@ pub fn spawn_map(map: &mut Map, ecs: &mut World) {
     }
 
     for (idx, i) in map.tiles.iter().enumerate() {
+        let (x, y) = map.idx_xy(idx as i32);
         match i {
             TileType::Chasm => {
-                let (x, y) = map.idx_xy(idx as i32);
                 map.contents[idx].push(chasm_trap(ecs, x, y));
+            }
+            TileType::ExitMap => {
+                println!("found an exit");
+                map.contents[idx].push(exit_map(ecs, x, y));
             }
             _ => {},
         }
@@ -241,6 +245,14 @@ pub fn chasm_trap(ecs: &mut World, x: i32, y: i32) -> Entity {
         .with(Position { x, y })
         .with(EntryTrigger {})
         .with(InflictsDamage { damage: 1000 })
+        .build()
+}
+
+pub fn exit_map(ecs: &mut World, x: i32, y: i32) -> Entity {
+    ecs.create_entity()
+        .with(Code { code: 4999 })
+        .with(Position { x, y })
+        .with(EntryTrigger {})
         .build()
 }
 

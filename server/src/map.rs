@@ -127,6 +127,7 @@ impl Map {
                     self.tiles.push(TileType::Blocked);
                     self.blocked[idx] = true;
                 }
+                49 => self.tiles.push(TileType::ExitMap),
                 50 => self.tiles.push(TileType::Chasm),
                 _ => self.tiles.push(TileType::Floor),
             }
