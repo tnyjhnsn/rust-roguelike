@@ -1,7 +1,10 @@
 [package]
 name = "roguelike_common"
+description = "A client/server version of roguelike"
+repository = "https://github.com/tnyjhnsn/rust-roguelike"
 version = "0.1.0"
 authors = ["Tony Johnson <tony@tosp.net.au>"]
+license = "MIT"
 edition = "2018"
 
 [dependencies]
