@@ -24,6 +24,7 @@ impl Dictionary {
         dict.insert(3002, ("Long Sword", "long-sword"));
         dict.insert(3100, ("Shield", "shield"));
         dict.insert(5000, ("Chasm", ""));
+        dict.insert(5001, ("Lava", ""));
 
         Self { dict }
     }

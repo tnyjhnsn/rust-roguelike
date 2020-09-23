@@ -129,6 +129,7 @@ impl Map {
                 }
                 49 => self.tiles.push(TileType::ExitMap),
                 50 => self.tiles.push(TileType::Chasm),
+                51 => self.tiles.push(TileType::Lava),
                 _ => self.tiles.push(TileType::Floor),
             }
         }

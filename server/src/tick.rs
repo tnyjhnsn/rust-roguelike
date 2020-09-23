@@ -160,19 +160,42 @@ impl GameSocket {
         }
     }
 
+    fn check_exit_map(&mut self) -> bool {
+        let mut state = self.ecs.fetch_mut::<RunState>();
+        if state.check_state(EXIT_MAP) {
+            let mut campaign = self.ecs.fetch_mut::<Campaign>();
+            let mut ppos = self.ecs.fetch_mut::<PlayerPosition>();
+            let new_ppos = campaign.exit_map(ppos.position);
+
+            let mut pos = self.ecs.write_storage::<Position>();
+            let player_entity = self.ecs.fetch::<PlayerEntity>();
+
+            let player_pos = pos.get_mut(*player_entity);
+            if let Some(player_pos) = player_pos {
+                player_pos.x = new_ppos.x;
+                ppos.position.x = new_ppos.x;
+                player_pos.y = new_ppos.y;
+                ppos.position.y = new_ppos.y;
+            }
+            state.remove_state(EXIT_MAP);
+            return true;
+        }
+        false
+    }
+
     pub fn game_tick(&mut self, ctx: &mut <Self as Actor>::Context) {
         self.run_systems();
         delete_the_dead(&mut self.ecs);
         if let Some(s) = self.gui_tick() {
             ctx.text(s);
         }
-        let mut state;
+        let state;
         {
-            let s = self.ecs.fetch_mut::<RunState>();
+            let s = self.ecs.fetch::<RunState>();
             state = *s;
         }
         if state.check_state(GAME_OVER) {
-            self.game_over();
+            &self.game_over();
             ctx.text(self.draw_map());
             self.run_systems();
             if let Some(s) = self.gui_tick() {
@@ -180,9 +203,14 @@ impl GameSocket {
             }
             return;
         }
-        if state.check_state(EXIT_MAP) {
-            println!("Ready to change maps");
-            state.remove_state(EXIT_MAP);
+        if self.check_exit_map() {
+            self.go_downstairs();
+            ctx.text(self.draw_map());
+            self.run_systems();
+            if let Some(s) = self.gui_tick() {
+                ctx.text(s);
+            }
+            return;
         }
         self.run_systems_ai();
         self.run_systems();

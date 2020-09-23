@@ -88,8 +88,7 @@ pub enum TileType {
     DownStairs = 3,
     ExitMap = 49, 
     Chasm = 50,
-    DeepWater = 51,
-    Lava = 52,
+    Lava = 51,
 }
 
 #[derive(Debug, PartialEq, Copy, Clone, Serialize_repr, Deserialize_repr)]

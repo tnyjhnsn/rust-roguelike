@@ -4,8 +4,6 @@ use super::{
     Player,
     InInventory,
     Equipped,
-    //map::*,
-    //spawner::*,
 };
 use roguelike_common::*;
 
@@ -16,9 +14,6 @@ impl GameSocket {
         for target in &to_delete {
             self.ecs.delete_entity(*target).expect("Unable to delete entity");
         }
-        //let mut new_map = down_stairs(&mut self.ecs);
-        //spawn_map(&mut new_map, &mut self.ecs);
-        //self.ecs.insert(new_map);
     }
 
     fn entities_to_remove_on_level_change(&self) -> Vec<Entity> {
