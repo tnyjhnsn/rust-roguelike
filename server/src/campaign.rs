@@ -61,9 +61,9 @@ impl Campaign {
 
         Self {
             name: "The Dwarven Mines",
-            start_position: Position::new(27, 48),
-            active_map: dm_forge::dwarven_mines_forge(),
-            active_map_key: String::from("dm_forge"),
+            start_position: Position::new(15, 59),
+            active_map: dm_gate::dwarven_mines_gate(),
+            active_map_key: String::from("dm_gate"),
             maps,
         }
     }
