@@ -13,7 +13,7 @@ use super::{
     WantsToRemoveItem,
     RunState,
     EntityMoved,
-    Campaign,
+    Map,
 };
 use std::cmp::{min, max};
 use roguelike_common::*;
@@ -33,16 +33,15 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
     let mut positions = ecs.write_storage::<Position>();
     let mut players = ecs.write_storage::<Player>();
     let combat_stats = ecs.read_storage::<CombatStats>();
-    let mut campaign = ecs.fetch_mut::<Campaign>();
-    let map = campaign.get_active_map();
+    let map = ecs.fetch::<Map>();
     let mut state = ecs.fetch_mut::<RunState>();
     let entities = ecs.entities();
     let mut wants_to_melee = ecs.write_storage::<WantsToMelee>();
     let mut entity_moved = ecs.write_storage::<EntityMoved>();
 
     for (entity, _player, pos) in (&entities, &mut players, &mut positions).join() {
-        if pos.x + delta_x < 1 || pos.x + delta_x > map.width - 1
-            || pos.y + delta_y < 1 || pos.y + delta_y > map.height - 1 { return; }
+        if pos.x + delta_x < 0 || pos.x + delta_x > map.width - 1
+            || pos.y + delta_y < 0 || pos.y + delta_y > map.height - 1 { return; }
         let dest_idx = map.xy_idx(pos.x + delta_x, pos.y + delta_y);
 
         for potential_target in &map.contents[dest_idx] {
@@ -72,8 +71,7 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
 
 pub fn try_next_level(ecs: &mut World) -> bool {
     let ppos = ecs.fetch::<PlayerPosition>();
-    let mut campaign = ecs.fetch_mut::<Campaign>();
-    let map = campaign.get_active_map();
+    let map = ecs.fetch::<Map>();
     let ppos_idx = map.xy_idx(ppos.position.x, ppos.position.y);
 
     if map.tiles[ppos_idx] == TileType::DownStairs {

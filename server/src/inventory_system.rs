@@ -5,7 +5,7 @@ use super::{
     WantsToUseItem,
     WantsToRemoveItem,
     Code,
-    Campaign,
+    Map,
     InInventory,
     Position,
     GameLog,
@@ -98,7 +98,7 @@ impl<'a> System<'a> for UseItemSystem {
     type SystemData = (
         ReadExpect<'a, Entity>,
         WriteExpect<'a, GameLog>,
-        WriteExpect<'a, Campaign>,
+        ReadExpect<'a, Map>,
         Entities<'a>,
         WriteStorage<'a, WantsToUseItem>,
         ReadStorage<'a, Code>,
@@ -116,11 +116,9 @@ impl<'a> System<'a> for UseItemSystem {
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (player, mut gamelog, mut campaign, entities, mut wants_use, codes, consumeables,
+        let (player, mut gamelog, map, entities, mut wants_use, codes, consumeables,
              healing, inflict_damage, mut suffer_damage, mut health_stats, aoe,
              mut confused, equippable, mut equipped, mut inventory, mut state) = data;
-
-        let map = campaign.get_active_map();
 
         for (entity, use_item) in (&entities, &wants_use).join() {
 

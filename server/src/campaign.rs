@@ -11,7 +11,7 @@ type Exits = HashMap<Position, (String, Position)>;
 pub struct Campaign {
     name: &'static str,
     start_position: Position,
-    active_map: Map,
+    pub active_map: Map,
     active_map_key: String,
     maps: HashMap<String, Exits>,
 }
@@ -57,7 +57,26 @@ impl Campaign {
                 (String::from("dm_hall"), Position::new(23, 1)));
         exits.insert(Position::new(30, 49),
                 (String::from("dm_hall"), Position::new(24, 1)));
+        exits.insert(Position::new(14, 0),
+                (String::from("dm_mine"), Position::new(14, 48)));
+        exits.insert(Position::new(15, 0),
+                (String::from("dm_mine"), Position::new(15, 48)));
+        exits.insert(Position::new(16, 0),
+                (String::from("dm_mine"), Position::new(16, 48)));
+        exits.insert(Position::new(45, 0),
+                (String::from("dm_mine"), Position::new(45, 48)));
         maps.insert(String::from("dm_forge"), exits);
+
+        exits = HashMap::new();
+        exits.insert(Position::new(14, 49),
+                (String::from("dm_forge"), Position::new(14, 1)));
+        exits.insert(Position::new(15, 49),
+                (String::from("dm_forge"), Position::new(15, 1)));
+        exits.insert(Position::new(16, 49),
+                (String::from("dm_forge"), Position::new(16, 1)));
+        exits.insert(Position::new(45, 49),
+                (String::from("dm_forge"), Position::new(45, 1)));
+        maps.insert(String::from("dm_mine"), exits);
 
         Self {
             name: "The Dwarven Mines",
@@ -72,8 +91,8 @@ impl Campaign {
         self.name.to_string()
     }
 
-    pub fn get_active_map(&mut self) -> &mut Map {
-        &mut self.active_map
+    pub fn get_active_map(&mut self) -> Map {
+        self.active_map.clone()
     }
 
     pub fn get_player_start(&self) -> Position {
@@ -96,6 +115,10 @@ impl Campaign {
             "dm_forge" => {
                 self.active_map = dm_forge::dwarven_mines_forge();
                 self.active_map_key = String::from("dm_forge");
+            }
+            "dm_mine" => {
+                self.active_map = dm_mine::dwarven_mines_mine();
+                self.active_map_key = String::from("dm_mine");
             }
             _ => {}
         }

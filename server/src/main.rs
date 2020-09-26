@@ -53,6 +53,7 @@ pub use tick::*;
 
 pub struct GameSocket {
     ecs: World,
+    campaign: Campaign,
 }
 
 impl GameSocket {
@@ -60,6 +61,7 @@ impl GameSocket {
     fn new() -> Self {
         let mut gs = GameSocket {
             ecs: World::new(),
+            campaign: Campaign::new(),
         };
         gs.ecs.register::<Position>(); 
         gs.ecs.register::<Code>(); 

@@ -1,8 +1,7 @@
 use specs::prelude::*;
 use roguelike_common::*;
 use super::components::*;
-//use super::map::*;
-use super::campaign::*;
+use super::map::*;
 use line_drawing::Bresenham;
 use std::collections::HashSet;
 use std::iter::FromIterator;
@@ -11,13 +10,12 @@ pub struct VisibilitySystem {}
 
 impl<'a> System<'a> for VisibilitySystem {
     type SystemData = (
-        WriteExpect<'a, Campaign>,
+        ReadExpect<'a, Map>,
         WriteStorage<'a, FieldOfView>, 
         ReadStorage<'a, Position>,
     );
 
-    fn run(&mut self, (mut campaign, mut fov, pos): Self::SystemData) {
-        let map = campaign.get_active_map();
+    fn run(&mut self, (map, mut fov, pos): Self::SystemData) {
         for (fov, pos) in (&mut fov, &pos).join() {
             fov.visible_tiles.clear();
             let mut possible_fov = get_possible_fov(pos.x, pos.y, fov.range);

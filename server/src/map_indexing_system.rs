@@ -1,6 +1,6 @@
 use specs::prelude::*;
 use super::{
-    Campaign,
+    Map,
     Position,
     BlocksTile
 };
@@ -9,16 +9,14 @@ pub struct MapIndexingSystem {}
 
 impl<'a> System<'a> for MapIndexingSystem {
     type SystemData = (
-        WriteExpect<'a, Campaign>,
+        WriteExpect<'a, Map>,
         ReadStorage<'a, Position>,
         ReadStorage<'a, BlocksTile>,
         Entities<'a>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (mut campaign, pos, blockers, entities) = data;
-
-        let map = campaign.get_active_map();
+        let (mut map, pos, blockers, entities) = data;
 
         map.populate_blocked();
         map.clear_contents();

@@ -33,18 +33,18 @@ impl GameSocket {
 
     pub fn new_game(&mut self) {
 
+        self.campaign = Campaign::new();
         self.ecs.insert(RandomNumberGenerator::new());
 
-        let mut campaign = Campaign::new();
-        let mut map = campaign.get_active_map();
+        let mut map = self.campaign.get_active_map();
         spawn_map(&mut map, &mut self.ecs);
         
-        let p_start = campaign.get_player_start();
+        let p_start = self.campaign.get_player_start();
         let player = player(&mut self.ecs, p_start.x, p_start.y);
         self.ecs.insert(player);
         self.ecs.insert(PlayerPosition::new(p_start));
 
-        self.ecs.insert(campaign);
+        self.ecs.insert(map);
 
         let mut state = RunState::new(WAITING);
         state.add_state(INVENTORY_CHANGE);
@@ -74,8 +74,7 @@ impl GameSocket {
         let codes = self.ecs.read_storage::<Code>();
         let inventory = self.ecs.read_storage::<InInventory>();
         let equipped = self.ecs.read_storage::<Equipped>();
-        let mut campaign = self.ecs.fetch_mut::<Campaign>();
-        let map = campaign.get_active_map();
+        let map = self.ecs.fetch::<Map>();
         let ppos = self.ecs.fetch::<PlayerPosition>();
         let mut state = self.ecs.fetch_mut::<RunState>();
         let entities = self.ecs.entities();
@@ -163,9 +162,8 @@ impl GameSocket {
     fn check_exit_map(&mut self) -> bool {
         let mut state = self.ecs.fetch_mut::<RunState>();
         if state.check_state(EXIT_MAP) {
-            let mut campaign = self.ecs.fetch_mut::<Campaign>();
             let mut ppos = self.ecs.fetch_mut::<PlayerPosition>();
-            let new_ppos = campaign.exit_map(ppos.position);
+            let new_ppos = self.campaign.exit_map(ppos.position);
 
             let mut pos = self.ecs.write_storage::<Position>();
             let player_entity = self.ecs.fetch::<PlayerEntity>();
@@ -195,7 +193,7 @@ impl GameSocket {
             state = *s;
         }
         if state.check_state(GAME_OVER) {
-            &self.game_over();
+            self.game_over();
             ctx.text(self.draw_map());
             self.run_systems();
             if let Some(s) = self.gui_tick() {
@@ -205,6 +203,9 @@ impl GameSocket {
         }
         if self.check_exit_map() {
             self.go_downstairs();
+            let mut map = self.campaign.get_active_map();
+            spawn_map(&mut map, &mut self.ecs);
+            self.ecs.insert(map);
             ctx.text(self.draw_map());
             self.run_systems();
             if let Some(s) = self.gui_tick() {
@@ -252,8 +253,7 @@ impl GameSocket {
         let mut state = self.ecs.fetch_mut::<RunState>();
         state.add_state(FOV_CHANGE);
         state.add_state(CONTENTS_CHANGE);
-        let mut campaign = self.ecs.fetch_mut::<Campaign>();
-        let map = campaign.get_active_map();
+        let map = self.ecs.fetch::<Map>();
         map.draw_map()
     }
 }
