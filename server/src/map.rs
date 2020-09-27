@@ -120,17 +120,10 @@ impl Map {
     }
 
     pub fn populate_tiles(&mut self, tiles: &[i32]) {
-        for (idx, i) in tiles.iter().enumerate() {
+        for i in tiles.iter() {
             match i {
-                1 => {
-                    self.tiles.push(TileType::Wall);
-                    self.blocked[idx] = true;
-                }
-
-                2 => {
-                    self.tiles.push(TileType::Blocked);
-                    self.blocked[idx] = true;
-                }
+                1 => self.tiles.push(TileType::Wall),
+                2 => self.tiles.push(TileType::Blocked), 
                 49 => self.tiles.push(TileType::ExitMap),
                 50 => self.tiles.push(TileType::Chasm),
                 51 => self.tiles.push(TileType::Lava),
