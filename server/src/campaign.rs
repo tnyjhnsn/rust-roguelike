@@ -14,11 +14,13 @@ pub struct Campaign {
     pub active_map: Map,
     active_map_key: String,
     maps: HashMap<String, Exits>,
+    maps_2: HashMap<String, (Option<Map>, Exits)>,
 }
 
 impl Campaign {
     pub fn new() -> Self {
         let mut maps = HashMap::new();
+        let mut maps_2 = HashMap::new();
         let mut exits = HashMap::new();
 
         exits.insert(Position::new(14, 1),
@@ -27,7 +29,8 @@ impl Campaign {
                 (String::from("dm_hall"), Position::new(23, 48)));
         exits.insert(Position::new(16, 1),
                 (String::from("dm_hall"), Position::new(24, 48)));
-        maps.insert(String::from("dm_gate"), exits);
+        maps.insert(String::from("dm_gate"), exits.clone());
+        maps_2.insert(String::from("dm_gate"), (None, exits));
 
         exits = HashMap::new();
         exits.insert(Position::new(22, 49),
@@ -46,7 +49,8 @@ impl Campaign {
                 (String::from("dm_forge"), Position::new(29, 48)));
         exits.insert(Position::new(25, 0),
                 (String::from("dm_forge"), Position::new(30, 48)));
-        maps.insert(String::from("dm_hall"), exits);
+        maps.insert(String::from("dm_hall"), exits.clone());
+        maps_2.insert(String::from("dm_hall"), (None, exits));
 
         exits = HashMap::new();
         exits.insert(Position::new(27, 49),
@@ -65,7 +69,8 @@ impl Campaign {
                 (String::from("dm_mine"), Position::new(16, 48)));
         exits.insert(Position::new(45, 0),
                 (String::from("dm_mine"), Position::new(45, 48)));
-        maps.insert(String::from("dm_forge"), exits);
+        maps.insert(String::from("dm_forge"), exits.clone());
+        maps_2.insert(String::from("dm_forge"), (None, exits));
 
         exits = HashMap::new();
         exits.insert(Position::new(14, 49),
@@ -76,7 +81,8 @@ impl Campaign {
                 (String::from("dm_forge"), Position::new(16, 1)));
         exits.insert(Position::new(45, 49),
                 (String::from("dm_forge"), Position::new(45, 1)));
-        maps.insert(String::from("dm_mine"), exits);
+        maps.insert(String::from("dm_mine"), exits.clone());
+        maps_2.insert(String::from("dm_mine"), (None, exits));
 
         Self {
             name: "The Dwarven Mines",
@@ -84,11 +90,30 @@ impl Campaign {
             active_map: dm_gate::dwarven_mines_gate(),
             active_map_key: String::from("dm_gate"),
             maps,
+            maps_2,
         }
     }
 
     pub fn get_name(&self) -> String {
         self.name.to_string()
+    }
+
+    // TEST
+    pub fn store_map(&mut self, map: &Map) {
+        for (key, val) in self.maps_2.iter_mut() {
+            if key == &self.active_map_key {
+                val.0 = Some(map.clone());
+            }
+        }
+    }
+
+    // TEST
+    pub fn get_map(&self, key: String) -> Option<Map> {
+        if let Some(map) = &self.maps_2.get(&key).unwrap().0 {
+            Some(map.clone())
+        } else {
+            None
+        }
     }
 
     pub fn get_active_map(&mut self) -> Map {

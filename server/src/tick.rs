@@ -162,6 +162,9 @@ impl GameSocket {
     fn check_exit_map(&mut self) -> bool {
         let mut state = self.ecs.fetch_mut::<RunState>();
         if state.check_state(EXIT_MAP) {
+            // TEST
+            //let map = self.ecs.fetch::<Map>();
+            //self.campaign.store_map(&map);
             let mut ppos = self.ecs.fetch_mut::<PlayerPosition>();
             let new_ppos = self.campaign.exit_map(ppos.position);
 
@@ -202,6 +205,9 @@ impl GameSocket {
             return;
         }
         if self.check_exit_map() {
+            // TEST
+            //let m = self.campaign.get_map(String::from("dm_gate")).unwrap();
+            //println!("map length {}", m.tiles.len());
             self.go_downstairs();
             let mut map = self.campaign.get_active_map();
             spawn_map(&mut map, &mut self.ecs);

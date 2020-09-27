@@ -122,7 +122,11 @@ impl Map {
     pub fn populate_tiles(&mut self, tiles: &[i32]) {
         for (idx, i) in tiles.iter().enumerate() {
             match i {
-                1 => self.tiles.push(TileType::Wall),
+                1 => {
+                    self.tiles.push(TileType::Wall);
+                    self.blocked[idx] = true;
+                }
+
                 2 => {
                     self.tiles.push(TileType::Blocked);
                     self.blocked[idx] = true;
