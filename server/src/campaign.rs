@@ -14,7 +14,7 @@ pub struct Campaign {
     pub active_map: Map,
     active_map_key: String,
     maps: HashMap<String, Exits>,
-    maps_2: HashMap<String, (Option<Map>, Exits)>,
+    maps_2: HashMap<String, (bool, Exits)>,
 }
 
 impl Campaign {
@@ -30,7 +30,7 @@ impl Campaign {
         exits.insert(Position::new(16, 1),
                 (String::from("dm_hall"), Position::new(24, 48)));
         maps.insert(String::from("dm_gate"), exits.clone());
-        maps_2.insert(String::from("dm_gate"), (None, exits));
+        maps_2.insert(String::from("dm_gate"), (false, exits));
 
         exits = HashMap::new();
         exits.insert(Position::new(22, 49),
@@ -50,7 +50,7 @@ impl Campaign {
         exits.insert(Position::new(25, 0),
                 (String::from("dm_forge"), Position::new(30, 48)));
         maps.insert(String::from("dm_hall"), exits.clone());
-        maps_2.insert(String::from("dm_hall"), (None, exits));
+        maps_2.insert(String::from("dm_hall"), (false, exits));
 
         exits = HashMap::new();
         exits.insert(Position::new(27, 49),
@@ -70,7 +70,7 @@ impl Campaign {
         exits.insert(Position::new(45, 0),
                 (String::from("dm_mine"), Position::new(45, 48)));
         maps.insert(String::from("dm_forge"), exits.clone());
-        maps_2.insert(String::from("dm_forge"), (None, exits));
+        maps_2.insert(String::from("dm_forge"), (false, exits));
 
         exits = HashMap::new();
         exits.insert(Position::new(14, 49),
@@ -81,8 +81,27 @@ impl Campaign {
                 (String::from("dm_forge"), Position::new(16, 1)));
         exits.insert(Position::new(45, 49),
                 (String::from("dm_forge"), Position::new(45, 1)));
+        exits.insert(Position::new(7, 0),
+                (String::from("dm_mountain"), Position::new(19, 48)));
+        exits.insert(Position::new(8, 0),
+                (String::from("dm_mountain"), Position::new(20, 48)));
+        exits.insert(Position::new(9, 0),
+                (String::from("dm_mountain"), Position::new(21, 48)));
         maps.insert(String::from("dm_mine"), exits.clone());
-        maps_2.insert(String::from("dm_mine"), (None, exits));
+        maps_2.insert(String::from("dm_mine"), (false, exits));
+
+        exits = HashMap::new();
+        exits.insert(Position::new(19, 49),
+                (String::from("dm_mine"), Position::new(7, 1)));
+        exits.insert(Position::new(20, 49),
+                (String::from("dm_mine"), Position::new(8, 1)));
+        exits.insert(Position::new(21, 49),
+                (String::from("dm_mine"), Position::new(9, 1)));
+        exits.insert(Position::new(22, 49),
+                (String::from("dm_mine"), Position::new(9, 1)));
+        maps.insert(String::from("dm_mountain"), exits.clone());
+        maps_2.insert(String::from("dm_mountain"), (false, exits));
+
 
         Self {
             name: "The Dwarven Mines",
@@ -99,21 +118,17 @@ impl Campaign {
     }
 
     // TEST
-    pub fn store_map(&mut self, map: &Map) {
+    pub fn set_visited(&mut self) {
         for (key, val) in self.maps_2.iter_mut() {
             if key == &self.active_map_key {
-                val.0 = Some(map.clone());
+                val.0 = true;
             }
         }
     }
 
     // TEST
-    pub fn get_map(&self, key: String) -> Option<Map> {
-        if let Some(map) = &self.maps_2.get(&key).unwrap().0 {
-            Some(map.clone())
-        } else {
-            None
-        }
+    pub fn get_visited(&self, key: String) -> bool {
+        self.maps_2.get(&key).unwrap().0
     }
 
     pub fn get_active_map(&mut self) -> Map {
@@ -144,6 +159,10 @@ impl Campaign {
             "dm_mine" => {
                 self.active_map = dm_mine::dwarven_mines_mine();
                 self.active_map_key = String::from("dm_mine");
+            }
+            "dm_mountain" => {
+                self.active_map = dm_mountain::dwarven_mines_mountain();
+                self.active_map_key = String::from("dm_mountain");
             }
             _ => {}
         }
