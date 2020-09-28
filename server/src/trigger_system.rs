@@ -9,9 +9,7 @@ use super::{
     SufferDamage,
     GameLog,
     LogType,
-    RunState,
 };
-use roguelike_common::*;
 
 pub struct TriggerSystem {}
 
@@ -26,12 +24,11 @@ impl<'a> System<'a> for TriggerSystem {
         WriteExpect<'a, GameLog>,
         ReadStorage<'a, InflictsDamage>,
         WriteStorage<'a, SufferDamage>,
-        WriteExpect<'a, RunState>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
         let (map, entry_trigger, mut entity_moved, position, codes, entities,
-             mut gamelog, inflict_damage, mut suffer_damage, mut state) = data;
+             mut gamelog, inflict_damage, mut suffer_damage) = data;
 
         for (entity, _entity_moved, pos) in (&entities, &entity_moved, &position).join() {
             let idx = map.xy_idx(pos.x, pos.y);
@@ -45,9 +42,6 @@ impl<'a> System<'a> for TriggerSystem {
                         if let Some(damage) = damage {
                             SufferDamage::new_damage(&mut suffer_damage, entity, damage.damage);
                             gamelog.add_log(vec![LogType::Trap as i32, triggerer, the_trigger, damage.damage]);
-                        }
-                        if the_trigger == 4999 && triggerer == 0 {
-                            state.add_state(EXIT_MAP);
                         }
                     }
                 }

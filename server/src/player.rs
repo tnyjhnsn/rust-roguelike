@@ -63,6 +63,10 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
             ppos.position.x = pos.x;
             ppos.position.y = pos.y;
             entity_moved.insert(entity, EntityMoved {}).expect("Unable to insert move");
+            match map.tiles[dest_idx] {
+                TileType::ExitMap => state.add_state(EXIT_MAP),
+                _ => {},
+            }
             state.add_state(FOV_CHANGE);
             state.add_state(CONTENTS_CHANGE);
         }

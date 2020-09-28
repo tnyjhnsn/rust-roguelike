@@ -108,9 +108,6 @@ pub fn spawn_map(map: &mut Map, ecs: &mut World) {
             TileType::Lava => {
                 map.contents[idx].push(lava_trap(ecs, x, y));
             }
-            TileType::ExitMap => {
-                map.contents[idx].push(exit_map(ecs, x, y));
-            }
             _ => {},
         }
     }
@@ -256,14 +253,6 @@ pub fn lava_trap(ecs: &mut World, x: i32, y: i32) -> Entity {
         .with(Position { x, y })
         .with(EntryTrigger {})
         .with(InflictsDamage { damage: 1000 })
-        .build()
-}
-
-pub fn exit_map(ecs: &mut World, x: i32, y: i32) -> Entity {
-    ecs.create_entity()
-        .with(Code { code: 4999 })
-        .with(Position { x, y })
-        .with(EntryTrigger {})
         .build()
 }
 
