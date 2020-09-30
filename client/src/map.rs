@@ -61,7 +61,7 @@ impl Component for Map {
     fn view(&self) -> Html {
         let mut background = String::new();
         if self.props.map.viewport.len() > 0 {
-            let background_img = format!("background-image: url('{}')", self.props.map.background);
+            let background_img = format!("background-image: url('{}.jpg')", self.props.map.key);
             let p = self.props.map.idx_xy(self.props.map.viewport[0]);
             let background_pos = format!("background-position: -{}px -{}px;", p.x * 32, p.y * 32);
             background = format!("{}; {}", background_img, background_pos);

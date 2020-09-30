@@ -131,6 +131,13 @@ pub struct EntryTrigger {}
 #[derive(Component, Debug, Clone)]
 pub struct EntityMoved {}
 
+#[derive(Component, Debug, Clone)]
+pub struct OtherLevelPosition {
+    pub x: i32,
+    pub y: i32,
+    pub key: &'static str,
+}
+
 // Component for each intent
 
 #[derive(Component, Debug, Clone)]

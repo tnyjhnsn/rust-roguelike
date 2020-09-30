@@ -28,7 +28,7 @@ pub enum Msg {
     Connect,
     Disconnected,
     Ignore,
-    GetMap,
+    GetCampaign,
     Received(Result<Value, Error>),
     ChangePanel(KeyboardEvent),
     MapAction(KeyboardEvent),
@@ -79,10 +79,10 @@ impl Component for Game {
     		Msg::Ignore => {
     			false
     		}
-    		Msg::GetMap => {
+    		Msg::GetCampaign => {
     			match self.ws {
     				Some(ref mut task) => {
-    					task.send(Ok(String::from("/map")));
+    					task.send(Ok(String::from("/campaign")));
     					false
     				}
     				None => {
@@ -231,7 +231,7 @@ impl Component for Game {
                 <div class="holding right-panel">
                     <button onclick=self.link.callback(|_| Msg::Connect)>{ "Connect" }</button>
                     <span style="color: white">{ " Connected: " } { !self.ws.is_none() }</span>
-                    <button onclick=self.link.callback(|_| Msg::GetMap)>{ "Get Map" }</button>
+                    <button onclick=self.link.callback(|_| Msg::GetCampaign)>{ "Get Campaign" }</button>
                     <Logs
                         logs=&self.game.log
                         dict=&self.game.dict

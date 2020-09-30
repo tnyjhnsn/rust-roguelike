@@ -53,7 +53,6 @@ pub use tick::*;
 
 pub struct GameSocket {
     ecs: World,
-    campaign: Campaign,
 }
 
 impl GameSocket {
@@ -61,7 +60,6 @@ impl GameSocket {
     fn new() -> Self {
         let mut gs = GameSocket {
             ecs: World::new(),
-            campaign: Campaign::new(),
         };
         gs.ecs.register::<Position>(); 
         gs.ecs.register::<Code>(); 
@@ -92,7 +90,7 @@ impl GameSocket {
         gs.ecs.register::<DefenseBonus>(); 
         gs.ecs.register::<EntryTrigger>(); 
         gs.ecs.register::<EntityMoved>(); 
-        gs.new_game();
+        gs.ecs.register::<OtherLevelPosition>(); 
         gs
     }
 }
@@ -115,7 +113,8 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for GameSocket {
                 match chunks.len() {
                     1 => {
                         match chunks[0] {
-                            "/map" => {
+                            "/campaign" => {
+                                self.new_campaign();
                                 ctx.text(self.draw_map());
                             }
                             "g"|"G" => {

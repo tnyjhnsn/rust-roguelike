@@ -7,6 +7,7 @@ const DIJKSTRA_MAX: i32 = 1000;
 
 #[derive(Debug, Clone)]
 pub struct Map {
+    pub key: &'static str,
     pub width: i32,
     pub height: i32,
     pub tiles: Vec<TileType>,
@@ -15,17 +16,16 @@ pub struct Map {
     pub dijkstra_values: Vec<i32>,
     pub contents: Vec<Vec<Entity>>,
     pub difficulty: i32,
-    pub background: &'static str,
 }
 
 impl Map {
 
-    pub fn new( width: i32, height: i32, new_tiles: &[i32],
-        difficulty: i32, background: &'static str
-    ) -> Self { 
+    pub fn new(key: &'static str, width: i32, height: i32, new_tiles: &[i32],
+        difficulty: i32) -> Self { 
 
         let dim = (width * height) as usize;
         let mut map = Map {
+            key,
             width,
             height,
             tiles: Vec::with_capacity(dim),
@@ -34,7 +34,6 @@ impl Map {
             dijkstra_values: Vec::new(),
             contents: vec![Vec::new(); dim],
             difficulty,
-            background,
         };
 
         map.populate_tiles(new_tiles);
@@ -135,7 +134,7 @@ impl Map {
     pub fn draw_map(&self) -> String {
         let mut map = HashMap::new();
         map.entry(String::from("MAP"))
-            .or_insert((self.width, self.height, self.background, &self.tiles));
+            .or_insert((self.key, self.width, self.height, &self.tiles));
         let gm = GameMsg {
             data: json!(map),
         };

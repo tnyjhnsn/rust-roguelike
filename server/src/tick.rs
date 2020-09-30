@@ -31,20 +31,20 @@ impl RunState {
 
 impl GameSocket {
 
-    pub fn new_game(&mut self) {
+    pub fn new_campaign(&mut self) {
 
-        self.campaign = Campaign::new();
+        let mut campaign = Campaign::new();
         self.ecs.insert(RandomNumberGenerator::new());
 
-        let mut map = self.campaign.get_active_map();
+        let (mut map, ppos, _visited) = campaign.create_map_from_exit(Position::new(0, 0));
         spawn_map(&mut map, &mut self.ecs);
         
-        let p_start = self.campaign.get_player_start();
-        let player = player(&mut self.ecs, p_start.x, p_start.y);
+        let player = player(&mut self.ecs, ppos.x, ppos.y);
         self.ecs.insert(player);
-        self.ecs.insert(PlayerPosition::new(p_start));
+        self.ecs.insert(PlayerPosition::new(ppos));
 
         self.ecs.insert(map);
+        self.ecs.insert(campaign);
 
         let mut state = RunState::new(WAITING);
         state.add_state(INVENTORY_CHANGE);
@@ -63,7 +63,7 @@ impl GameSocket {
             self.ecs.delete_entity(*del).expect("Delete everything failed");
         }
         self.ecs.maintain();
-        self.new_game();
+        self.new_campaign();
     }
 
     pub fn gui_tick(&self) -> Option<String> {
@@ -159,31 +159,6 @@ impl GameSocket {
         }
     }
 
-    fn check_exit_map(&mut self) -> bool {
-        let mut state = self.ecs.fetch_mut::<RunState>();
-        if state.check_state(EXIT_MAP) {
-            // TEST
-            //let map = self.ecs.fetch::<Map>();
-            //self.campaign.store_map(&map);
-            let mut ppos = self.ecs.fetch_mut::<PlayerPosition>();
-            let new_ppos = self.campaign.exit_map(ppos.position);
-
-            let mut pos = self.ecs.write_storage::<Position>();
-            let player_entity = self.ecs.fetch::<PlayerEntity>();
-
-            let player_pos = pos.get_mut(*player_entity);
-            if let Some(player_pos) = player_pos {
-                player_pos.x = new_ppos.x;
-                ppos.position.x = new_ppos.x;
-                player_pos.y = new_ppos.y;
-                ppos.position.y = new_ppos.y;
-            }
-            state.remove_state(EXIT_MAP);
-            return true;
-        }
-        false
-    }
-
     pub fn game_tick(&mut self, ctx: &mut <Self as Actor>::Context) {
         self.run_systems();
         delete_the_dead(&mut self.ecs);
@@ -204,13 +179,14 @@ impl GameSocket {
             }
             return;
         }
-        if self.check_exit_map() {
-            // TEST
-            //let m = self.campaign.get_map(String::from("dm_gate")).unwrap();
-            //println!("map length {}", m.tiles.len());
-            self.go_downstairs();
-            let mut map = self.campaign.get_active_map();
-            spawn_map(&mut map, &mut self.ecs);
+        if state.check_state(EXIT_MAP) {
+            freeze_entities(&mut self.ecs);
+            let (mut map, visited) = exit_map(&mut self.ecs);
+            if visited {
+                thaw_entities(map.key, &mut self.ecs);
+            } else {
+                spawn_map(&mut map, &mut self.ecs);
+            }
             self.ecs.insert(map);
             ctx.text(self.draw_map());
             self.run_systems();

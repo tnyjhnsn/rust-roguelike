@@ -10,17 +10,13 @@ type Exits = HashMap<Position, (String, Position)>;
 #[derive(Debug)]
 pub struct Campaign {
     name: &'static str,
-    start_position: Position,
-    pub active_map: Map,
     active_map_key: String,
-    maps: HashMap<String, Exits>,
-    maps_2: HashMap<String, (bool, Exits)>,
+    maps: HashMap<String, (bool, Exits)>,
 }
 
 impl Campaign {
     pub fn new() -> Self {
         let mut maps = HashMap::new();
-        let mut maps_2 = HashMap::new();
         let mut exits = HashMap::new();
 
         exits.insert(Position::new(14, 1),
@@ -29,8 +25,7 @@ impl Campaign {
                 (String::from("dm_hall"), Position::new(23, 48)));
         exits.insert(Position::new(16, 1),
                 (String::from("dm_hall"), Position::new(24, 48)));
-        maps.insert(String::from("dm_gate"), exits.clone());
-        maps_2.insert(String::from("dm_gate"), (false, exits));
+        maps.insert(String::from("dm_gate"), (false, exits));
 
         exits = HashMap::new();
         exits.insert(Position::new(22, 49),
@@ -49,8 +44,7 @@ impl Campaign {
                 (String::from("dm_forge"), Position::new(29, 48)));
         exits.insert(Position::new(25, 0),
                 (String::from("dm_forge"), Position::new(30, 48)));
-        maps.insert(String::from("dm_hall"), exits.clone());
-        maps_2.insert(String::from("dm_hall"), (false, exits));
+        maps.insert(String::from("dm_hall"), (false, exits));
 
         exits = HashMap::new();
         exits.insert(Position::new(27, 49),
@@ -69,8 +63,7 @@ impl Campaign {
                 (String::from("dm_mine"), Position::new(16, 48)));
         exits.insert(Position::new(45, 0),
                 (String::from("dm_mine"), Position::new(45, 48)));
-        maps.insert(String::from("dm_forge"), exits.clone());
-        maps_2.insert(String::from("dm_forge"), (false, exits));
+        maps.insert(String::from("dm_forge"), (false, exits));
 
         exits = HashMap::new();
         exits.insert(Position::new(14, 49),
@@ -87,8 +80,7 @@ impl Campaign {
                 (String::from("dm_mountain"), Position::new(20, 48)));
         exits.insert(Position::new(9, 0),
                 (String::from("dm_mountain"), Position::new(21, 48)));
-        maps.insert(String::from("dm_mine"), exits.clone());
-        maps_2.insert(String::from("dm_mine"), (false, exits));
+        maps.insert(String::from("dm_mine"), (false, exits));
 
         exits = HashMap::new();
         exits.insert(Position::new(19, 49),
@@ -99,17 +91,17 @@ impl Campaign {
                 (String::from("dm_mine"), Position::new(9, 1)));
         exits.insert(Position::new(22, 49),
                 (String::from("dm_mine"), Position::new(9, 1)));
-        maps.insert(String::from("dm_mountain"), exits.clone());
-        maps_2.insert(String::from("dm_mountain"), (false, exits));
+        maps.insert(String::from("dm_mountain"), (false, exits));
 
+        exits = HashMap::new();
+        exits.insert(Position::new(0, 0),
+                (String::from("dm_gate"), Position::new(15, 59)));
+        maps.insert(String::from("no_map"), (false, exits));
 
         Self {
             name: "The Dwarven Mines",
-            start_position: Position::new(15, 59),
-            active_map: dm_gate::dwarven_mines_gate(),
-            active_map_key: String::from("dm_gate"),
+            active_map_key: String::from("no_map"),
             maps,
-            maps_2,
         }
     }
 
@@ -117,56 +109,34 @@ impl Campaign {
         self.name.to_string()
     }
 
-    // TEST
     pub fn set_visited(&mut self) {
-        for (key, val) in self.maps_2.iter_mut() {
+        for (key, val) in self.maps.iter_mut() {
             if key == &self.active_map_key {
                 val.0 = true;
             }
         }
     }
 
-    // TEST
-    pub fn get_visited(&self, key: String) -> bool {
-        self.maps_2.get(&key).unwrap().0
+    pub fn get_visited(&self) -> bool {
+        self.maps.get(&self.active_map_key).unwrap().0
     }
 
-    pub fn get_active_map(&mut self) -> Map {
-        self.active_map.clone()
-    }
+    pub fn create_map_from_exit(&mut self, ppos: Position) -> (Map, Position, bool) {
+        self.set_visited();
 
-    pub fn get_player_start(&self) -> Position {
-        self.start_position
-    }
-
-    pub fn exit_map(&mut self, ppos: Position) -> Position {
         let exits = self.maps.get(&self.active_map_key).unwrap();
-        let (new_map_key, new_ppos) = &exits.get(&ppos).unwrap();
+        let (new_map_key, new_ppos) = exits.1.get(&ppos).unwrap();
 
-        match &new_map_key[..] {
-            "dm_gate" => {
-                self.active_map = dm_gate::dwarven_mines_gate();
-                self.active_map_key = String::from("dm_gate");
-            }
-            "dm_hall" => {
-                self.active_map = dm_hall::dwarven_mines_hall();
-                self.active_map_key = String::from("dm_hall");
-            }
-            "dm_forge" => {
-                self.active_map = dm_forge::dwarven_mines_forge();
-                self.active_map_key = String::from("dm_forge");
-            }
-            "dm_mine" => {
-                self.active_map = dm_mine::dwarven_mines_mine();
-                self.active_map_key = String::from("dm_mine");
-            }
-            "dm_mountain" => {
-                self.active_map = dm_mountain::dwarven_mines_mountain();
-                self.active_map_key = String::from("dm_mountain");
-            }
-            _ => {}
-        }
-        *new_ppos
+        let map = match &new_map_key[..] {
+            "dm_hall" => dm_hall::dwarven_mines_hall(),
+            "dm_forge" => dm_forge::dwarven_mines_forge(),
+            "dm_mine" => dm_mine::dwarven_mines_mine(),
+            "dm_mountain" => dm_mountain::dwarven_mines_mountain(),
+            _ => dm_gate::dwarven_mines_gate(),
+        };
+        self.active_map_key = String::from(map.key);
+        let visited = self.get_visited();
+        (map, *new_ppos, visited)
     }
 }
 
