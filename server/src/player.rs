@@ -152,7 +152,7 @@ pub fn remove_item(idx: u64, ecs: &mut World) {
     }
 }
 
-pub fn use_item(idx: u64, target: Option<i32>, ecs: &mut World) {
+pub fn use_item(idx: u64, target: Option<usize>, ecs: &mut World) {
     let player = ecs.fetch::<PlayerEntity>();
     let inventory = ecs.read_storage::<InInventory>();
     let entities = ecs.entities();

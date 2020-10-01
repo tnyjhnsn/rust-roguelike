@@ -164,6 +164,6 @@ pub struct WantsToRemoveItem {
 #[derive(Component, Debug, Clone)]
 pub struct WantsToUseItem {
     pub item: Entity,
-    pub target: Option<i32>,
+    pub target: Option<usize>,
 }
 

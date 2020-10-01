@@ -51,14 +51,14 @@ impl Map {
         }
     }
 
-    pub fn get_area_of_effect(&self, area: &mut Vec<i32>, radius: i32) {
+    pub fn get_area_of_effect(&self, area: &mut Vec<usize>, radius: i32) {
         if radius == 0 {
             return;
         }
         let mut v = Vec::new();
         for idx in area.iter() {
-            for n in &self.neighbours[*idx as usize] {
-                v.push(*n as i32);
+            for n in &self.neighbours[*idx] {
+                v.push(*n);
             }
         }
         area.append(&mut v);

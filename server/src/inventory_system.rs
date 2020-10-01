@@ -133,9 +133,9 @@ impl<'a> System<'a> for UseItemSystem {
                             let idx = use_item.target.unwrap();
                             let mut aoe = vec![idx];
                             map.get_area_of_effect(&mut aoe, area.radius);
-                            let aoe_tiles: HashSet<i32> = HashSet::from_iter(aoe);
+                            let aoe_tiles: HashSet<usize> = HashSet::from_iter(aoe);
                             for tile in &aoe_tiles {
-                                for mob in &map.contents[*tile as usize] {
+                                for mob in &map.contents[*tile] {
                                     targets.push(*mob);
                                 }
                             }
