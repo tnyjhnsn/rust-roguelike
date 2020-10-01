@@ -142,7 +142,7 @@ impl<'a> System<'a> for UseItemSystem {
                         }
                         None => {
                             let idx = use_item.target.unwrap();
-                            for mob in &map.contents[idx as usize] {
+                            for mob in &map.contents[idx] {
                                 targets.push(*mob);
                             }
                         }

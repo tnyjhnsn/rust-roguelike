@@ -80,7 +80,7 @@ impl Map {
         let idx = self.xy_idx(x, y);
         let dv = self.dijkstra_values[idx];
         let v: Vec<&usize> = self.neighbours[idx].iter()
-            .filter(|n| self.blocked[**n as usize] == false && self.dijkstra_values[**n as usize] < dv)
+            .filter(|n| self.blocked[**n] == false && self.dijkstra_values[**n] < dv)
             .collect();
 
         let mut rng = RandomNumberGenerator::new();
