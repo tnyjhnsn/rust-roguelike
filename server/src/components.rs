@@ -2,33 +2,56 @@ use specs::prelude::*;
 use specs_derive::*;
 use roguelike_common::*;
 
-#[derive(Component, Debug)]
+use serde::{Serialize, Deserialize};
+
+ #[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct MyEntities {
+    entities: Vec<MyEntity>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct MyEntity {
+    code: Code,
+    item: Option<Item>,
+    consumeable: Option<Consumeable>,
+    provides_healing: Option<ProvidesHealing>,
+    ranged: Option<Ranged>,
+    inflicts_damage: Option<InflictsDamage>,
+    area_of_effect: Option<AreaOfEffect>,
+    confusion: Option<Confusion>,
+    health_stats: Option<HealthStats>,
+    equipment: Option<Equippable>,
+    melee_power_bonus: Option<MeleePowerBonus>,
+    defense_bonus: Option<DefenseBonus>,
+}
+
+#[derive(Component, Debug, Clone, Serialize, Deserialize)]
 pub struct Player {}
 
-#[derive(Component, Debug)]
+#[derive(Component, Debug, Clone, Serialize, Deserialize)]
 pub struct BlocksTile {}
 
-#[derive(Component, Debug)]
+#[derive(Component, Debug, Clone, Serialize, Deserialize)]
 pub struct Monster {}
 
-#[derive(Component, Debug)]
+#[derive(Component, Debug, Clone, Serialize, Deserialize)]
 pub struct FieldOfView {
     pub visible_tiles: Vec<Position>,
     pub range: i32,
 }
 
-#[derive(Component, Debug)]
+#[derive(Component, Debug, Clone, Serialize, Deserialize)]
 pub struct Code {
     pub code: i32,
 }
 
-#[derive(Component, Debug)]
+#[derive(Component, Debug, Clone, Serialize, Deserialize)]
 pub struct CombatStats {
     pub defense: i32,
     pub power: i32,
 }
 
-#[derive(Component, Debug)]
+#[derive(Component, Debug, Clone, Serialize, Deserialize)]
 pub struct HealthStats {
     pub max_hp: i32,
     pub hp: i32,
@@ -50,10 +73,10 @@ impl SufferDamage {
     }
 }
 
-#[derive(Component, Debug)]
+#[derive(Component, Debug, Clone, Serialize, Deserialize)]
 pub struct Item {}
 
-#[derive(Component, Debug)]
+#[derive(Component, Debug, Clone, Serialize, Deserialize)]
 pub struct ProvidesHealing {
     pub heal: i32,
 }
@@ -63,30 +86,30 @@ pub struct InInventory {
     pub owner: Entity,
 }
 
-#[derive(Component, Debug)]
+#[derive(Component, Debug, Clone, Serialize, Deserialize)]
 pub struct Consumeable {}
 
-#[derive(Component, Debug)]
+#[derive(Component, Debug, Clone, Serialize, Deserialize)]
 pub struct Ranged {
     pub range: i32,
 }
 
-#[derive(Component, Debug)]
+#[derive(Component, Debug, Clone, Serialize, Deserialize)]
 pub struct AreaOfEffect {
     pub radius: i32,
 }
 
-#[derive(Component, Debug)]
+#[derive(Component, Debug, Clone, Serialize, Deserialize)]
 pub struct InflictsDamage {
     pub damage: i32,
 }
 
-#[derive(Component, Debug)]
+#[derive(Component, Debug, Clone, Serialize, Deserialize)]
 pub struct Confusion {
     pub turns: i32,
 }
 
-#[derive(PartialEq, Debug, Copy, Clone)]
+#[derive(PartialEq, Debug, Copy, Clone, Serialize, Deserialize)]
 #[repr(u8)]
 pub enum ArmourSlot {
     Melee = 1,
@@ -104,7 +127,7 @@ pub enum ArmourSlot {
     Ring6 = 13,
 }
 
-#[derive(Component, Debug, Clone)]
+#[derive(Component, Debug, Clone, Serialize, Deserialize)]
 pub struct Equippable {
     pub slot: ArmourSlot,
 }
@@ -115,17 +138,17 @@ pub struct Equipped {
     pub slot: ArmourSlot,
 }
 
-#[derive(Component, Clone)]
+#[derive(Component, Debug, Clone, Serialize, Deserialize)]
 pub struct MeleePowerBonus {
     pub power: i32,
 }
 
-#[derive(Component, Clone)]
+#[derive(Component, Debug, Clone, Serialize, Deserialize)]
 pub struct DefenseBonus {
     pub defense: i32,
 }
 
-#[derive(Component, Debug, Clone)]
+#[derive(Component, Debug, Clone, Serialize, Deserialize)]
 pub struct EntryTrigger {}
 
 #[derive(Component, Debug, Clone)]

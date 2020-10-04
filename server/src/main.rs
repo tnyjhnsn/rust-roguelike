@@ -18,6 +18,9 @@ use roguelike_common::*;
 mod maps;
 pub use maps::*;
 
+mod raws;
+pub use raws::*;
+
 mod components;
 pub use components::*;
 mod map;

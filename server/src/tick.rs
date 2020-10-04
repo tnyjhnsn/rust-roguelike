@@ -52,6 +52,8 @@ impl GameSocket {
 
         self.ecs.insert(GameLog::new());
         self.ecs.insert(state);
+
+        load_raws();
     }
 
     fn game_over(&mut self) {
