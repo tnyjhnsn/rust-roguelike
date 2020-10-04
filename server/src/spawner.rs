@@ -102,12 +102,8 @@ pub fn spawn_map(map: &mut Map, ecs: &mut World) {
     for (idx, i) in map.tiles.iter().enumerate() {
         let (x, y) = map.idx_xy(idx as i32);
         match i {
-            TileType::Chasm => {
-                map.contents[idx].push(chasm_trap(ecs, x, y));
-            }
-            TileType::Lava => {
-                map.contents[idx].push(lava_trap(ecs, x, y));
-            }
+            TileType::Chasm => chasm_trap(ecs, x, y),
+            TileType::Lava => lava_trap(ecs, x, y), 
             _ => {},
         }
     }
@@ -238,21 +234,21 @@ pub fn shield(ecs: &mut World, x: i32, y: i32) {
         .build();
 }
 
-pub fn chasm_trap(ecs: &mut World, x: i32, y: i32) -> Entity {
+pub fn chasm_trap(ecs: &mut World, x: i32, y: i32) {
     ecs.create_entity()
         .with(Code { code: TRAP_CHASM })
         .with(Position { x, y })
         .with(EntryTrigger {})
         .with(InflictsDamage { damage: 1000 })
-        .build()
+        .build();
 }
 
-pub fn lava_trap(ecs: &mut World, x: i32, y: i32) -> Entity {
+pub fn lava_trap(ecs: &mut World, x: i32, y: i32) {
     ecs.create_entity()
         .with(Code { code: TRAP_LAVA })
         .with(Position { x, y })
         .with(EntryTrigger {})
         .with(InflictsDamage { damage: 1000 })
-        .build()
+        .build();
 }
 
