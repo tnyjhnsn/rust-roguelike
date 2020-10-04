@@ -42,19 +42,19 @@ pub fn player(ecs: &mut World, x: i32, y: i32) -> PlayerEntity {
 
 fn map_table(difficulty: i32) -> RandomTable {
     RandomTable::new()
-        .add(10, 10)
-        .add(11, 5)
-        .add(12, 5)
-        .add(13, 1 + difficulty)
-        .add(2000, 8)
-        .add(2100, 5)
-        .add(2101, 2 + difficulty)
-        .add(2102, 2 + difficulty)
-        .add(2103, 1 + difficulty)
-        .add(3000, 5)
-        .add(3001, 5)
-        .add(3002, 5)
-        .add(3100, 5)
+        .add(MOB_WHITE_CENTIPEDE, 10)
+        .add(MOB_RED_ANT, 5)
+        .add(MOB_GHOST, 5)
+        .add(MOB_GREY_MOULD, 1 + difficulty)
+        .add(ITEM_HEALTH_POTION, 8)
+        .add(ITEM_MAGIC_MISSILE, 5)
+        .add(ITEM_DRAGON_BREATH, 2 + difficulty)
+        .add(ITEM_ACID_RAIN, 2 + difficulty)
+        .add(ITEM_CONFUSION_SCROLL, 1 + difficulty)
+        .add(WEAP_DAGGER, 5)
+        .add(WEAP_SHORT_SWORD, 5)
+        .add(WEAP_LONG_SWORD, 5)
+        .add(WEAP_SHIELD, 5)
 }
 
 pub fn spawn_map(map: &mut Map, ecs: &mut World) {
@@ -82,19 +82,19 @@ pub fn spawn_map(map: &mut Map, ecs: &mut World) {
     for spawn in spawn_points.iter() {
         let (x, y) = *spawn.0;
         match spawn.1 {
-            Some(10) => white_centipede(ecs, x, y),
-            Some(11) => red_ant(ecs, x, y),
-            Some(12) => ghost(ecs, x, y),
-            Some(13) => grey_mould(ecs, x, y),
-            Some(2000) => health_potion(ecs, x, y),
-            Some(2100) => magic_missile_scroll(ecs, x, y),
-            Some(2101) => dragon_breath_potion(ecs, x, y),
-            Some(2102) => acid_rain_potion(ecs, x, y),
-            Some(2103) => confusion_scroll(ecs, x, y),
-            Some(3000) => dagger(ecs, x, y),
-            Some(3001) => short_sword(ecs, x, y),
-            Some(3002) => long_sword(ecs, x, y),
-            Some(3100) => shield(ecs, x, y),
+            Some(MOB_WHITE_CENTIPEDE) => white_centipede(ecs, x, y),
+            Some(MOB_RED_ANT) => red_ant(ecs, x, y),
+            Some(MOB_GHOST) => ghost(ecs, x, y),
+            Some(MOB_GREY_MOULD) => grey_mould(ecs, x, y),
+            Some(ITEM_HEALTH_POTION) => health_potion(ecs, x, y),
+            Some(ITEM_MAGIC_MISSILE) => magic_missile_scroll(ecs, x, y),
+            Some(ITEM_DRAGON_BREATH) => dragon_breath_potion(ecs, x, y),
+            Some(ITEM_ACID_RAIN) => acid_rain_potion(ecs, x, y),
+            Some(ITEM_CONFUSION_SCROLL) => confusion_scroll(ecs, x, y),
+            Some(WEAP_DAGGER) => dagger(ecs, x, y),
+            Some(WEAP_SHORT_SWORD) => short_sword(ecs, x, y),
+            Some(WEAP_LONG_SWORD) => long_sword(ecs, x, y),
+            Some(WEAP_SHIELD) => shield(ecs, x, y),
             _ => {},
         }
     }
@@ -113,10 +113,10 @@ pub fn spawn_map(map: &mut Map, ecs: &mut World) {
     }
 }
 
-fn white_centipede(ecs: &mut World, x: i32, y: i32) { monster(ecs, 10, x, y); }
-fn red_ant(ecs: &mut World, x: i32, y: i32) { monster(ecs, 11, x, y); }
-fn ghost(ecs: &mut World, x: i32, y: i32) { monster(ecs, 12, x, y); }
-fn grey_mould(ecs: &mut World, x: i32, y: i32) { monster(ecs, 13, x, y); }
+fn white_centipede(ecs: &mut World, x: i32, y: i32) { monster(ecs, MOB_WHITE_CENTIPEDE, x, y); }
+fn red_ant(ecs: &mut World, x: i32, y: i32) { monster(ecs, MOB_RED_ANT, x, y); }
+fn ghost(ecs: &mut World, x: i32, y: i32) { monster(ecs, MOB_GHOST, x, y); }
+fn grey_mould(ecs: &mut World, x: i32, y: i32) { monster(ecs, MOB_GREY_MOULD, x, y); }
 
 pub fn monster(ecs: &mut World, code: i32, x: i32, y: i32) {
     ecs.create_entity()
@@ -135,7 +135,7 @@ pub fn monster(ecs: &mut World, code: i32, x: i32, y: i32) {
 
 pub fn health_potion(ecs: &mut World, x: i32, y: i32) {
     ecs.create_entity()
-        .with(Code { code: 2000 })
+        .with(Code { code: ITEM_HEALTH_POTION })
         .with(Position { x, y })
         .with(Item {})
         .with(Consumeable {})
@@ -146,7 +146,7 @@ pub fn health_potion(ecs: &mut World, x: i32, y: i32) {
 
 pub fn magic_missile_scroll(ecs: &mut World, x: i32, y: i32) {
     ecs.create_entity()
-        .with(Code { code: 2100 })
+        .with(Code { code: ITEM_MAGIC_MISSILE })
         .with(Position { x, y })
         .with(Item {})
         .with(Consumeable {})
@@ -158,7 +158,7 @@ pub fn magic_missile_scroll(ecs: &mut World, x: i32, y: i32) {
 
 pub fn dragon_breath_potion(ecs: &mut World, x: i32, y: i32) {
     ecs.create_entity()
-        .with(Code { code: 2101 })
+        .with(Code { code: ITEM_DRAGON_BREATH })
         .with(Position { x, y })
         .with(Item {})
         .with(Consumeable {})
@@ -171,7 +171,7 @@ pub fn dragon_breath_potion(ecs: &mut World, x: i32, y: i32) {
 
 pub fn acid_rain_potion(ecs: &mut World, x: i32, y: i32) {
     ecs.create_entity()
-        .with(Code { code: 2102 })
+        .with(Code { code: ITEM_ACID_RAIN })
         .with(Position { x, y })
         .with(Item {})
         .with(Consumeable {})
@@ -184,7 +184,7 @@ pub fn acid_rain_potion(ecs: &mut World, x: i32, y: i32) {
 
 pub fn confusion_scroll(ecs: &mut World, x: i32, y: i32) {
     ecs.create_entity()
-        .with(Code { code: 2103 })
+        .with(Code { code: ITEM_CONFUSION_SCROLL })
         .with(Position { x, y })
         .with(Item {})
         .with(Consumeable {})
@@ -196,7 +196,7 @@ pub fn confusion_scroll(ecs: &mut World, x: i32, y: i32) {
 
 pub fn dagger(ecs: &mut World, x: i32, y: i32) {
     ecs.create_entity()
-        .with(Code { code: 3000 })
+        .with(Code { code: WEAP_DAGGER })
         .with(Position { x, y })
         .with(Item {})
         .with(Equippable { slot: ArmourSlot::Melee })
@@ -207,7 +207,7 @@ pub fn dagger(ecs: &mut World, x: i32, y: i32) {
 
 pub fn short_sword(ecs: &mut World, x: i32, y: i32) {
     ecs.create_entity()
-        .with(Code { code: 3001 })
+        .with(Code { code: WEAP_SHORT_SWORD })
         .with(Position { x, y })
         .with(Item {})
         .with(Equippable { slot: ArmourSlot::Melee })
@@ -218,7 +218,7 @@ pub fn short_sword(ecs: &mut World, x: i32, y: i32) {
 
 pub fn long_sword(ecs: &mut World, x: i32, y: i32) {
     ecs.create_entity()
-        .with(Code { code: 3002 })
+        .with(Code { code: WEAP_LONG_SWORD })
         .with(Position { x, y })
         .with(Item {})
         .with(Equippable { slot: ArmourSlot::Melee })
@@ -229,7 +229,7 @@ pub fn long_sword(ecs: &mut World, x: i32, y: i32) {
 
 pub fn shield(ecs: &mut World, x: i32, y: i32) {
     ecs.create_entity()
-        .with(Code { code: 3100 })
+        .with(Code { code: WEAP_SHIELD })
         .with(Position { x, y })
         .with(Item {})
         .with(Equippable { slot: ArmourSlot::Shield })
@@ -240,7 +240,7 @@ pub fn shield(ecs: &mut World, x: i32, y: i32) {
 
 pub fn chasm_trap(ecs: &mut World, x: i32, y: i32) -> Entity {
     ecs.create_entity()
-        .with(Code { code: 5000 })
+        .with(Code { code: TRAP_CHASM })
         .with(Position { x, y })
         .with(EntryTrigger {})
         .with(InflictsDamage { damage: 1000 })
@@ -249,7 +249,7 @@ pub fn chasm_trap(ecs: &mut World, x: i32, y: i32) -> Entity {
 
 pub fn lava_trap(ecs: &mut World, x: i32, y: i32) -> Entity {
     ecs.create_entity()
-        .with(Code { code: 5001 })
+        .with(Code { code: TRAP_LAVA })
         .with(Position { x, y })
         .with(EntryTrigger {})
         .with(InflictsDamage { damage: 1000 })

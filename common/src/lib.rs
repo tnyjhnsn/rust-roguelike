@@ -6,41 +6,8 @@ use serde_repr::*;
 use rand::{Rng, SeedableRng};
 use rand_xorshift::XorShiftRng;
 
-// consts for binary operations
-pub const SEEN: i32 = 1;
-pub const VISIBLE: i32 = 2;
-pub const TARGETED: i32 = 4;
-
-pub const WAITING: i32 = 0;
-pub const FOV_CHANGE: i32 = 1;
-pub const CONTENTS_CHANGE: i32 = 2;
-pub const INVENTORY_CHANGE: i32 = 4;
-pub const ARMOUR_CHANGE: i32 = 8;
-pub const EXIT_MAP: i32 = 16;
-pub const GAME_OVER: i32 = 32;
-
-// key codes
-// sections
-pub const KEY_ESC: u32 = 27;
-pub const KEY_I: u32 = 73;
-pub const KEY_A: u32 = 65;
-// movement
-pub const KEY_LEFT: u32 = 37;
-pub const KEY_UP: u32 = 38;
-pub const KEY_RIGHT: u32 = 39;
-pub const KEY_DOWN: u32 = 40;
-pub const KEY_Y: u32 = 89;
-pub const KEY_U: u32 = 85;
-pub const KEY_B: u32 = 66;
-pub const KEY_N: u32 = 78;
-pub const KEY_G: u32 = 71;
-// actions
-pub const KEY_D: u32 = 68;
-pub const KEY_R: u32 = 82;
-pub const KEY_ENTER: u32 = 13;
-// stairs
-pub const KEY_GT: u32 = 190;
-pub const KEY_LT: u32 = 188;
+mod consts;
+pub use consts::*;
 
 pub type PlayerEntity = Entity;
 
