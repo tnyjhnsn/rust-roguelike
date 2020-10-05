@@ -1,0 +1,41 @@
+(
+    entities: [
+// MOBS
+        (
+            // WHITE_CENTIPEDE
+            code:(code: 10),
+            monster:Some(()),
+            blocks_tile:Some(()),
+            combat_stats:Some((defense: 1, power: 3)),
+            health_stats:Some((max_hp: 10, hp: 10)),
+            field_of_view:Some((visible_tiles: [], range: 6)),
+        ),
+        (
+            // RED_ANT
+            code:(code: 11),
+            monster:Some(()),
+            blocks_tile:Some(()),
+            combat_stats:Some((defense: 1, power: 3)),
+            health_stats:Some((max_hp: 10, hp: 10)),
+            field_of_view:Some((visible_tiles: [], range: 6)),
+        ),
+        (
+            // GHOST
+            code:(code: 12),
+            monster:Some(()),
+            blocks_tile:Some(()),
+            combat_stats:Some((defense: 1, power: 5)),
+            health_stats:Some((max_hp: 16, hp: 16)),
+            field_of_view:Some((visible_tiles: [], range: 10)),
+        ),
+        (
+            // GREY_MOULD
+            code:(code: 13),
+            monster:Some(()),
+            blocks_tile:Some(()),
+            combat_stats:Some((defense: 1, power: 2)),
+            health_stats:Some((max_hp: 6, hp: 6)),
+            field_of_view:Some((visible_tiles: [], range: 4)),
+        ),
+    ],
+)

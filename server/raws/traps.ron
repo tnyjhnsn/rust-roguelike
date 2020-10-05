@@ -1,0 +1,17 @@
+(
+    entities: [
+// TRAPS
+        (
+            // CHASM
+            code:(code: 5000),
+            entry_trigger:Some(()),
+            inflicts_damage:Some((damage: 1000)),
+        ),
+        (
+            // LAVA
+            code:(code: 5001),
+            entry_trigger:Some(()),
+            inflicts_damage:Some((damage: 1000)),
+        ),
+    ],
+)

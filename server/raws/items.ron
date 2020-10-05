@@ -1,6 +1,8 @@
 (
     entities: [
+// ITEMS
         (
+            // HEALTH_POTION
             code:(code: 2000),
             item:Some(()),
             consumeable:Some(()),
@@ -8,6 +10,7 @@
             health_stats:Some((max_hp: 1, hp: 1)),
         ),
         (
+            // MAGIC_MISSILE
             code:(code: 2100),
             item:Some(()),
             consumeable:Some(()),
@@ -16,6 +19,7 @@
             health_stats:Some((max_hp: 1, hp: 1)),
         ),
         (
+            // DRAGON_BREATH
             code:(code: 2101),
             item:Some(()),
             consumeable:Some(()),
@@ -25,6 +29,7 @@
             health_stats:Some((max_hp: 1, hp: 1)),
         ),
         (
+            // ACID_RAIN
             code:(code: 2102),
             item:Some(()),
             consumeable:Some(()),
@@ -34,50 +39,13 @@
             health_stats:Some((max_hp: 1, hp: 1)),
         ),
         (
+            // CONFUSION_SCROLL
             code:(code: 2103),
             item:Some(()),
             consumeable:Some(()),
             ranged:Some((range: 6)),
             confusion:Some((turns: 3)),
             health_stats:Some((max_hp: 1, hp: 1)),
-        ),
-        (
-            code:(code: 3000),
-            item:Some(()),
-            equippable:Some((slot: Melee)),
-            melee_power_bonus:Some((power: 2)),
-            health_stats:Some((max_hp: 1, hp: 1)),
-        ),
-        (
-            code:(code: 3001),
-            item:Some(()),
-            equippable:Some((slot: Melee)),
-            melee_power_bonus:Some((power: 4)),
-            health_stats:Some((max_hp: 1, hp: 1)),
-        ),
-        (
-            code:(code: 3002),
-            item:Some(()),
-            equippable:Some((slot: Melee)),
-            melee_power_bonus:Some((power: 6)),
-            health_stats:Some((max_hp: 1, hp: 1)),
-        ),
-        (
-            code:(code: 3100),
-            item:Some(()),
-            equippable:Some((slot: Shield)),
-            defense_bonus:Some((defense: 1)),
-            health_stats:Some((max_hp: 1, hp: 1)),
-        ),
-        (
-            code:(code: 5000),
-            entry_trigger:Some(()),
-            inflicts_damage:Some((damage: 1000)),
-        ),
-        (
-            code:(code: 5001),
-            entry_trigger:Some(()),
-            inflicts_damage:Some((damage: 1000)),
         ),
     ],
 )
