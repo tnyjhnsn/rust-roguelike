@@ -1,51 +1,48 @@
-(
-    entities: [
-// ITEMS
-        (
-            // HEALTH_POTION
-            code:(code: 2000),
-            item:Some(()),
-            consumeable:Some(()),
-            provides_healing:Some((heal: 8)),
-            health_stats:Some((max_hp: 1, hp: 1)),
-        ),
-        (
-            // MAGIC_MISSILE
-            code:(code: 2100),
-            item:Some(()),
-            consumeable:Some(()),
-            ranged:Some((range: 6)),
-            inflicts_damage:Some((damage: 8)),
-            health_stats:Some((max_hp: 1, hp: 1)),
-        ),
-        (
-            // DRAGON_BREATH
-            code:(code: 2101),
-            item:Some(()),
-            consumeable:Some(()),
-            ranged:Some((range: 6)),
-            inflicts_damage:Some((damage: 10)),
-            area_of_effect:Some((radius: 2)),
-            health_stats:Some((max_hp: 1, hp: 1)),
-        ),
-        (
-            // ACID_RAIN
-            code:(code: 2102),
-            item:Some(()),
-            consumeable:Some(()),
-            ranged:Some((range: 6)),
-            inflicts_damage:Some((damage: 8)),
-            area_of_effect:Some((radius: 3)),
-            health_stats:Some((max_hp: 1, hp: 1)),
-        ),
-        (
-            // CONFUSION_SCROLL
-            code:(code: 2103),
-            item:Some(()),
-            consumeable:Some(()),
-            ranged:Some((range: 6)),
-            confusion:Some((turns: 3)),
-            health_stats:Some((max_hp: 1, hp: 1)),
-        ),
-    ],
-)
+[
+    (
+        // HEALTH_POTION
+        code: (code: 2000),
+        item: Some(()),
+        consumeable: Some(()),
+        provides_healing: Some((heal: 8)),
+        health_stats: Some((max_hp: 1, hp: 1)),
+    ),
+    (
+        // MAGIC_MISSILE
+        code: (code: 2100),
+        item: Some(()),
+        consumeable: Some(()),
+        ranged: Some((range: 6)),
+        inflicts_damage: Some((damage: 8)),
+        health_stats: Some((max_hp: 1, hp: 1)),
+    ),
+    (
+        // DRAGON_BREATH
+        code: (code: 2101),
+        item: Some(()),
+        consumeable: Some(()),
+        ranged: Some((range: 6)),
+        inflicts_damage: Some((damage: 10)),
+        area_of_effect: Some((radius: 2)),
+        health_stats: Some((max_hp: 1, hp: 1)),
+    ),
+    (
+        // ACID_RAIN
+        code: (code: 2102),
+        item: Some(()),
+        consumeable: Some(()),
+        ranged: Some((range: 6)),
+        inflicts_damage: Some((damage: 8)),
+        area_of_effect: Some((radius: 3)),
+        health_stats: Some((max_hp: 1, hp: 1)),
+    ),
+    (
+        // CONFUSION_SCROLL
+        code: (code: 2103),
+        item: Some(()),
+        consumeable: Some(()),
+        ranged: Some((range: 6)),
+        confusion: Some((turns: 3)),
+        health_stats: Some((max_hp: 1, hp: 1)),
+    ),
+]
