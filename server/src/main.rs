@@ -19,7 +19,7 @@ mod maps;
 pub use maps::*;
 
 mod raws;
-pub use raws::raws::*;
+pub use raws::*;
 
 mod components;
 pub use components::*;
@@ -53,6 +53,9 @@ mod campaign;
 pub use campaign::*;
 mod tick;
 pub use tick::*;
+
+#[macro_use]
+extern crate lazy_static;
 
 pub struct GameSocket {
     ecs: World,

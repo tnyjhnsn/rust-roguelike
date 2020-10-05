@@ -1,17 +1,5 @@
-use std::fs::File;
-use ron::de::from_reader;
-
 use super::*;
 use serde::{Deserialize};
-
-#[derive(Clone, Debug, Deserialize)]
-pub struct SpawnTableEntry {
-    pub code: i32,
-    pub weight: i32,
-    pub min_difficulty: i32,
-    pub max_difficulty: i32,
-    pub add_diff_to_weight: Option<bool>,
-}
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct Raws {
@@ -26,9 +14,11 @@ impl Raws {
             spawn_table: Vec::new(),
         }
     }
-
-    pub fn concat(&mut self, mut entities: Vec<RawEntity>) {
+    pub fn load_entities(&mut self, mut entities: Vec<RawEntity>) {
         self.entities.append(&mut entities);
+    }
+    pub fn load_spawn_table(&mut self, mut spawn_table: Vec<SpawnTableEntry>) {
+        self.spawn_table.append(&mut spawn_table);
     }
 }
 
@@ -52,30 +42,12 @@ pub struct RawEntity {
     pub entry_trigger: Option<EntryTrigger>,
 }
 
-pub fn load_raws() {
-    let paths = vec![
-        "raws/mobs.ron",
-        "raws/items.ron",
-        "raws/weapons.ron",
-        "raws/traps.ron",
-    ];
-
-    let mut master_raws = Raws::new();
-
-    for path in &paths {
-        let file = File::open(path).expect("Cannot open file");
-        let raws: Vec<RawEntity> = from_reader(file).expect("Cannot read from file");
-        master_raws.concat(raws);
-    }
-
-    let file = File::open("raws/spawn_table.ron").expect("Cannot open file");
-    let mut spawns: Vec<SpawnTableEntry> = from_reader(file).expect("Cannot read from file");
-    master_raws.spawn_table.append(&mut spawns);
-    println!("{:?}", master_raws);
-
-    // testing
-    //let ent: Option<RawEntity> = master_raws.entities.into_iter().find(|e| e.code.code == ITEM_HEALTH_POTION);
-    //if let Some(e) = ent {
-        //println!("{:?}", e);
-    //}
+#[derive(Clone, Debug, Deserialize)]
+pub struct SpawnTableEntry {
+    pub code: i32,
+    pub weight: i32,
+    pub min_difficulty: i32,
+    pub max_difficulty: i32,
+    pub add_diff_to_weight: Option<bool>,
 }
+
