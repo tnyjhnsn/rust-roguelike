@@ -4,43 +4,6 @@ use roguelike_common::*;
 
 use serde::{Serialize, Deserialize};
 
- #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct Raws {
-    pub entities: Vec<RawEntity>,
-}
-
-impl Raws {
-    pub fn new() -> Self {
-        Self {
-            entities: Vec::new(),
-        }
-    }
-
-    pub fn concat(&mut self, mut other: Raws) {
-        self.entities.append(&mut other.entities);
-    }
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct RawEntity {
-    pub code: Code,
-    pub item: Option<Item>,
-    pub monster: Option<Monster>,
-    pub blocks_tile: Option<BlocksTile>,
-    pub consumeable: Option<Consumeable>,
-    pub provides_healing: Option<ProvidesHealing>,
-    pub ranged: Option<Ranged>,
-    pub inflicts_damage: Option<InflictsDamage>,
-    pub area_of_effect: Option<AreaOfEffect>,
-    pub confusion: Option<Confusion>,
-    pub health_stats: Option<HealthStats>,
-    pub equipment: Option<Equippable>,
-    pub melee_power_bonus: Option<MeleePowerBonus>,
-    pub defense_bonus: Option<DefenseBonus>,
-    pub field_of_view: Option<FieldOfView>,
-    pub entry_trigger: Option<EntryTrigger>,
-}
-
 #[derive(Component, Debug, Clone, Serialize, Deserialize)]
 pub struct Player {}
 
