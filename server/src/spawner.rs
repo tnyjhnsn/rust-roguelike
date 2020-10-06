@@ -53,14 +53,11 @@ pub fn spawn_map(map: &mut Map, ecs: &mut World) {
         let num_spawns = rng.roll_dice(5, 6, 0) + (map.difficulty as f64 * 1.5).floor() as i32;
         for _i in 0..num_spawns {
             let mut added = false;
-            let mut tries = 0;
-            while !added && tries < 20 {
+            while !added {
                 let idx = map.get_random_space(&mut rng);
                 if !spawn_points.contains_key(&idx) {
                     spawn_points.insert(idx, spawn_table.roll());
                     added = true;
-                } else {
-                    tries += 1;
                 }
             }
         }
