@@ -7,10 +7,10 @@ use serde::{Serialize, Deserialize};
 #[derive(Component, Debug, Clone, Serialize, Deserialize)]
 pub struct Player {}
 
-#[derive(Component, Debug, Clone, Serialize, Deserialize)]
+#[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
 pub struct BlocksTile {}
 
-#[derive(Component, Debug, Clone, Serialize, Deserialize)]
+#[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
 pub struct Monster {}
 
 #[derive(Component, Debug, Clone, Serialize, Deserialize)]
@@ -19,18 +19,18 @@ pub struct FieldOfView {
     pub range: i32,
 }
 
-#[derive(Component, Debug, Clone, Serialize, Deserialize)]
+#[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
 pub struct Code {
     pub code: i32,
 }
 
-#[derive(Component, Debug, Clone, Serialize, Deserialize)]
+#[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
 pub struct CombatStats {
     pub defense: i32,
     pub power: i32,
 }
 
-#[derive(Component, Debug, Clone, Serialize, Deserialize)]
+#[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
 pub struct HealthStats {
     pub max_hp: i32,
     pub hp: i32,
@@ -52,10 +52,10 @@ impl SufferDamage {
     }
 }
 
-#[derive(Component, Debug, Clone, Serialize, Deserialize)]
+#[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
 pub struct Item {}
 
-#[derive(Component, Debug, Clone, Serialize, Deserialize)]
+#[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
 pub struct ProvidesHealing {
     pub heal: i32,
 }
@@ -65,25 +65,25 @@ pub struct InInventory {
     pub owner: Entity,
 }
 
-#[derive(Component, Debug, Clone, Serialize, Deserialize)]
+#[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
 pub struct Consumeable {}
 
-#[derive(Component, Debug, Clone, Serialize, Deserialize)]
+#[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
 pub struct Ranged {
     pub range: i32,
 }
 
-#[derive(Component, Debug, Clone, Serialize, Deserialize)]
+#[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
 pub struct AreaOfEffect {
     pub radius: i32,
 }
 
-#[derive(Component, Debug, Clone, Serialize, Deserialize)]
+#[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
 pub struct InflictsDamage {
     pub damage: i32,
 }
 
-#[derive(Component, Debug, Clone, Serialize, Deserialize)]
+#[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
 pub struct Confusion {
     pub turns: i32,
 }
@@ -106,7 +106,7 @@ pub enum ArmourSlot {
     Ring6 = 13,
 }
 
-#[derive(Component, Debug, Clone, Serialize, Deserialize)]
+#[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
 pub struct Equippable {
     pub slot: ArmourSlot,
 }
@@ -117,17 +117,17 @@ pub struct Equipped {
     pub slot: ArmourSlot,
 }
 
-#[derive(Component, Debug, Clone, Serialize, Deserialize)]
+#[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
 pub struct MeleePowerBonus {
     pub power: i32,
 }
 
-#[derive(Component, Debug, Clone, Serialize, Deserialize)]
+#[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
 pub struct DefenseBonus {
     pub defense: i32,
 }
 
-#[derive(Component, Debug, Clone, Serialize, Deserialize)]
+#[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
 pub struct EntryTrigger {}
 
 #[derive(Component, Debug, Clone)]

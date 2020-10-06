@@ -22,7 +22,7 @@ impl Raws {
     }
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Copy, Clone, Debug, Deserialize)]
 pub struct RawEntity {
     pub code: Code,
     pub item: Option<Item>,
@@ -34,11 +34,12 @@ pub struct RawEntity {
     pub inflicts_damage: Option<InflictsDamage>,
     pub area_of_effect: Option<AreaOfEffect>,
     pub confusion: Option<Confusion>,
+    pub combat_stats: Option<CombatStats>,
     pub health_stats: Option<HealthStats>,
     pub equipment: Option<Equippable>,
     pub melee_power_bonus: Option<MeleePowerBonus>,
     pub defense_bonus: Option<DefenseBonus>,
-    pub field_of_view: Option<FieldOfView>,
+    pub field_of_view: Option<i32>,
     pub entry_trigger: Option<EntryTrigger>,
 }
 
@@ -51,3 +52,34 @@ pub struct SpawnTableEntry {
     pub add_diff_to_weight: Option<bool>,
 }
 
+pub fn spawn_from_raws(raws: &Raws, new_entity: EntityBuilder, code: &i32,
+    pos: Position) -> Option<Entity> {
+
+    let mut entity = new_entity;
+
+    let template = &raws.entities.iter().find(|e| e.code.code == *code);
+    if let Some(t) = template {
+        entity = entity.with(t.code);
+        entity = entity.with(pos);
+        if let Some(item) = t.item { entity = entity.with(item); }
+        if let Some(monster) = t.monster { entity = entity.with(monster); }
+        if let Some(blocks_tile) = t.blocks_tile { entity = entity.with(blocks_tile); }
+        if let Some(consumeable) = t.consumeable { entity = entity.with(consumeable); }
+        if let Some(provides_healing) = t.provides_healing { entity = entity.with(provides_healing); }
+        if let Some(ranged) = t.ranged { entity = entity.with(ranged); }
+        if let Some(inflicts_damage) = t.inflicts_damage { entity = entity.with(inflicts_damage); }
+        if let Some(area_of_effect) = t.area_of_effect { entity = entity.with(area_of_effect); }
+        if let Some(confusion) = t.confusion { entity = entity.with(confusion); }
+        if let Some(combat_stats) = t.combat_stats { entity = entity.with(combat_stats); }
+        if let Some(health_stats) = t.health_stats { entity = entity.with(health_stats); }
+        if let Some(equipment) = t.equipment { entity = entity.with(equipment); }
+        if let Some(melee_power_bonus) = t.melee_power_bonus { entity = entity.with(melee_power_bonus); }
+        if let Some(defense_bonus) = t.defense_bonus { entity = entity.with(defense_bonus); }
+        if let Some(entry_trigger) = t.entry_trigger { entity = entity.with(entry_trigger); }
+        if let Some(field_of_view) = t.field_of_view {
+            entity = entity.with(FieldOfView { visible_tiles: Vec::new(), range: field_of_view });
+        }
+    }
+     
+    Some(entity.build())
+}

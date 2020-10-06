@@ -33,6 +33,8 @@ impl GameSocket {
 
     pub fn new_campaign(&mut self) {
 
+        load_raws();
+
         let mut campaign = Campaign::new();
         self.ecs.insert(RandomNumberGenerator::new());
 
@@ -52,8 +54,6 @@ impl GameSocket {
 
         self.ecs.insert(GameLog::new());
         self.ecs.insert(state);
-
-        load_raws();
     }
 
     fn game_over(&mut self) {

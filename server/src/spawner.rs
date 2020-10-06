@@ -22,6 +22,7 @@ use super::{
     MeleePowerBonus,
     DefenseBonus,
     EntryTrigger,
+    raws::*,
 };
 use std::collections::HashMap;
 use roguelike_common::*;
@@ -106,6 +107,17 @@ pub fn spawn_map(map: &mut Map, ecs: &mut World) {
             TileType::Lava => lava_trap(ecs, x, y), 
             _ => {},
         }
+    }
+
+    // TESTING
+    let pos = Position { x: 15, y: 5 };
+    spawn_from_raws(&RAWS.lock().unwrap(), ecs.create_entity(), &MOB_GHOST, pos);
+    let entities = ecs.entities();
+    let attr = ecs.read_storage::<HealthStats>();
+    let code = ecs.read_storage::<Code>();
+    let mon = ecs.read_storage::<Monster>();
+    for (c, _e, a, m) in (&code, &entities, &attr, &mon).join() {
+        println!("{} - {:?} - {:?}", c.code, m, a);
     }
 }
 

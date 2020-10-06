@@ -30,7 +30,7 @@ impl RandomNumberGenerator {
     }
 }
 
-#[derive(Component, Eq, PartialEq, Hash, Clone, Copy, Debug, Serialize, Deserialize)]
+#[derive(Component, Eq, PartialEq, Hash, Copy, Clone, Debug, Serialize, Deserialize)]
 pub struct Position {
     pub x: i32,
     pub y: i32,

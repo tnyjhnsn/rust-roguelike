@@ -19,19 +19,16 @@ pub fn load_raws() {
         "raws/traps.ron",
     ];
 
-    let master_raws = &mut RAWS.lock().unwrap();
-
     for path in &paths {
         let file = File::open(path).expect("Cannot open file");
         let raws: Vec<RawEntity> = from_reader(file).expect("Cannot read from file");
-        master_raws.load_entities(raws);
+        &RAWS.lock().unwrap().load_entities(raws);
     }
 
     let file = File::open("raws/spawn_table.ron").expect("Cannot open file");
     let spawns: Vec<SpawnTableEntry> = from_reader(file).expect("Cannot read from file");
-    master_raws.load_spawn_table(spawns);
+    &RAWS.lock().unwrap().load_spawn_table(spawns);
 
     // testing
     //println!("{:?}", &RAWS.lock().unwrap().spawn_table);
-    //println!("{:?}", master_raws.spawn_table);
 }
