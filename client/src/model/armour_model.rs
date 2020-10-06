@@ -2,7 +2,7 @@ use serde_json::Value;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct MArmour {
-    pub items: Vec<(i32, u64)>,
+    pub items: Vec<(i32, i32)>,
 }
 
 impl MArmour {

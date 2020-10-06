@@ -132,7 +132,7 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for GameSocket {
                         }
                     }
                     _ => {
-                        let idx = chunks[1].parse::<u64>().unwrap();
+                        let idx = chunks[1].parse::<i32>().unwrap();
                         match chunks[0] {
                             "/drop" => {
                                 drop_item(idx, &mut self.ecs);

@@ -19,7 +19,7 @@ pub struct Props {
     pub armour: MArmour,
     pub dict: Dictionary,
     pub change_panel_signal: Callback<KeyboardEvent>,
-    pub item_action_signal: Callback<(KeyboardEvent, u64, i32)>,
+    pub item_action_signal: Callback<(KeyboardEvent, i32, i32)>,
 }
 
 pub enum Msg {
@@ -125,7 +125,7 @@ impl Component for Armour {
     }
 
     fn view(&self) -> Html {
-        let render_items = |item: &(i32, u64)| {
+        let render_items = |item: &(i32, i32)| {
             let name = self.props.dict.get_name(item.0);
             let css = self.props.dict.get_css(item.0);
             html! {

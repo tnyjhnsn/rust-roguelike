@@ -128,36 +128,36 @@ pub fn pickup_item(ecs: &mut World) {
     }
 }
 
-pub fn drop_item(idx: u64, ecs: &mut World) {
+pub fn drop_item(idx: i32, ecs: &mut World) {
     let player = ecs.fetch::<PlayerEntity>();
     let inventory = ecs.read_storage::<InInventory>();
     let entities = ecs.entities();
 
-    for (entity, _i) in (&entities, &inventory).join().filter(|item| item.0.id() as u64 == idx) {
+    for (entity, _i) in (&entities, &inventory).join().filter(|item| item.0.id() as i32 == idx) {
         let mut intent = ecs.write_storage::<WantsToDropItem>();
         intent.insert(*player,
             WantsToDropItem{ item: entity }).expect("Unable to insert wants to drop item");
     }
 }
 
-pub fn remove_item(idx: u64, ecs: &mut World) {
+pub fn remove_item(idx: i32, ecs: &mut World) {
     let player = ecs.fetch::<PlayerEntity>();
     let equipped = ecs.read_storage::<Equipped>();
     let entities = ecs.entities();
 
-    for (entity, _i) in (&entities, &equipped).join().filter(|item| item.0.id() as u64 == idx) {
+    for (entity, _i) in (&entities, &equipped).join().filter(|item| item.0.id() as i32 == idx) {
         let mut intent = ecs.write_storage::<WantsToRemoveItem>();
         intent.insert(*player,
             WantsToRemoveItem{ item: entity }).expect("Unable to insert wants to remove item");
     }
 }
 
-pub fn use_item(idx: u64, target: Option<usize>, ecs: &mut World) {
+pub fn use_item(idx: i32, target: Option<usize>, ecs: &mut World) {
     let player = ecs.fetch::<PlayerEntity>();
     let inventory = ecs.read_storage::<InInventory>();
     let entities = ecs.entities();
 
-    for (entity, _i) in (&entities, &inventory).join().filter(|item| item.0.id() as u64 == idx) {
+    for (entity, _i) in (&entities, &inventory).join().filter(|item| item.0.id() as i32 == idx) {
         let mut intent = ecs.write_storage::<WantsToUseItem>();
         intent.insert(*player,
             WantsToUseItem{ item: entity, target  }).expect("Unable to insert wants to use item");

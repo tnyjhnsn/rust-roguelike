@@ -32,7 +32,7 @@ pub enum Msg {
     Received(Result<Value, Error>),
     ChangePanel(KeyboardEvent),
     MapAction(KeyboardEvent),
-    ItemAction((KeyboardEvent, u64, i32)),
+    ItemAction((KeyboardEvent, i32, i32)),
     TargetIndicator((Option<KeyboardEvent>, Option<i32>))
 }
 
