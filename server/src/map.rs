@@ -94,13 +94,13 @@ impl Map {
 
     fn populate_neighbours(&mut self) {
         for i in 0..self.get_dim() {
-            let (x, y) = self.idx_xy(i as i32);
+            let pos = self.idx_xy(i as i32);
             let mut neighbours = Vec::new();
             for c in [-1, 0, 1].iter().cloned() {
-                let xx = x + c;
+                let xx = pos.x + c;
                 if xx < 0 || xx >= self.width { continue; }
                 for r in [-1, 0, 1].iter().cloned() {
-                    let yy = y + r;
+                    let yy = pos.y + r;
                     if (c == 0 && r == 0) || yy < 0 || yy >= self.height { continue; }
                     neighbours.push(self.xy_idx(xx, yy));
                 }
@@ -146,17 +146,17 @@ impl Map {
         (y as usize * self.width as usize) + x as usize
     }
 
-    pub fn idx_xy(&self, idx: i32) -> (i32, i32) {
-        (idx % self.width, idx / self.width)
+    pub fn idx_xy(&self, idx: i32) -> Position {
+        Position::new(idx % self.width, idx / self.width)
     }
 
-    pub fn get_random_space(&self, rng: &mut RandomNumberGenerator) -> (i32, i32) {
+    pub fn get_random_space(&self, rng: &mut RandomNumberGenerator) -> Position {
         loop {
             let x = rng.range(1, self.width - 1);
             let y = rng.range(1, self.height - 1);
             let idx = self.xy_idx(x, y);
             if self.tiles[idx] == TileType::Floor {
-                break (x, y)
+                break Position::new(x, y)
             }
         }
     }

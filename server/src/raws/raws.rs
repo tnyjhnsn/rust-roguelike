@@ -36,7 +36,7 @@ pub struct RawEntity {
     pub confusion: Option<Confusion>,
     pub combat_stats: Option<CombatStats>,
     pub health_stats: Option<HealthStats>,
-    pub equipment: Option<Equippable>,
+    pub equippable: Option<Equippable>,
     pub melee_power_bonus: Option<MeleePowerBonus>,
     pub defense_bonus: Option<DefenseBonus>,
     pub field_of_view: Option<i32>,
@@ -53,7 +53,7 @@ pub struct SpawnTableEntry {
 }
 
 pub fn spawn_from_raws(raws: &Raws, new_entity: EntityBuilder, code: &i32,
-    pos: Position) -> Option<Entity> {
+    pos: Position) {
 
     let mut entity = new_entity;
 
@@ -72,14 +72,13 @@ pub fn spawn_from_raws(raws: &Raws, new_entity: EntityBuilder, code: &i32,
         if let Some(confusion) = t.confusion { entity = entity.with(confusion); }
         if let Some(combat_stats) = t.combat_stats { entity = entity.with(combat_stats); }
         if let Some(health_stats) = t.health_stats { entity = entity.with(health_stats); }
-        if let Some(equipment) = t.equipment { entity = entity.with(equipment); }
+        if let Some(equippable) = t.equippable { entity = entity.with(equippable); }
         if let Some(melee_power_bonus) = t.melee_power_bonus { entity = entity.with(melee_power_bonus); }
         if let Some(defense_bonus) = t.defense_bonus { entity = entity.with(defense_bonus); }
         if let Some(entry_trigger) = t.entry_trigger { entity = entity.with(entry_trigger); }
         if let Some(field_of_view) = t.field_of_view {
             entity = entity.with(FieldOfView { visible_tiles: Vec::new(), range: field_of_view });
         }
+        entity.build();
     }
-     
-    Some(entity.build())
 }
