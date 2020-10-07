@@ -7,7 +7,6 @@ use super::{
     Position,
     FieldOfView,
     Map,
-    RandomTable,
     raws::*,
 };
 use std::collections::HashMap;
@@ -27,25 +26,8 @@ pub fn player(ecs: &mut World, x: i32, y: i32) -> PlayerEntity {
         .build()
 }
 
-fn map_table(difficulty: i32) -> RandomTable {
-    RandomTable::new()
-        .add(MOB_WHITE_CENTIPEDE, 10)
-        .add(MOB_RED_ANT, 5)
-        .add(MOB_GHOST, 5)
-        .add(MOB_GREY_MOULD, 1 + difficulty)
-        .add(ITEM_HEALTH_POTION, 8)
-        .add(ITEM_MAGIC_MISSILE, 5)
-        .add(ITEM_DRAGON_BREATH, 2 + difficulty)
-        .add(ITEM_ACID_RAIN, 2 + difficulty)
-        .add(ITEM_CONFUSION_SCROLL, 1 + difficulty)
-        .add(WEAP_DAGGER, 5)
-        .add(WEAP_SHORT_SWORD, 5)
-        .add(WEAP_LONG_SWORD, 5)
-        .add(WEAP_SHIELD, 5)
-}
-
 pub fn spawn_map(map: &mut Map, ecs: &mut World) {
-    let spawn_table = map_table(map.difficulty);
+    let spawn_table = get_spawn_table(&RAWS.lock().unwrap(), map.difficulty);
     let mut spawn_points = HashMap::new();
 
     {

@@ -82,3 +82,19 @@ pub fn spawn_from_raws(raws: &Raws, new_entity: EntityBuilder, code: &i32,
         entity.build();
     }
 }
+
+pub fn get_spawn_table(raws: &Raws, difficulty: i32) -> RandomTable {
+    let options: Vec<&SpawnTableEntry> = raws.spawn_table
+        .iter()
+        .filter(|o| difficulty >= o.min_difficulty && difficulty <= o.max_difficulty)
+        .collect();
+    let mut table = RandomTable::new();
+    for o in options.iter() {
+        let mut weight = o.weight;
+        if o.add_diff_to_weight.is_some() {
+            weight += difficulty;
+        }
+        table = table.add(o.code, weight);
+    }
+    table
+}
