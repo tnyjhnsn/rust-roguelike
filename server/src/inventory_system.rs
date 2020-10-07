@@ -136,7 +136,10 @@ impl<'a> System<'a> for UseItemSystem {
                             let aoe_tiles: HashSet<usize> = HashSet::from_iter(aoe);
                             for tile in &aoe_tiles {
                                 for mob in &map.contents[*tile] {
-                                    targets.push(*mob);
+                                    let code = codes.get(*mob).unwrap().code;
+                                    if code < 5000 {
+                                        targets.push(*mob);
+                                    }
                                 }
                             }
                         }

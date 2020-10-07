@@ -35,4 +35,13 @@
         health_stats: Some((max_hp: 6, hp: 6)),
         field_of_view: Some(4),
     ),
+    (
+        // KOBOLD
+        code: (code: 14),
+        monster: Some(()),
+        blocks_tile: Some(()),
+        combat_stats: Some((defense: 1, power: 3)),
+        health_stats: Some((max_hp: 8, hp: 8)),
+        field_of_view: Some(6),
+    ),
 ]
