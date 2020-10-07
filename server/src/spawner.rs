@@ -38,7 +38,7 @@ pub fn spawn_map(map: &mut Map, ecs: &mut World) {
             while !added {
                 let idx = map.get_random_space(&mut rng);
                 if !spawn_points.contains_key(&idx) {
-                    spawn_points.insert(idx, spawn_table.roll());
+                    spawn_points.insert(idx, spawn_table.roll(&mut rng));
                     added = true;
                 }
             }
