@@ -19,7 +19,7 @@ pub fn player(ecs: &mut World, x: i32, y: i32) -> PlayerEntity {
         .with(Position { x, y })
         .with(FieldOfView {
             visible_tiles: Vec::new(),
-            range: 5,
+            range: 8,
         })
         .with(CombatStats { defense: 2, power: 5 })
         .with(HealthStats { max_hp: 300, hp: 300 })
