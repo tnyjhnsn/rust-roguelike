@@ -35,7 +35,7 @@ impl Component for Status {
         let mut style = String::from("not-seen");
         if self.props.status & SEEN != 0 { style = String::from("seen") };
         if self.props.status & VISIBLE != 0 { style = String::from("visible") };
-        if self.props.status & TARGETED != 0 { style = String::from("visible targeted") };
+        if self.props.status & TARGETED != 0 { style = String::from("targeted") };
 
         html! {
             <div class=("tile", style)></div>
