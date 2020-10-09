@@ -104,8 +104,46 @@ body {
 
 .targeted {
   box-shadow: inset 0px 0px 0px 3px #8b0000;
-  //background: red;
-  //border-radius: 50%;
+}
+
+//.tile:hover {
+//animation: effect 0.5s;
+//animation: attack 0.2s;
+//animation: defend 0.2s;
+//animation-iteration-count: 1;
+//}
+
+@keyframes effect {
+  0% {
+    background-color: rgba(128, 0, 128, 1);
+  }
+  100% {
+    background-color: rgba(128, 0, 128, 0);
+  }
+}
+
+@keyframes attack {
+  50% {
+    transform: translateX(10px);
+  }
+}
+
+@keyframes defend {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-10deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+  75% {
+    transform: rotate(10deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
 }
 
 .modal {
