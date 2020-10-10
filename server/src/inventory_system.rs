@@ -19,6 +19,7 @@ use super::{
     SufferDamage,
     HealthStats,
     RunState,
+    Particles,
 };
 use roguelike_common::*;
 use std::collections::HashSet;
@@ -113,12 +114,14 @@ impl<'a> System<'a> for UseItemSystem {
         WriteStorage<'a, Equipped>,
         WriteStorage<'a, InInventory>,
         WriteExpect<'a, RunState>,
+        WriteExpect<'a, Particles>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
         let (player, mut gamelog, map, entities, mut wants_use, codes, consumeables,
              healing, inflict_damage, mut suffer_damage, mut health_stats, aoe,
-             mut confused, equippable, mut equipped, mut inventory, mut state) = data;
+             mut confused, equippable, mut equipped, mut inventory,
+             mut state, mut particles) = data;
 
         for (entity, use_item) in (&entities, &wants_use).join() {
 
@@ -142,6 +145,7 @@ impl<'a> System<'a> for UseItemSystem {
                                     }
                                 }
                             }
+                            particles.add_particle((PARTICLE_EFFECT, aoe_tiles.into_iter().collect()));
                         }
                         None => {
                             let idx = use_item.target.unwrap();

@@ -9,7 +9,7 @@ pub struct MMap {
     pub tiles: Vec<TileType>,
     pub contents: Vec<Vec<i32>>,
     pub status: Vec<i32>,
-    pub particles: Vec<Option<i32>>,
+    pub particles: Vec<Option<(i32, u64)>>,
     pub fov: Vec<usize>,
     pub viewport: Vec<i32>,
     pub ppos: i32,
@@ -71,17 +71,18 @@ impl MMap {
     pub fn set_contents(&mut self, data: Value) {
         let contents: Vec<(usize, Vec<i32>)> = serde_json::from_value(data).unwrap();
         self.contents = vec![Vec::new(); self.get_dim()];
-        self.particles = vec![None; self.get_dim()];
         for (idx, c) in &contents {
             self.contents[*idx] = c.to_vec();
         }
     }
 
     pub fn set_particles(&mut self, data: Value) {
-        let particles: Vec<(i32, Vec<usize>)> = serde_json::from_value(data).unwrap();
+        let time = serde_json::from_value(data[0].clone()).unwrap();
+        let particles: Vec<(i32, Vec<usize>)> = serde_json::from_value(data[1].clone()).unwrap();
+        self.particles = vec![None; self.get_dim()];
         for (p, indexes) in &particles {
             for idx in indexes {
-                self.particles[*idx] = Some(*p);
+                self.particles[*idx] = Some((*p, time));
             }
         }
     }

@@ -73,3 +73,4 @@ pub const TRAP_LAVA: i32 = 5001;
 // OR an Item code
 pub const PARTICLE_ATTACK: i32 = 0;
 pub const PARTICLE_DEFEND: i32 = 1;
+pub const PARTICLE_EFFECT: i32 = 2;

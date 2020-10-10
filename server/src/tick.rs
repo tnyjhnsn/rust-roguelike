@@ -172,7 +172,7 @@ impl GameSocket {
                 data: json!(map),
             };
             let s = serde_json::to_string(&gm).unwrap();
-            println!("{}", s);
+            //println!("{}", s);
             Some(s)
         } else {
             None
@@ -219,6 +219,9 @@ impl GameSocket {
             return;
         }
         self.run_systems_ai();
+        if let Some(p) = self.check_particles() {
+            ctx.text(p);
+        }
         self.run_systems();
         delete_the_dead(&mut self.ecs);
         if let Some(s) = self.gui_tick() {

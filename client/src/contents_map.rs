@@ -1,6 +1,7 @@
 use yew::prelude::*;
 use super::contents::*;
 use super::model::dictionary::*;
+use yew::services::ConsoleService;
 
 pub struct ContentsMap {
     props: Props,
@@ -9,7 +10,7 @@ pub struct ContentsMap {
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
     pub contents: Vec<Vec<i32>>,
-    pub particles: Vec<Option<i32>>,
+    pub particles: Vec<Option<(i32, u64)>>,
     pub dict: Dictionary,
     pub viewport: Vec<i32>,
 }
@@ -36,7 +37,7 @@ impl Component for ContentsMap {
     }
 
     fn view(&self) -> Html {
-        let render_tile = |content: &Vec<i32>, particle: &Option<i32>| {
+        let render_tile = |content: &Vec<i32>, particle: &Option<(i32, u64)>| {
             html! {
                 <Contents
                     content=content

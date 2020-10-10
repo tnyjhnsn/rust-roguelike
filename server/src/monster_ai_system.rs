@@ -17,11 +17,13 @@ impl<'a> System<'a> for MonsterAISystem {
         WriteStorage<'a, WantsToMelee>,
         WriteStorage<'a, Confusion>,
         WriteStorage<'a, EntityMoved>,
+        WriteExpect<'a, Particles>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
         let (ppos, fov, mut map, mut state, monster, mut mpos, player_entity,
-             entities, mut wants_to_melee, mut confused, mut entity_moved) = data;
+             entities, mut wants_to_melee, mut confused,
+             mut entity_moved, mut particles) = data;
 
         for (entity, fov, _m, mpos) in (&entities, &fov, &monster, &mut mpos).join() {
             let mut can_act = true;
@@ -38,6 +40,8 @@ impl<'a> System<'a> for MonsterAISystem {
                 let distance = ppos.position.distance(Position::new(mpos.x, mpos.y));
                 if distance < 1.5 {
                     wants_to_melee.insert(entity, WantsToMelee{ target: *player_entity }).expect("Unable to insert attack");
+                    particles.add_particle((PARTICLE_ATTACK, vec![map.xy_idx(mpos.x, mpos.y)]));
+                    particles.add_particle((PARTICLE_DEFEND, vec![map.xy_idx(ppos.position.x, ppos.position.y)]));
                 } else if fov.visible_tiles.contains(&ppos.position) {
                     let mut idx = map.xy_idx(mpos.x, mpos.y);
                     map.blocked[idx] = false;
