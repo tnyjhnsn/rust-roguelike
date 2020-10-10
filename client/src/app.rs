@@ -115,6 +115,9 @@ impl Component for Game {
                         "ARMOUR" => {
                             self.game.armour.set_items(d);
                         }
+                        "PARTICLES" => {
+                            self.game.map.set_particles(d);
+                        }
                         _ => {
                             //ConsoleService::info(&format!("{:?}", gm.d));
                             return false;

@@ -14,6 +14,7 @@ use super::{
     RunState,
     EntityMoved,
     Map,
+    Particles,
 };
 use std::cmp::{min, max};
 use roguelike_common::*;
@@ -38,6 +39,7 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
     let entities = ecs.entities();
     let mut wants_to_melee = ecs.write_storage::<WantsToMelee>();
     let mut entity_moved = ecs.write_storage::<EntityMoved>();
+    let mut particles = ecs.fetch_mut::<Particles>();
 
     for (entity, _player, pos) in (&entities, &mut players, &mut positions).join() {
         if pos.x + delta_x < 0 || pos.x + delta_x > map.width - 1
@@ -50,6 +52,8 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
                 Some(_t) => {
                     wants_to_melee.insert(entity, WantsToMelee{ target: *potential_target })
                         .expect("Add target failed");
+                    particles.add_particle((PARTICLE_ATTACK, vec![map.xy_idx(pos.x, pos.y)]));
+                    particles.add_particle((PARTICLE_DEFEND, vec![dest_idx]));
                     return;
                 }
                 None => {}

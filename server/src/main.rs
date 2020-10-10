@@ -53,6 +53,8 @@ mod campaign;
 pub use campaign::*;
 mod tick;
 pub use tick::*;
+mod particles;
+pub use particles::*;
 
 #[macro_use]
 extern crate lazy_static;

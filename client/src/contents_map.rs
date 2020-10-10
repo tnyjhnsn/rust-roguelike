@@ -9,6 +9,7 @@ pub struct ContentsMap {
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
     pub contents: Vec<Vec<i32>>,
+    pub particles: Vec<Option<i32>>,
     pub dict: Dictionary,
     pub viewport: Vec<i32>,
 }
@@ -35,16 +36,20 @@ impl Component for ContentsMap {
     }
 
     fn view(&self) -> Html {
-        let render_tile = |content: &Vec<i32>| {
+        let render_tile = |content: &Vec<i32>, particle: &Option<i32>| {
             html! {
-                <Contents content=content dict=&self.props.dict />
+                <Contents
+                    content=content
+                    particle=particle
+                    dict=&self.props.dict />
             }
         };
         html! {
             <div class="contents">
                 { for self.props.viewport
                     .iter()
-                    .map(|i| render_tile(&self.props.contents[*i as usize])) }
+                    .map(|i| render_tile(&self.props.contents[*i as usize],
+                                     &self.props.particles[*i as usize])) }
             </div>
         }
     }

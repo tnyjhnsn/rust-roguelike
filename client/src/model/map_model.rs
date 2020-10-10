@@ -9,6 +9,7 @@ pub struct MMap {
     pub tiles: Vec<TileType>,
     pub contents: Vec<Vec<i32>>,
     pub status: Vec<i32>,
+    pub particles: Vec<Option<i32>>,
     pub fov: Vec<usize>,
     pub viewport: Vec<i32>,
     pub ppos: i32,
@@ -27,6 +28,7 @@ impl MMap {
             tiles: Vec::new(),
             contents: Vec::new(),
             status: Vec::new(),
+            particles: Vec::new(),
             fov: Vec::new(),
             viewport: Vec::new(),
             ppos: 0,
@@ -45,6 +47,7 @@ impl MMap {
         self.height = game.2;
         self.tiles = game.3;
         self.status = vec![0; self.get_dim()];
+        self.particles = vec![None; self.get_dim()];
         self.fov = Vec::new();
         self.viewport = Vec::new();
     }
@@ -68,8 +71,18 @@ impl MMap {
     pub fn set_contents(&mut self, data: Value) {
         let contents: Vec<(usize, Vec<i32>)> = serde_json::from_value(data).unwrap();
         self.contents = vec![Vec::new(); self.get_dim()];
+        self.particles = vec![None; self.get_dim()];
         for (idx, c) in &contents {
             self.contents[*idx] = c.to_vec();
+        }
+    }
+
+    pub fn set_particles(&mut self, data: Value) {
+        let particles: Vec<(i32, Vec<usize>)> = serde_json::from_value(data).unwrap();
+        for (p, indexes) in &particles {
+            for idx in indexes {
+                self.particles[*idx] = Some(*p);
+            }
         }
     }
 

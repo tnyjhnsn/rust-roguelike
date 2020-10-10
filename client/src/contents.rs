@@ -8,6 +8,7 @@ pub struct Contents {
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
     pub content: Vec<i32>,
+    pub particle: Option<i32>,
     pub dict: Dictionary,
 }
 
@@ -36,6 +37,9 @@ impl Component for Contents {
         let mut tile = String::from("");
         if self.props.content.len() > 0 {
             tile = self.props.dict.get_css(self.props.content[0]);
+        }
+        if let Some(_p) = self.props.particle {
+            tile = String::from(format!("{} attack", tile));
         }
         html! {
             <div class=("tile", tile)></div>

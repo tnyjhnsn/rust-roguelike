@@ -84,6 +84,7 @@ impl Component for Map {
                 />
                 <ContentsMap
                     contents=&self.props.map.contents
+                    particles=&self.props.map.particles
                     dict=&self.props.dict
                     viewport=&self.props.map.viewport
                 />

@@ -53,6 +53,7 @@ impl GameSocket {
         state.add_state(ARMOUR_CHANGE);
 
         self.ecs.insert(GameLog::new());
+        self.ecs.insert(Particles::new());
         self.ecs.insert(state);
     }
 
@@ -161,8 +162,28 @@ impl GameSocket {
         }
     }
 
+    pub fn check_particles(&self) -> Option<String> {
+        let mut particles = self.ecs.write_resource::<Particles>();
+        if let Some(p) = particles.get_particles() {
+            let mut map = HashMap::new();
+            map.entry(String::from("PARTICLES"))
+                .or_insert(p);
+            let gm = GameMsg {
+                data: json!(map),
+            };
+            let s = serde_json::to_string(&gm).unwrap();
+            println!("{}", s);
+            Some(s)
+        } else {
+            None
+        }
+    }
+
     pub fn game_tick(&mut self, ctx: &mut <Self as Actor>::Context) {
         self.run_systems();
+        if let Some(p) = self.check_particles() {
+            ctx.text(p);
+        }
         delete_the_dead(&mut self.ecs);
         if let Some(s) = self.gui_tick() {
             ctx.text(s);
