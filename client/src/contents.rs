@@ -1,6 +1,5 @@
 use yew::prelude::*;
 use super::model::dictionary::*;
-use yew::services::ConsoleService;
 
 pub struct Contents {
     props: Props,
@@ -45,7 +44,6 @@ impl Component for Contents {
                 1 => tile = String::from(format!("{} particle-defend", tile)),
                 _ => tile = String::from(format!("{} particle-effect", tile)),
             }
-            
         }
         html! {
             <div class=("tile", tile)></div>

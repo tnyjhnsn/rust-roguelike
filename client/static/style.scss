@@ -49,9 +49,6 @@ body {
   }
 }
 
-.tiles {
-}
-
 .status,
 .contents,
 .tiles {
@@ -117,8 +114,10 @@ body {
 }
 
 .particle-effect {
-  animation: effect 0.5s;
+  animation: effect 0.7s;
   animation-iteration-count: 1;
+  //animation: effect 0.8s linear 0.1s 1 normal forwards;
+  //animation-fill-mode: both;
 }
 
 @keyframes attack {

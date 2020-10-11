@@ -10,6 +10,7 @@ pub struct MMap {
     pub contents: Vec<Vec<i32>>,
     pub status: Vec<i32>,
     pub particles: Vec<Option<(i32, u64)>>,
+    pub particles_reset: bool,
     pub fov: Vec<usize>,
     pub viewport: Vec<i32>,
     pub ppos: i32,
@@ -29,6 +30,7 @@ impl MMap {
             contents: Vec::new(),
             status: Vec::new(),
             particles: Vec::new(),
+            particles_reset: false,
             fov: Vec::new(),
             viewport: Vec::new(),
             ppos: 0,
@@ -48,6 +50,7 @@ impl MMap {
         self.tiles = game.3;
         self.status = vec![0; self.get_dim()];
         self.particles = vec![None; self.get_dim()];
+        self.particles_reset = true;
         self.fov = Vec::new();
         self.viewport = Vec::new();
     }
@@ -66,6 +69,7 @@ impl MMap {
             self.status[*idx] |= VISIBLE;
             self.fov.push(*idx);
         }
+        self.reset_particles();
     }
 
     pub fn set_contents(&mut self, data: Value) {
@@ -76,15 +80,23 @@ impl MMap {
         }
     }
 
+    fn reset_particles(&mut self) {
+        if !self.particles_reset {
+            self.particles = vec![None; self.get_dim()];
+            self.particles_reset = true;
+        }
+    }
+
     pub fn set_particles(&mut self, data: Value) {
         let time = serde_json::from_value(data[0].clone()).unwrap();
         let particles: Vec<(i32, Vec<usize>)> = serde_json::from_value(data[1].clone()).unwrap();
-        self.particles = vec![None; self.get_dim()];
+        self.reset_particles();
         for (p, indexes) in &particles {
             for idx in indexes {
                 self.particles[*idx] = Some((*p, time));
             }
         }
+        self.particles_reset = false;
     }
 
     pub fn set_viewport(&mut self) {

@@ -69,7 +69,7 @@ pub const TRAP_CHASM: i32 = 5000;
 pub const TRAP_LAVA: i32 = 5001;
 
 // PARTICLES
-// Particles can be either from the following list
+// Particles can be from either the following list
 // OR an Item code
 pub const PARTICLE_ATTACK: i32 = 0;
 pub const PARTICLE_DEFEND: i32 = 1;
