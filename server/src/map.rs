@@ -134,7 +134,7 @@ impl Map {
     pub fn draw_map(&self) -> String {
         let mut map = HashMap::new();
         map.entry(String::from("MAP"))
-            .or_insert((self.key, self.width, self.height, &self.tiles));
+            .or_insert((self.key, self.width, self.height));
         let gm = GameMsg {
             data: json!(map),
         };

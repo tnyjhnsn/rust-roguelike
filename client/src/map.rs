@@ -72,7 +72,6 @@ impl Component for Map {
                     |e: KeyboardEvent| { e.prevent_default(); Msg::Pressed(e) })
             >
                 <TileMap
-                    tiles=&self.props.map.tiles
                     status=&self.props.map.status
                     contents=&self.props.map.contents
                     particles=&self.props.map.particles

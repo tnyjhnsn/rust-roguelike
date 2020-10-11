@@ -8,7 +8,6 @@ pub struct Tile {
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
-    pub tile: TileType,
     pub status: i32,
     pub content: Vec<i32>,
     pub particle: Option<(i32, u64)>,
@@ -39,7 +38,6 @@ impl Component for Tile {
     fn view(&self) -> Html {
         html! {
             <div class=("tile",
-                        self.get_tile_css(),
                         self.get_status_css(), 
                         self.get_contents_css(), 
                         self.get_particle_css())>
@@ -49,12 +47,6 @@ impl Component for Tile {
 }
 
 impl Tile {
-    fn get_tile_css(&self) -> String {
-        match self.props.tile {
-            TileType::DownStairs => String::from("stairs-down"),
-            _ => String::from("")
-        }
-    }
     fn get_status_css(&self) -> String {
         let mut status = String::from("not-seen");
         if self.props.status & SEEN != 0 { status = String::from("seen") };

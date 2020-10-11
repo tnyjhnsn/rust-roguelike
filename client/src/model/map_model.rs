@@ -6,7 +6,6 @@ pub struct MMap {
     pub key: String,
     pub width: i32,
     pub height: i32,
-    pub tiles: Vec<TileType>,
     pub contents: Vec<Vec<i32>>,
     pub status: Vec<i32>,
     pub particles: Vec<Option<(i32, u64)>>,
@@ -26,7 +25,6 @@ impl MMap {
             key: String::new(),
             width: 0,
             height: 0,
-            tiles: Vec::new(),
             contents: Vec::new(),
             status: Vec::new(),
             particles: Vec::new(),
@@ -43,11 +41,10 @@ impl MMap {
     }
 
     pub fn set_map(&mut self, data: Value) {
-        let game: (String, i32, i32, Vec<TileType>) = serde_json::from_value(data).unwrap();
+        let game: (String, i32, i32) = serde_json::from_value(data).unwrap();
         self.key = game.0;
         self.width = game.1;
         self.height = game.2;
-        self.tiles = game.3;
         self.status = vec![0; self.get_dim()];
         self.particles = vec![None; self.get_dim()];
         self.particles_reset = true;

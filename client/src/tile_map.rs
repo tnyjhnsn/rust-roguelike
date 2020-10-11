@@ -1,5 +1,4 @@
 use yew::prelude::*;
-use roguelike_common::*;
 use super::tile::*;
 use super::model::dictionary::*;
 
@@ -9,7 +8,6 @@ pub struct TileMap {
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
-    pub tiles: Vec<TileType>,
     pub status: Vec<i32>,
     pub contents: Vec<Vec<i32>>,
     pub particles: Vec<Option<(i32, u64)>>,
@@ -40,10 +38,9 @@ impl Component for TileMap {
     }
 
     fn view(&self) -> Html {
-        let render_tile = |tile: &TileType, status: &i32, content: &Vec<i32>, particle: &Option<(i32, u64)>| {
+        let render_tile = |status: &i32, content: &Vec<i32>, particle: &Option<(i32, u64)>| {
             html! {
                 <Tile
-                    tile=*tile
                     status=*status
                     content=content
                     particle=particle
@@ -56,7 +53,6 @@ impl Component for TileMap {
                 { for self.props.viewport
                     .iter()
                     .map(|i| render_tile(
-                            &self.props.tiles[*i as usize],
                             &self.props.status[*i as usize],
                             &self.props.contents[*i as usize],
                             &self.props.particles[*i as usize],
