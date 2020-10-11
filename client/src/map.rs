@@ -4,8 +4,6 @@ use super::model::map_model::*;
 use super::model::dictionary::*;
 
 use super::tile_map::*;
-use super::contents_map::*;
-use super::status_map::*;
 
 use roguelike_common::*;
 
@@ -75,18 +73,12 @@ impl Component for Map {
             >
                 <TileMap
                     tiles=&self.props.map.tiles
-                    viewport=&self.props.map.viewport
-                    background=&background
-                />
-                <StatusMap
                     status=&self.props.map.status
-                    viewport=&self.props.map.viewport
-                />
-                <ContentsMap
                     contents=&self.props.map.contents
                     particles=&self.props.map.particles
-                    dict=&self.props.dict
                     viewport=&self.props.map.viewport
+                    background=&background
+                    dict=&self.props.dict
                 />
             </div>
         }
