@@ -145,13 +145,14 @@ impl<'a> System<'a> for UseItemSystem {
                                     }
                                 }
                             }
-                            particles.add_particle((PARTICLE_EFFECT, aoe_tiles.into_iter().collect()));
+                            particles.add_particle((item_code, aoe_tiles.into_iter().collect()));
                         }
                         None => {
                             let idx = use_item.target.unwrap();
                             for mob in &map.contents[idx] {
                                 targets.push(*mob);
                             }
+                            particles.add_particle((item_code, vec![idx]));
                         }
                     }
                 }

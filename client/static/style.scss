@@ -114,8 +114,16 @@ body {
 .particle-effect {
   animation: effect 0.7s;
   animation-iteration-count: 1;
-  //animation: effect 0.8s linear 0.1s 1 normal forwards;
-  //animation-fill-mode: both;
+}
+
+.particle-acid-rain {
+  animation: acid-rain 0.7s;
+  animation-iteration-count: 1;
+}
+
+.particle-dragon-breath {
+  animation: dragon-breath 0.7s;
+  animation-iteration-count: 1;
 }
 
 @keyframes attack {
@@ -144,10 +152,28 @@ body {
 
 @keyframes effect {
   0% {
+    background-color: rgba(0, 191, 255, 1);
+  }
+  100% {
+    background-color: rgba(0, 191, 255, 0);
+  }
+}
+
+@keyframes acid-rain {
+  0% {
     background-color: rgba(128, 0, 128, 1);
   }
   100% {
     background-color: rgba(128, 0, 128, 0);
+  }
+}
+
+@keyframes dragon-breath {
+  0% {
+    background-color: rgba(255, 69, 0, 1);
+  }
+  100% {
+    background-color: rgba(255, 69, 0, 0);
   }
 }
 

@@ -67,6 +67,8 @@ impl Tile {
             match p.0 {
                 0 => effects = String::from("particle-attack"),
                 1 => effects = String::from("particle-defend"),
+                ITEM_ACID_RAIN => effects = String::from("particle-acid-rain"),
+                ITEM_DRAGON_BREATH => effects = String::from("particle-dragon-breath"),
                 _ => effects = String::from("particle-effect"),
             }
         }
