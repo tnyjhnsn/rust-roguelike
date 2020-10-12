@@ -1,6 +1,7 @@
 use yew::prelude::*;
 use super::tile::*;
 use super::model::dictionary::*;
+use std::collections::HashMap;
 
 pub struct TileMap {
     props: Props,
@@ -10,7 +11,7 @@ pub struct TileMap {
 pub struct Props {
     pub status: Vec<i32>,
     pub contents: Vec<Vec<i32>>,
-    pub particles: Vec<Option<(i32, u64)>>,
+    pub particles: HashMap<usize, Option<(i32, u64)>>,
     pub viewport: Vec<i32>,
     pub background: String,
     pub dict: Dictionary,
@@ -55,10 +56,18 @@ impl Component for TileMap {
                     .map(|i| render_tile(
                             &self.props.status[*i as usize],
                             &self.props.contents[*i as usize],
-                            &self.props.particles[*i as usize],
+                            self.check_for_particle(*i as usize),
                             )) }
             </div>
         }
     }
 }
 
+impl TileMap {
+    fn check_for_particle(&self, idx: usize) -> &Option<(i32, u64)> {
+        match self.props.particles.contains_key(&idx) {
+            true => self.props.particles.get(&idx).unwrap(),
+            false => &None,
+        }
+    }
+}

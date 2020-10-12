@@ -1,5 +1,6 @@
 use serde_json::Value;
 use roguelike_common::*;
+use std::collections::HashMap;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct MMap {
@@ -8,7 +9,7 @@ pub struct MMap {
     pub height: i32,
     pub contents: Vec<Vec<i32>>,
     pub status: Vec<i32>,
-    pub particles: Vec<Option<(i32, u64)>>,
+    pub particles: HashMap<usize, Option<(i32, u64)>>,
     pub particles_reset: bool,
     pub fov: Vec<usize>,
     pub viewport: Vec<i32>,
@@ -27,8 +28,8 @@ impl MMap {
             height: 0,
             contents: Vec::new(),
             status: Vec::new(),
-            particles: Vec::new(),
-            particles_reset: false,
+            particles: HashMap::new(),
+            particles_reset: true,
             fov: Vec::new(),
             viewport: Vec::new(),
             ppos: 0,
@@ -46,8 +47,6 @@ impl MMap {
         self.width = game.1;
         self.height = game.2;
         self.status = vec![0; self.get_dim()];
-        self.particles = vec![None; self.get_dim()];
-        self.particles_reset = true;
         self.fov = Vec::new();
         self.viewport = Vec::new();
     }
@@ -79,7 +78,7 @@ impl MMap {
 
     fn reset_particles(&mut self) {
         if !self.particles_reset {
-            self.particles = vec![None; self.get_dim()];
+            self.particles = HashMap::new();
             self.particles_reset = true;
         }
     }
@@ -90,7 +89,7 @@ impl MMap {
         self.reset_particles();
         for (p, indexes) in &particles {
             for idx in indexes {
-                self.particles[*idx] = Some((*p, time));
+                self.particles.entry(*idx).or_insert(Some((*p, time)));
             }
         }
         self.particles_reset = false;
