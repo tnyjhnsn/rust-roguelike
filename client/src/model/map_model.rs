@@ -9,7 +9,7 @@ pub struct MMap {
     pub height: i32,
     pub contents: Vec<Vec<i32>>,
     pub status: Vec<i32>,
-    pub particles: HashMap<usize, Option<(i32, u64)>>,
+    pub particles: HashMap<usize, (i32, u64)>,
     pub particles_reset: bool,
     pub fov: Vec<usize>,
     pub viewport: Vec<i32>,
@@ -89,7 +89,7 @@ impl MMap {
         self.reset_particles();
         for (p, indexes) in &particles {
             for idx in indexes {
-                self.particles.entry(*idx).or_insert(Some((*p, time)));
+                self.particles.entry(*idx).or_insert((*p, time));
             }
         }
         self.particles_reset = false;
