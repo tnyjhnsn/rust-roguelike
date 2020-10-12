@@ -69,11 +69,8 @@ impl MMap {
     }
 
     pub fn set_contents(&mut self, data: Value) {
-        self.contents = HashMap::new();
         let contents: Vec<(usize, Vec<i32>)> = serde_json::from_value(data).unwrap();
-        for (idx, c) in &contents {
-            self.contents.insert(*idx, c.to_vec());
-        }
+        self.contents = contents.into_iter().collect();
     }
 
     fn reset_particles(&mut self) {
