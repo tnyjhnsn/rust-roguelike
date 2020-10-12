@@ -10,7 +10,7 @@ pub struct TileMap {
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
     pub status: Vec<i32>,
-    pub contents: Vec<Vec<i32>>,
+    pub contents: HashMap<usize, Vec<i32>>,
     pub particles: HashMap<usize, (i32, u64)>,
     pub viewport: Vec<i32>,
     pub background: String,
@@ -55,7 +55,7 @@ impl Component for TileMap {
                     .iter()
                     .map(|i| render_tile(
                             &self.props.status[*i as usize],
-                            &self.props.contents[*i as usize],
+                            &self.check_for_contents(*i as usize),
                             &self.check_for_particle(*i as usize),
                             )) }
             </div>
@@ -68,6 +68,12 @@ impl TileMap {
         match self.props.particles.contains_key(&idx) {
             true => Some(*self.props.particles.get(&idx).unwrap()),
             false => None,
+        }
+    }
+    fn check_for_contents(&self, idx: usize) -> Vec<i32> {
+        match self.props.contents.contains_key(&idx) {
+            true => self.props.contents.get(&idx).unwrap().clone(),
+            false => Vec::new(),
         }
     }
 }

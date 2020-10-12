@@ -7,7 +7,7 @@ pub struct MMap {
     pub key: String,
     pub width: i32,
     pub height: i32,
-    pub contents: Vec<Vec<i32>>,
+    pub contents: HashMap<usize, Vec<i32>>,
     pub status: Vec<i32>,
     pub particles: HashMap<usize, (i32, u64)>,
     pub particles_reset: bool,
@@ -26,7 +26,7 @@ impl MMap {
             key: String::new(),
             width: 0,
             height: 0,
-            contents: Vec::new(),
+            contents: HashMap::new(),
             status: Vec::new(),
             particles: HashMap::new(),
             particles_reset: true,
@@ -69,10 +69,10 @@ impl MMap {
     }
 
     pub fn set_contents(&mut self, data: Value) {
+        self.contents = HashMap::new();
         let contents: Vec<(usize, Vec<i32>)> = serde_json::from_value(data).unwrap();
-        self.contents = vec![Vec::new(); self.get_dim()];
         for (idx, c) in &contents {
-            self.contents[*idx] = c.to_vec();
+            self.contents.insert(*idx, c.to_vec());
         }
     }
 
