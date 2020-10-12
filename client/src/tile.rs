@@ -9,7 +9,7 @@ pub struct Tile {
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
     pub status: i32,
-    pub content: Vec<i32>,
+    pub content: Option<Vec<i32>>,
     pub particle: Option<(i32, u64)>,
     pub dict: Dictionary,
 }
@@ -56,8 +56,8 @@ impl Tile {
     }
     fn get_contents_css(&self) -> String {
         let mut contents = String::from("");
-        if self.props.content.len() > 0 {
-            contents = self.props.dict.get_css(self.props.content[0]);
+        if let Some(c) = &self.props.content {
+            contents = self.props.dict.get_css(c[0]);
         }
         contents
     }

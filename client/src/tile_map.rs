@@ -39,7 +39,7 @@ impl Component for TileMap {
     }
 
     fn view(&self) -> Html {
-        let render_tile = |status: &i32, content: &Vec<i32>, particle: &Option<(i32, u64)>| {
+        let render_tile = |status: &i32, content: &Option<Vec<i32>>, particle: &Option<(i32, u64)>| {
             html! {
                 <Tile
                     status=*status
@@ -70,10 +70,10 @@ impl TileMap {
             false => None,
         }
     }
-    fn check_for_contents(&self, idx: usize) -> Vec<i32> {
+    fn check_for_contents(&self, idx: usize) -> Option<Vec<i32>> {
         match self.props.contents.contains_key(&idx) {
-            true => self.props.contents.get(&idx).unwrap().clone(),
-            false => Vec::new(),
+            true => Some(self.props.contents.get(&idx).unwrap().clone()),
+            false => None,
         }
     }
 }
