@@ -1,5 +1,12 @@
 [
     (
+        // DOOR 
+        code: (code: 1900),
+        door: Some((open: false)),
+        blocks_tile: Some(()),
+        blocks_visibility: Some(()),
+    ),
+    (
         // HEALTH_POTION
         code: (code: 2000),
         item: Some(()),

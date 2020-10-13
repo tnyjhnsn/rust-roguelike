@@ -140,6 +140,14 @@ pub struct OtherLevelPosition {
     pub key: &'static str,
 }
 
+#[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
+pub struct BlocksVisibility {}
+
+#[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
+pub struct Door {
+    pub open: bool,
+}
+
 // Component for each intent
 
 #[derive(Component, Debug, Clone)]

@@ -1,7 +1,7 @@
 use specs::prelude::*;
 use roguelike_common::*;
 use serde_json::json;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 const DIJKSTRA_MAX: i32 = 1000;
 
@@ -16,6 +16,7 @@ pub struct Map {
     pub dijkstra_values: Vec<i32>,
     pub contents: Vec<Vec<Entity>>,
     pub difficulty: i32,
+    pub view_blocked: HashSet<usize>,
 }
 
 impl Map {
@@ -34,6 +35,7 @@ impl Map {
             dijkstra_values: Vec::new(),
             contents: vec![Vec::new(); dim],
             difficulty,
+            view_blocked: HashSet::new(),
         };
 
         map.populate_tiles(new_tiles);
@@ -123,6 +125,7 @@ impl Map {
             match i {
                 1 => self.tiles.push(TileType::Wall),
                 2 => self.tiles.push(TileType::Blocked), 
+                3 => self.tiles.push(TileType::Door), 
                 49 => self.tiles.push(TileType::ExitMap),
                 50 => self.tiles.push(TileType::Chasm),
                 51 => self.tiles.push(TileType::Lava),

@@ -230,10 +230,10 @@ impl GameSocket {
     }
 
     fn run_systems(&mut self) {
-        let mut vis = VisibilitySystem{};
-        vis.run_now(&self.ecs);
         let mut mapindex = MapIndexingSystem{};
         mapindex.run_now(&self.ecs);
+        let mut vis = VisibilitySystem{};
+        vis.run_now(&self.ecs);
         let mut melee = MeleeCombatSystem{};
         melee.run_now(&self.ecs);
         let mut pickup_item = PickupItemSystem{};

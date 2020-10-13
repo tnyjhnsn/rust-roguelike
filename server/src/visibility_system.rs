@@ -34,7 +34,7 @@ impl<'a> System<'a> for VisibilitySystem {
                         for (x, y) in Bresenham::new((pos.x, pos.y), (point.x, point.y)) {
                             set.insert(Position::new(x, y));
                             let idx = map.xy_idx(x, y);
-                            if map.tiles[idx] == TileType::Wall {
+                            if map.tiles[idx] == TileType::Wall || map.view_blocked.contains(&idx) {
                                 break;
                             }
                         }

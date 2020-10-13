@@ -41,6 +41,9 @@ pub const MOB_GHOST: i32 = 12;
 pub const MOB_GREY_MOULD: i32 = 13;
 pub const MOB_KOBOLD: i32 = 14;
 
+// OTHER
+pub const OTHER_DOOR: i32 = 1900;
+
 // ITEMS
 // Regular 2000 - 2099
 pub const ITEM_HEALTH_POTION: i32 = 2000;

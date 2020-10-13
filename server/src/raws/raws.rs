@@ -41,6 +41,8 @@ pub struct RawEntity {
     pub defense_bonus: Option<DefenseBonus>,
     pub field_of_view: Option<i32>,
     pub entry_trigger: Option<EntryTrigger>,
+    pub door: Option<Door>,
+    pub blocks_visibility: Option<BlocksVisibility>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -76,6 +78,8 @@ pub fn spawn_from_raws(raws: &Raws, new_entity: EntityBuilder, code: &i32,
         if let Some(melee_power_bonus) = t.melee_power_bonus { entity = entity.with(melee_power_bonus); }
         if let Some(defense_bonus) = t.defense_bonus { entity = entity.with(defense_bonus); }
         if let Some(entry_trigger) = t.entry_trigger { entity = entity.with(entry_trigger); }
+        if let Some(door) = t.door { entity = entity.with(door); }
+        if let Some(blocks_visibility) = t.blocks_visibility { entity = entity.with(blocks_visibility); }
         if let Some(field_of_view) = t.field_of_view {
             entity = entity.with(FieldOfView { visible_tiles: Vec::new(), range: field_of_view });
         }

@@ -99,6 +99,8 @@ impl GameSocket {
         gs.ecs.register::<EntryTrigger>(); 
         gs.ecs.register::<EntityMoved>(); 
         gs.ecs.register::<OtherLevelPosition>(); 
+        gs.ecs.register::<BlocksVisibility>(); 
+        gs.ecs.register::<Door>(); 
         gs
     }
 }

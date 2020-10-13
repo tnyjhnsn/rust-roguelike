@@ -15,6 +15,9 @@ use super::{
     EntityMoved,
     Map,
     Particles,
+    Door,
+    BlocksVisibility,
+    BlocksTile,
 };
 use std::cmp::{min, max};
 use roguelike_common::*;
@@ -40,6 +43,9 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
     let mut wants_to_melee = ecs.write_storage::<WantsToMelee>();
     let mut entity_moved = ecs.write_storage::<EntityMoved>();
     let mut particles = ecs.fetch_mut::<Particles>();
+    let mut doors = ecs.write_storage::<Door>();
+    let mut blocks_visibility = ecs.write_storage::<BlocksVisibility>();
+    let mut blocks_tile = ecs.write_storage::<BlocksTile>();
 
     for (entity, _player, pos) in (&entities, &mut players, &mut positions).join() {
         if pos.x + delta_x < 0 || pos.x + delta_x > map.width - 1
@@ -48,15 +54,18 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
 
         for potential_target in &map.contents[dest_idx] {
             let t = combat_stats.get(*potential_target);
-            match t {
-                Some(_t) => {
-                    wants_to_melee.insert(entity, WantsToMelee{ target: *potential_target })
-                        .expect("Add target failed");
-                    particles.add_particle((PARTICLE_ATTACK, vec![map.xy_idx(pos.x, pos.y)]));
-                    particles.add_particle((PARTICLE_DEFEND, vec![dest_idx]));
-                    return;
-                }
-                None => {}
+            if let Some(_t) = t {
+                wants_to_melee.insert(entity, WantsToMelee{ target: *potential_target })
+                    .expect("Add target failed");
+                particles.add_particle((PARTICLE_ATTACK, vec![map.xy_idx(pos.x, pos.y)]));
+                particles.add_particle((PARTICLE_DEFEND, vec![dest_idx]));
+                return;
+            }
+            let door = doors.get_mut(*potential_target);
+            if let Some(door) = door {
+                door.open = true;
+                blocks_visibility.remove(*potential_target);
+                blocks_tile.remove(*potential_target);
             }
         }
 

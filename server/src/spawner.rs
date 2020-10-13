@@ -55,6 +55,8 @@ pub fn spawn_map(map: &mut Map, ecs: &mut World) {
     for (idx, i) in map.tiles.iter().enumerate() {
         let pos = map.idx_xy(idx as i32);
         match i {
+            TileType::Door => spawn_from_raws(&RAWS.lock().unwrap(),
+                ecs.create_entity(), &OTHER_DOOR, pos),
             TileType::Chasm => spawn_from_raws(&RAWS.lock().unwrap(),
                 ecs.create_entity(), &TRAP_CHASM, pos),
             TileType::Lava => spawn_from_raws(&RAWS.lock().unwrap(),
