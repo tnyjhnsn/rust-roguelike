@@ -52,7 +52,7 @@ pub enum TileType {
     Floor = 0, // Can see through, Can traverse
     Wall = 1, // Cannot see through, Cannot traverse
     Blocked = 2, // Can see through, Cannot traverse
-    DownStairs = 3,
+    Door = 3,
     ExitMap = 49, 
     Chasm = 50,
     Lava = 51,
