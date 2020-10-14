@@ -66,6 +66,7 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
                 door.open = true;
                 blocks_visibility.remove(*potential_target);
                 blocks_tile.remove(*potential_target);
+                state.add_state(FOV_CHANGE);
             }
         }
 
