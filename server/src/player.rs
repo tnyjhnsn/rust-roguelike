@@ -18,6 +18,7 @@ use super::{
     Door,
     BlocksVisibility,
     BlocksTile,
+    Bystander,
 };
 use std::cmp::{min, max};
 use roguelike_common::*;
@@ -46,6 +47,9 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
     let mut doors = ecs.write_storage::<Door>();
     let mut blocks_visibility = ecs.write_storage::<BlocksVisibility>();
     let mut blocks_tile = ecs.write_storage::<BlocksTile>();
+    let bystanders = ecs.read_storage::<Bystander>();
+
+    let mut swap_entities = Vec::new();
 
     for (entity, _player, pos) in (&entities, &mut players, &mut positions).join() {
         if pos.x + delta_x < 0 || pos.x + delta_x > map.width - 1
@@ -53,13 +57,26 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
         let dest_idx = map.xy_idx(pos.x + delta_x, pos.y + delta_y);
 
         for potential_target in &map.contents[dest_idx] {
-            let t = combat_stats.get(*potential_target);
-            if let Some(_t) = t {
-                wants_to_melee.insert(entity, WantsToMelee{ target: *potential_target })
-                    .expect("Add target failed");
-                particles.add_particle((PARTICLE_ATTACK, vec![map.xy_idx(pos.x, pos.y)]));
-                particles.add_particle((PARTICLE_DEFEND, vec![dest_idx]));
-                return;
+            let bystander = bystanders.get(*potential_target);
+            if bystander.is_some() {
+                swap_entities.push((*potential_target, pos.x, pos.y));
+                pos.x = min(map.width - 1 , max(0, pos.x + delta_x));
+                pos.y = min(map.height - 1, max(0, pos.y + delta_y));
+                let mut ppos = ecs.write_resource::<PlayerPosition>();
+                ppos.position.x = pos.x;
+                ppos.position.y = pos.y;
+                entity_moved.insert(entity, EntityMoved {}).expect("Unable to insert move");
+                state.add_state(FOV_CHANGE);
+                state.add_state(CONTENTS_CHANGE);
+            } else {
+                let t = combat_stats.get(*potential_target);
+                if let Some(_t) = t {
+                    wants_to_melee.insert(entity, WantsToMelee{ target: *potential_target })
+                        .expect("Add target failed");
+                    particles.add_particle((PARTICLE_ATTACK, vec![map.xy_idx(pos.x, pos.y)]));
+                    particles.add_particle((PARTICLE_DEFEND, vec![dest_idx]));
+                    return;
+                }
             }
             let door = doors.get_mut(*potential_target);
             if let Some(door) = door {
@@ -84,6 +101,15 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
             state.add_state(FOV_CHANGE);
             state.add_state(CONTENTS_CHANGE);
         }
+    }
+
+    for e in swap_entities {
+        let their_pos = positions.get_mut(e.0);
+        if let Some(their_pos) = their_pos {
+            their_pos.x = e.1;
+            their_pos.y = e.2;
+        }
+        entity_moved.insert(e.0, EntityMoved {}).expect("Unable to insert move");
     }
 }
 

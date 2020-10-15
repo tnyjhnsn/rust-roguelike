@@ -40,6 +40,7 @@ pub const MOB_RED_ANT: i32 = 11;
 pub const MOB_GHOST: i32 = 12;
 pub const MOB_GREY_MOULD: i32 = 13;
 pub const MOB_KOBOLD: i32 = 14;
+pub const MOB_THIEF: i32 = 15;
 
 // OTHER
 pub const OTHER_DOOR: i32 = 1900;

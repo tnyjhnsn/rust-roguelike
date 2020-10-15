@@ -27,6 +27,7 @@ pub struct RawEntity {
     pub code: Code,
     pub item: Option<Item>,
     pub monster: Option<Monster>,
+    pub bystander: Option<Bystander>,
     pub blocks_tile: Option<BlocksTile>,
     pub consumeable: Option<Consumeable>,
     pub provides_healing: Option<ProvidesHealing>,
@@ -65,6 +66,7 @@ pub fn spawn_from_raws(raws: &Raws, new_entity: EntityBuilder, code: &i32,
         entity = entity.with(pos);
         if let Some(item) = t.item { entity = entity.with(item); }
         if let Some(monster) = t.monster { entity = entity.with(monster); }
+        if let Some(bystander) = t.bystander { entity = entity.with(bystander); }
         if let Some(blocks_tile) = t.blocks_tile { entity = entity.with(blocks_tile); }
         if let Some(consumeable) = t.consumeable { entity = entity.with(consumeable); }
         if let Some(provides_healing) = t.provides_healing { entity = entity.with(provides_healing); }

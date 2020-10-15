@@ -16,6 +16,7 @@ impl Dictionary {
         dict.insert(MOB_GHOST, ("Scary Ghost", "ghost"));
         dict.insert(MOB_GREY_MOULD, ("Shambling Grey Mould", "grey-mould"));
         dict.insert(MOB_KOBOLD, ("Annoying Kobold", "kobold"));
+        dict.insert(MOB_THIEF, ("Sneaky Thief", "Thief"));
         dict.insert(ITEM_HEALTH_POTION, ("Health Potion", "health-potion"));
         dict.insert(ITEM_MAGIC_MISSILE, ("Magic Missiles Scroll", "scroll"));
         dict.insert(ITEM_DRAGON_BREATH, ("Dragon Breath", "dragon-breath"));

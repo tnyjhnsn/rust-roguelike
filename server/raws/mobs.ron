@@ -44,4 +44,13 @@
         health_stats: Some((max_hp: 8, hp: 8)),
         field_of_view: Some(6),
     ),
+    (
+        // THIEF
+        code: (code: 15),
+        bystander: Some(()),
+        blocks_tile: Some(()),
+        combat_stats: Some((defense: 1, power: 3)),
+        health_stats: Some((max_hp: 8, hp: 8)),
+        field_of_view: Some(6),
+    ),
 ]

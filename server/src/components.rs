@@ -4,14 +4,17 @@ use roguelike_common::*;
 
 use serde::{Serialize, Deserialize};
 
+#[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
+pub struct BlocksTile {}
+
 #[derive(Component, Debug, Clone, Serialize, Deserialize)]
 pub struct Player {}
 
 #[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
-pub struct BlocksTile {}
+pub struct Monster {}
 
 #[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
-pub struct Monster {}
+pub struct Bystander {}
 
 #[derive(Component, Debug, Clone, Serialize, Deserialize)]
 pub struct FieldOfView {
