@@ -16,6 +16,9 @@ pub struct Monster {}
 #[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
 pub struct Bystander {}
 
+#[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
+pub struct Vendor {}
+
 #[derive(Component, Debug, Clone, Serialize, Deserialize)]
 pub struct FieldOfView {
     pub visible_tiles: Vec<Position>,

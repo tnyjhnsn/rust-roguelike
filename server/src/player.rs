@@ -19,6 +19,7 @@ use super::{
     BlocksVisibility,
     BlocksTile,
     Bystander,
+    Vendor,
 };
 use std::cmp::{min, max};
 use roguelike_common::*;
@@ -48,6 +49,7 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
     let mut blocks_visibility = ecs.write_storage::<BlocksVisibility>();
     let mut blocks_tile = ecs.write_storage::<BlocksTile>();
     let bystanders = ecs.read_storage::<Bystander>();
+    let vendors = ecs.read_storage::<Vendor>();
 
     let mut swap_entities = Vec::new();
 
@@ -58,7 +60,8 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
 
         for potential_target in &map.contents[dest_idx] {
             let bystander = bystanders.get(*potential_target);
-            if bystander.is_some() {
+            let vendor = vendors.get(*potential_target);
+            if bystander.is_some() || vendor.is_some() {
                 swap_entities.push((*potential_target, pos.x, pos.y));
                 pos.x = min(map.width - 1 , max(0, pos.x + delta_x));
                 pos.y = min(map.height - 1, max(0, pos.y + delta_y));
