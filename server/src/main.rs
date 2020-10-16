@@ -55,6 +55,8 @@ mod tick;
 pub use tick::*;
 mod particles;
 pub use particles::*;
+mod gamestats;
+pub use gamestats::*;
 
 #[macro_use]
 extern crate lazy_static;
@@ -76,6 +78,7 @@ impl GameSocket {
         gs.ecs.register::<Monster>(); 
         gs.ecs.register::<Bystander>(); 
         gs.ecs.register::<Vendor>(); 
+        gs.ecs.register::<Attributes>(); 
         gs.ecs.register::<Code>(); 
         gs.ecs.register::<BlocksTile>(); 
         gs.ecs.register::<CombatStats>(); 

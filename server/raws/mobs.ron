@@ -3,6 +3,7 @@
         // WHITE_CENTIPEDE
         code: (code: 10),
         monster: Some(()),
+        attributes: Some(()),
         blocks_tile: Some(()),
         combat_stats: Some((defense: 1, power: 3)),
         health_stats: Some((max_hp: 10, hp: 10)),
@@ -12,6 +13,7 @@
         // RED_ANT
         code: (code: 11),
         monster: Some(()),
+        attributes: Some(()),
         blocks_tile: Some(()),
         combat_stats: Some((defense: 1, power: 3)),
         health_stats: Some((max_hp: 10, hp: 10)),
@@ -21,6 +23,7 @@
         // GHOST
         code: (code: 12),
         monster: Some(()),
+        attributes: Some(()),
         blocks_tile: Some(()),
         combat_stats: Some((defense: 1, power: 5)),
         health_stats: Some((max_hp: 15, hp: 15)),
@@ -30,6 +33,7 @@
         // GREY_MOULD
         code: (code: 13),
         monster: Some(()),
+        attributes: Some(()),
         blocks_tile: Some(()),
         combat_stats: Some((defense: 1, power: 2)),
         health_stats: Some((max_hp: 6, hp: 6)),
@@ -39,15 +43,17 @@
         // KOBOLD
         code: (code: 14),
         monster: Some(()),
+        attributes: Some(()),
         blocks_tile: Some(()),
         combat_stats: Some((defense: 1, power: 3)),
         health_stats: Some((max_hp: 8, hp: 8)),
         field_of_view: Some(6),
     ),
     (
-        // THIEF
+        // TODO - THIEF IS TEST !!!!
         code: (code: 15),
         vendor: Some(()),
+        attributes: Some((intelligence: Some(13))),
         blocks_tile: Some(()),
         combat_stats: Some((defense: 1, power: 3)),
         health_stats: Some((max_hp: 8, hp: 8)),

@@ -30,5 +30,5 @@ pub fn load_raws() {
     &RAWS.lock().unwrap().load_spawn_table(spawns);
 
     // testing
-    //println!("{:?}", &RAWS.lock().unwrap().spawn_table);
+    //println!("{:?}", &RAWS.lock().unwrap().entities);
 }

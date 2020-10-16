@@ -19,6 +19,21 @@ pub struct Bystander {}
 #[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
 pub struct Vendor {}
 
+#[derive(Debug, Copy, Clone, Serialize, Deserialize)]
+pub struct Attribute {
+    pub base: i32,
+    pub modifiers: i32,
+    pub bonus: i32,
+}
+
+#[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
+pub struct Attributes {
+    pub might: Attribute,
+    pub fitness: Attribute,
+    pub quickness: Attribute,
+    pub intelligence: Attribute,
+}
+
 #[derive(Component, Debug, Clone, Serialize, Deserialize)]
 pub struct FieldOfView {
     pub visible_tiles: Vec<Position>,

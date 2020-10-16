@@ -7,10 +7,15 @@ use super::{
     Position,
     FieldOfView,
     Map,
+    Attributes,
+    Attribute,
     raws::*,
 };
 use std::collections::HashMap;
 use roguelike_common::*;
+use crate::attr_bonus;
+
+const ATTR_BASE: i32 = 11;
 
 pub fn player(ecs: &mut World, x: i32, y: i32) -> PlayerEntity {
     ecs.create_entity()
@@ -23,6 +28,12 @@ pub fn player(ecs: &mut World, x: i32, y: i32) -> PlayerEntity {
         })
         .with(CombatStats { defense: 2, power: 5 })
         .with(HealthStats { max_hp: 300, hp: 300 })
+        .with(Attributes {
+            might: Attribute { base: ATTR_BASE, modifiers: 0, bonus: attr_bonus(ATTR_BASE) },
+            fitness: Attribute { base: ATTR_BASE, modifiers: 0, bonus: attr_bonus(ATTR_BASE) },
+            quickness: Attribute { base: ATTR_BASE, modifiers: 0, bonus: attr_bonus(ATTR_BASE) },
+            intelligence: Attribute { base: ATTR_BASE, modifiers: 0, bonus: attr_bonus(ATTR_BASE) },
+        })
         .build()
 }
 

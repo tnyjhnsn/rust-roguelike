@@ -1,5 +1,6 @@
 use super::*;
 use serde::{Deserialize};
+use crate::attr_bonus;
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct Raws {
@@ -23,12 +24,21 @@ impl Raws {
 }
 
 #[derive(Copy, Clone, Debug, Deserialize)]
+pub struct MobAttributes {
+    pub might: Option<i32>,
+    pub fitness: Option<i32>,
+    pub quickness: Option<i32>,
+    pub intelligence: Option<i32>,
+}
+
+#[derive(Copy, Clone, Debug, Deserialize)]
 pub struct RawEntity {
     pub code: Code,
     pub item: Option<Item>,
     pub monster: Option<Monster>,
     pub bystander: Option<Bystander>,
     pub vendor: Option<Vendor>,
+    pub attributes: Option<MobAttributes>,
     pub blocks_tile: Option<BlocksTile>,
     pub consumeable: Option<Consumeable>,
     pub provides_healing: Option<ProvidesHealing>,
@@ -55,6 +65,8 @@ pub struct SpawnTableEntry {
     pub max_difficulty: i32,
     pub add_diff_to_weight: Option<bool>,
 }
+
+const ATTR_BASE: i32 = 11;
 
 pub fn spawn_from_raws(raws: &Raws, new_entity: EntityBuilder, code: &i32,
     pos: Position) {
@@ -86,6 +98,28 @@ pub fn spawn_from_raws(raws: &Raws, new_entity: EntityBuilder, code: &i32,
         if let Some(blocks_visibility) = t.blocks_visibility { entity = entity.with(blocks_visibility); }
         if let Some(field_of_view) = t.field_of_view {
             entity = entity.with(FieldOfView { visible_tiles: Vec::new(), range: field_of_view });
+        }
+        if let Some(attributes) = t.attributes {
+            let mut attr = Attributes {
+                might: Attribute { base: ATTR_BASE, modifiers: 0, bonus: attr_bonus(ATTR_BASE) },
+                fitness: Attribute { base: ATTR_BASE, modifiers: 0, bonus: attr_bonus(ATTR_BASE) },
+                quickness: Attribute { base: ATTR_BASE, modifiers: 0, bonus: attr_bonus(ATTR_BASE) },
+                intelligence: Attribute { base: ATTR_BASE, modifiers: 0, bonus: attr_bonus(ATTR_BASE) },
+            };
+            if let Some(might) = attributes.might {
+                attr.might = Attribute { base: might, modifiers: 0, bonus: attr_bonus(might) };
+            }
+            if let Some(fitness) = attributes.fitness {
+                attr.fitness = Attribute { base: fitness, modifiers: 0, bonus: attr_bonus(fitness) };
+            }
+            if let Some(quickness) = attributes.quickness {
+                attr.quickness = Attribute { base: quickness, modifiers: 0, bonus: attr_bonus(quickness) };
+            }
+            if let Some(intelligence) = attributes.intelligence {
+                attr.intelligence = Attribute { base: intelligence, modifiers: 0, bonus: attr_bonus(intelligence) };
+            }
+            println!("{} - {:?}", code, attr);
+            entity = entity.with(attr);
         }
         entity.build();
     }
