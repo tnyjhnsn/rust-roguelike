@@ -9,6 +9,8 @@ use super::{
     Map,
     Attributes,
     Attribute,
+    Skills,
+    Skill,
     raws::*,
 };
 use std::collections::HashMap;
@@ -18,6 +20,10 @@ use crate::attr_bonus;
 const ATTR_BASE: i32 = 11;
 
 pub fn player(ecs: &mut World, x: i32, y: i32) -> PlayerEntity {
+    let mut skills = Skills { skills: HashMap::new() };
+    skills.skills.insert(Skill::Melee, 1);
+    skills.skills.insert(Skill::Defense, 1);
+    skills.skills.insert(Skill::Magic, 1);
     ecs.create_entity()
         .with(Player {})
         .with(Code { code: 0 })
@@ -34,6 +40,7 @@ pub fn player(ecs: &mut World, x: i32, y: i32) -> PlayerEntity {
             quickness: Attribute { base: ATTR_BASE, modifiers: 0, bonus: attr_bonus(ATTR_BASE) },
             intelligence: Attribute { base: ATTR_BASE, modifiers: 0, bonus: attr_bonus(ATTR_BASE) },
         })
+        .with(skills)
         .build()
 }
 

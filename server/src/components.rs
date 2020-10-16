@@ -1,6 +1,7 @@
 use specs::prelude::*;
 use specs_derive::*;
 use roguelike_common::*;
+use std::collections::HashMap;
 
 use serde::{Serialize, Deserialize};
 
@@ -32,6 +33,18 @@ pub struct Attributes {
     pub fitness: Attribute,
     pub quickness: Attribute,
     pub intelligence: Attribute,
+}
+
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash, Serialize, Deserialize)]
+pub enum Skill {
+    Melee,
+    Defense,
+    Magic,
+}
+
+#[derive(Component, Debug, Clone, Serialize, Deserialize)]
+pub struct Skills {
+    pub skills: HashMap<Skill, i32>,
 }
 
 #[derive(Component, Debug, Clone, Serialize, Deserialize)]

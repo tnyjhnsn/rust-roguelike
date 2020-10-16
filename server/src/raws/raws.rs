@@ -1,6 +1,7 @@
 use super::*;
 use serde::{Deserialize};
 use crate::attr_bonus;
+use std::collections::HashMap;
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct Raws {
@@ -31,7 +32,7 @@ pub struct MobAttributes {
     pub intelligence: Option<i32>,
 }
 
-#[derive(Copy, Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct RawEntity {
     pub code: Code,
     pub item: Option<Item>,
@@ -39,6 +40,7 @@ pub struct RawEntity {
     pub bystander: Option<Bystander>,
     pub vendor: Option<Vendor>,
     pub attributes: Option<MobAttributes>,
+    pub skills: Option<HashMap<Skill, i32>>,
     pub blocks_tile: Option<BlocksTile>,
     pub consumeable: Option<Consumeable>,
     pub provides_healing: Option<ProvidesHealing>,
@@ -99,6 +101,17 @@ pub fn spawn_from_raws(raws: &Raws, new_entity: EntityBuilder, code: &i32,
         if let Some(field_of_view) = t.field_of_view {
             entity = entity.with(FieldOfView { visible_tiles: Vec::new(), range: field_of_view });
         }
+        if let Some(s) = &t.skills {
+            let mut skills = Skills { skills: HashMap::new() };
+            skills.skills.insert(Skill::Melee, 1);
+            skills.skills.insert(Skill::Defense, 1);
+            skills.skills.insert(Skill::Magic, 1);
+            for (k, v) in s {
+                skills.skills.insert(*k, *v);
+            }
+            println!("{:?}", skills);
+            entity = entity.with(skills);
+        }
         if let Some(attributes) = t.attributes {
             let mut attr = Attributes {
                 might: Attribute { base: ATTR_BASE, modifiers: 0, bonus: attr_bonus(ATTR_BASE) },
@@ -118,7 +131,6 @@ pub fn spawn_from_raws(raws: &Raws, new_entity: EntityBuilder, code: &i32,
             if let Some(intelligence) = attributes.intelligence {
                 attr.intelligence = Attribute { base: intelligence, modifiers: 0, bonus: attr_bonus(intelligence) };
             }
-            println!("{} - {:?}", code, attr);
             entity = entity.with(attr);
         }
         entity.build();

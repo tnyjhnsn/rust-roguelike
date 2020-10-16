@@ -79,6 +79,7 @@ impl GameSocket {
         gs.ecs.register::<Bystander>(); 
         gs.ecs.register::<Vendor>(); 
         gs.ecs.register::<Attributes>(); 
+        gs.ecs.register::<Skills>(); 
         gs.ecs.register::<Code>(); 
         gs.ecs.register::<BlocksTile>(); 
         gs.ecs.register::<CombatStats>(); 

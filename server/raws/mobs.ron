@@ -54,6 +54,7 @@
         code: (code: 15),
         vendor: Some(()),
         attributes: Some((intelligence: Some(13))),
+        skills: Some({ Magic: 2 }),
         blocks_tile: Some(()),
         combat_stats: Some((defense: 1, power: 3)),
         health_stats: Some((max_hp: 8, hp: 8)),
