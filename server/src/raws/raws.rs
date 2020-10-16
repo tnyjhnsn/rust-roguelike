@@ -109,7 +109,6 @@ pub fn spawn_from_raws(raws: &Raws, new_entity: EntityBuilder, code: &i32,
             for (k, v) in s {
                 skills.skills.insert(*k, *v);
             }
-            println!("{:?}", skills);
             entity = entity.with(skills);
         }
         if let Some(attributes) = t.attributes {
