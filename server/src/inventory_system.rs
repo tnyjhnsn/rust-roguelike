@@ -17,7 +17,7 @@ use super::{
     Equippable,
     Equipped,
     SufferDamage,
-    HealthStats,
+    Pools,
     RunState,
     Particles,
 };
@@ -107,7 +107,7 @@ impl<'a> System<'a> for UseItemSystem {
         ReadStorage<'a, ProvidesHealing>,
         ReadStorage<'a, InflictsDamage>,
         WriteStorage<'a, SufferDamage>,
-        WriteStorage<'a, HealthStats>,
+        WriteStorage<'a, Pools>,
         ReadStorage<'a, AreaOfEffect>,
         WriteStorage<'a, Confusion>,
         ReadStorage<'a, Equippable>,
@@ -119,7 +119,7 @@ impl<'a> System<'a> for UseItemSystem {
 
     fn run(&mut self, data: Self::SystemData) {
         let (player, mut gamelog, map, entities, mut wants_use, codes, consumeables,
-             healing, inflict_damage, mut suffer_damage, mut health_stats, aoe,
+             healing, inflict_damage, mut suffer_damage, mut combat_stats, aoe,
              mut confused, equippable, mut equipped, mut inventory,
              mut state, mut particles) = data;
 
@@ -198,9 +198,9 @@ impl<'a> System<'a> for UseItemSystem {
             match item_heals {
                 Some(item) => {
                     for target in &targets {
-                        let stats = health_stats.get_mut(*target);
+                        let stats = combat_stats.get_mut(*target);
                         if let Some(stats) = stats {
-                            stats.hp = i32::min(stats.max_hp, stats.hp + item.heal);
+                            stats.hp.current = i32::min(stats.hp.max, stats.hp.current + item.heal);
                             if entity == *player {
                                 gamelog.add_log(vec![LogType::Drink as i32, 0, item_code, item.heal]);
                             }

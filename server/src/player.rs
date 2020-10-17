@@ -3,7 +3,6 @@ use super::{
     Player,
     Item,
     GameLog,
-    CombatStats,
     WantsToMelee,
     WantsToPickupItem,
     WantsToDropItem,
@@ -20,6 +19,7 @@ use super::{
     BlocksTile,
     Bystander,
     Vendor,
+    Attributes,
 };
 use std::cmp::{min, max};
 use roguelike_common::*;
@@ -38,7 +38,7 @@ impl PlayerPosition {
 pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
     let mut positions = ecs.write_storage::<Position>();
     let mut players = ecs.write_storage::<Player>();
-    let combat_stats = ecs.read_storage::<CombatStats>();
+    let combat_stats = ecs.read_storage::<Attributes>();
     let map = ecs.fetch::<Map>();
     let mut state = ecs.fetch_mut::<RunState>();
     let entities = ecs.entities();

@@ -80,10 +80,9 @@ impl GameSocket {
         gs.ecs.register::<Vendor>(); 
         gs.ecs.register::<Attributes>(); 
         gs.ecs.register::<Skills>(); 
+        gs.ecs.register::<Pools>(); 
         gs.ecs.register::<Code>(); 
         gs.ecs.register::<BlocksTile>(); 
-        gs.ecs.register::<CombatStats>(); 
-        gs.ecs.register::<HealthStats>(); 
         gs.ecs.register::<SufferDamage>(); 
         gs.ecs.register::<WantsToMelee>(); 
         gs.ecs.register::<Item>(); 

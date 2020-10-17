@@ -1,7 +1,5 @@
 use specs::prelude::*;
 use super::{
-    CombatStats,
-    HealthStats,
     Player,
     Code,
     Position,
@@ -11,11 +9,13 @@ use super::{
     Attribute,
     Skills,
     Skill,
+    Pools,
+    Pool,
     raws::*,
 };
 use std::collections::HashMap;
 use roguelike_common::*;
-use crate::attr_bonus;
+use crate::{attr_bonus, player_hp_at_level, mana_at_level};
 
 const ATTR_BASE: i32 = 11;
 
@@ -24,6 +24,14 @@ pub fn player(ecs: &mut World, x: i32, y: i32) -> PlayerEntity {
     skills.skills.insert(Skill::Melee, 1);
     skills.skills.insert(Skill::Defense, 1);
     skills.skills.insert(Skill::Magic, 1);
+    let hp = Pool {
+        current: player_hp_at_level(ATTR_BASE, 1),
+        max: player_hp_at_level(ATTR_BASE, 1),
+    };
+    let mana = Pool {
+        current: mana_at_level(ATTR_BASE, 1),
+        max: mana_at_level(ATTR_BASE, 1),
+    };
     ecs.create_entity()
         .with(Player {})
         .with(Code { code: 0 })
@@ -32,8 +40,6 @@ pub fn player(ecs: &mut World, x: i32, y: i32) -> PlayerEntity {
             visible_tiles: Vec::new(),
             range: 8,
         })
-        .with(CombatStats { defense: 2, power: 5 })
-        .with(HealthStats { max_hp: 300, hp: 300 })
         .with(Attributes {
             might: Attribute { base: ATTR_BASE, modifiers: 0, bonus: attr_bonus(ATTR_BASE) },
             fitness: Attribute { base: ATTR_BASE, modifiers: 0, bonus: attr_bonus(ATTR_BASE) },
@@ -41,6 +47,12 @@ pub fn player(ecs: &mut World, x: i32, y: i32) -> PlayerEntity {
             intelligence: Attribute { base: ATTR_BASE, modifiers: 0, bonus: attr_bonus(ATTR_BASE) },
         })
         .with(skills)
+        .with(Pools {
+            hp,
+            mana,
+            xp: 0,
+            level: 1,
+        })
         .build()
 }
 

@@ -5,7 +5,6 @@
         item: Some(()),
         equippable: Some((slot: Melee)),
         melee_power_bonus: Some((power: 2)),
-        health_stats: Some((max_hp: 1, hp: 1)),
     ),
     (
         // SHORT_SWORD
@@ -13,7 +12,6 @@
         item: Some(()),
         equippable: Some((slot: Melee)),
         melee_power_bonus: Some((power: 4)),
-        health_stats: Some((max_hp: 1, hp: 1)),
     ),
     (
         // LONG_SWORD
@@ -21,7 +19,6 @@
         item: Some(()),
         equippable: Some((slot: Melee)),
         melee_power_bonus: Some((power: 6)),
-        health_stats: Some((max_hp: 1, hp: 1)),
     ),
     (
         // SHIELD
@@ -29,6 +26,5 @@
         item: Some(()),
         equippable: Some((slot: Shield)),
         defense_bonus: Some((defense: 1)),
-        health_stats: Some((max_hp: 1, hp: 1)),
     ),
 ]

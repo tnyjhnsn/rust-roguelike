@@ -21,6 +21,20 @@ pub struct Bystander {}
 pub struct Vendor {}
 
 #[derive(Debug, Copy, Clone, Serialize, Deserialize)]
+pub struct Pool {
+    pub max: i32,
+    pub current: i32,
+}
+
+#[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
+pub struct Pools {
+    pub hp: Pool,
+    pub mana: Pool,
+    pub xp: i32,
+    pub level: i32,
+}
+
+#[derive(Debug, Copy, Clone, Serialize, Deserialize)]
 pub struct Attribute {
     pub base: i32,
     pub modifiers: i32,
@@ -56,18 +70,6 @@ pub struct FieldOfView {
 #[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
 pub struct Code {
     pub code: i32,
-}
-
-#[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
-pub struct CombatStats {
-    pub defense: i32,
-    pub power: i32,
-}
-
-#[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
-pub struct HealthStats {
-    pub max_hp: i32,
-    pub hp: i32,
 }
 
 #[derive(Component, Debug)]

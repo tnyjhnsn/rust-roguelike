@@ -48,8 +48,6 @@ pub struct RawEntity {
     pub inflicts_damage: Option<InflictsDamage>,
     pub area_of_effect: Option<AreaOfEffect>,
     pub confusion: Option<Confusion>,
-    pub combat_stats: Option<CombatStats>,
-    pub health_stats: Option<HealthStats>,
     pub equippable: Option<Equippable>,
     pub melee_power_bonus: Option<MeleePowerBonus>,
     pub defense_bonus: Option<DefenseBonus>,
@@ -57,6 +55,7 @@ pub struct RawEntity {
     pub entry_trigger: Option<EntryTrigger>,
     pub door: Option<Door>,
     pub blocks_visibility: Option<BlocksVisibility>,
+    pub level: Option<i32>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -90,8 +89,6 @@ pub fn spawn_from_raws(raws: &Raws, new_entity: EntityBuilder, code: &i32,
         if let Some(inflicts_damage) = t.inflicts_damage { entity = entity.with(inflicts_damage); }
         if let Some(area_of_effect) = t.area_of_effect { entity = entity.with(area_of_effect); }
         if let Some(confusion) = t.confusion { entity = entity.with(confusion); }
-        if let Some(combat_stats) = t.combat_stats { entity = entity.with(combat_stats); }
-        if let Some(health_stats) = t.health_stats { entity = entity.with(health_stats); }
         if let Some(equippable) = t.equippable { entity = entity.with(equippable); }
         if let Some(melee_power_bonus) = t.melee_power_bonus { entity = entity.with(melee_power_bonus); }
         if let Some(defense_bonus) = t.defense_bonus { entity = entity.with(defense_bonus); }
@@ -111,6 +108,8 @@ pub fn spawn_from_raws(raws: &Raws, new_entity: EntityBuilder, code: &i32,
             }
             entity = entity.with(skills);
         }
+        let mut mob_fitness = ATTR_BASE;
+        let mut mob_intelligence = ATTR_BASE;
         if let Some(attributes) = t.attributes {
             let mut attr = Attributes {
                 might: Attribute { base: ATTR_BASE, modifiers: 0, bonus: attr_bonus(ATTR_BASE) },
@@ -123,15 +122,28 @@ pub fn spawn_from_raws(raws: &Raws, new_entity: EntityBuilder, code: &i32,
             }
             if let Some(fitness) = attributes.fitness {
                 attr.fitness = Attribute { base: fitness, modifiers: 0, bonus: attr_bonus(fitness) };
+                mob_fitness = fitness;
             }
             if let Some(quickness) = attributes.quickness {
                 attr.quickness = Attribute { base: quickness, modifiers: 0, bonus: attr_bonus(quickness) };
             }
             if let Some(intelligence) = attributes.intelligence {
                 attr.intelligence = Attribute { base: intelligence, modifiers: 0, bonus: attr_bonus(intelligence) };
+                mob_intelligence = intelligence
             }
             entity = entity.with(attr);
         }
+        let mut mob_level = 1;
+        if let Some(level) = t.level { mob_level = level; };
+        let mob_hp = npc_hp(mob_fitness, mob_level);
+        let mob_mana = mana_at_level(mob_intelligence, mob_level);
+        let pools = Pools {
+            level: mob_level,
+            xp: 0,
+            hp: Pool { current: mob_hp, max: mob_hp },
+            mana: Pool { current: mob_mana, max: mob_mana },
+        };
+        entity = entity.with(pools);
         entity.build();
     }
 }
