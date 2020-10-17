@@ -57,7 +57,7 @@ pub const ITEM_CONFUSION_SCROLL: i32 = 2103;
 // WEAPONS
 // Melee 3000 - 3099
 pub const WEAP_DAGGER: i32 = 3000;
-pub const WEAP_SHORT_SWORD: i32 = 3001;
+pub const WEAP_RUSTY_SWORD: i32 = 3001;
 pub const WEAP_LONG_SWORD: i32 = 3002;
 // Shield 3100 - 3199
 pub const WEAP_SHIELD: i32 = 3100;

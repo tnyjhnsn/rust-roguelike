@@ -99,8 +99,8 @@ impl GameSocket {
         gs.ecs.register::<WantsToRemoveItem>(); 
         gs.ecs.register::<Equippable>(); 
         gs.ecs.register::<Equipped>(); 
-        gs.ecs.register::<MeleePowerBonus>(); 
-        gs.ecs.register::<DefenseBonus>(); 
+        gs.ecs.register::<MeleeWeapon>(); 
+        gs.ecs.register::<Wearable>(); 
         gs.ecs.register::<EntryTrigger>(); 
         gs.ecs.register::<EntityMoved>(); 
         gs.ecs.register::<OtherLevelPosition>(); 

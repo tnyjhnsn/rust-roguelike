@@ -3,28 +3,27 @@
         // DAGGER
         code: (code: 3000),
         item: Some(()),
-        equippable: Some((slot: Melee)),
-        melee_power_bonus: Some((power: 2)),
+        weapon: Some((range: 0, attribute: Quickness,
+                      damage_dice: (1, 4, 0), hit_bonus: 0)),
     ),
     (
-        // SHORT_SWORD
+        // RUSTY_SWORD
         code: (code: 3001),
         item: Some(()),
-        equippable: Some((slot: Melee)),
-        melee_power_bonus: Some((power: 4)),
+        weapon: Some((range: 0, attribute: Might,
+                      damage_dice: (1, 8, -1), hit_bonus: -1)),
     ),
     (
         // LONG_SWORD
         code: (code: 3002),
         item: Some(()),
-        equippable: Some((slot: Melee)),
-        melee_power_bonus: Some((power: 6)),
+        weapon: Some((range: 0, attribute: Quickness,
+                      damage_dice: (1, 6, 0), hit_bonus: 0)),
     ),
     (
         // SHIELD
         code: (code: 3100),
         item: Some(()),
-        equippable: Some((slot: Shield)),
-        defense_bonus: Some((defense: 1)),
+        wearable: Some((slot: Shield, armour_class: 1.0)),
     ),
 ]

@@ -78,19 +78,21 @@ pub fn spawn_map(map: &mut Map, ecs: &mut World) {
     for spawn in &spawn_points {
         let pos = *spawn.0;
         if spawn.1.is_some() {
-            spawn_from_raws(&RAWS.lock().unwrap(), ecs.create_entity(), &spawn.1.unwrap(), pos);
+            spawn_from_raws(&RAWS.lock().unwrap(), ecs.create_entity(),
+                &spawn.1.unwrap(), SpawnType::AtPosition{ x: pos.x, y: pos.y });
         }
     }
 
     for (idx, i) in map.tiles.iter().enumerate() {
         let pos = map.idx_xy(idx as i32);
+        let (x, y) = (pos.x, pos.y);
         match i {
             TileType::Door => spawn_from_raws(&RAWS.lock().unwrap(),
-                ecs.create_entity(), &OTHER_DOOR, pos),
+                ecs.create_entity(), &OTHER_DOOR, SpawnType::AtPosition{ x, y }),
             TileType::Chasm => spawn_from_raws(&RAWS.lock().unwrap(),
-                ecs.create_entity(), &TRAP_CHASM, pos),
+                ecs.create_entity(), &TRAP_CHASM, SpawnType::AtPosition{ x, y }),
             TileType::Lava => spawn_from_raws(&RAWS.lock().unwrap(),
-                ecs.create_entity(), &TRAP_LAVA, pos),
+                ecs.create_entity(), &TRAP_LAVA, SpawnType::AtPosition{ x, y }),
             _ => {},
         }
     }

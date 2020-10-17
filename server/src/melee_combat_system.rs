@@ -8,6 +8,10 @@ use super::{
     Skills,
     Skill,
     Pools,
+    Equipped,
+    MeleeWeapon,
+    WeaponAttribute,
+    EquipmentSlot,
     skill_bonus,
 };
 use roguelike_common::*;
@@ -18,6 +22,7 @@ const BASE_AC: i32 = 10;
 
 impl<'a> System<'a> for MeleeCombatSystem {
     type SystemData = (
+        Entities<'a>,
         WriteStorage<'a, WantsToMelee>,
         ReadStorage<'a, Code>,
         ReadStorage<'a, Attributes>,
@@ -25,14 +30,18 @@ impl<'a> System<'a> for MeleeCombatSystem {
         WriteStorage<'a, SufferDamage>,
         ReadStorage<'a, Pools>,
         WriteExpect<'a, GameLog>,
+        ReadStorage<'a, Equipped>,
+        ReadStorage<'a, MeleeWeapon>,
         WriteExpect<'a, RandomNumberGenerator>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (mut wants_melee, codes, attributes, skills,
-             mut inflict_damage, pools, mut log, mut rng) = data;
-        for (wants_melee, code, attacker_attributes, attacker_skills, attacker_pools)
-            in (&wants_melee, &codes, &attributes, &skills, &pools).join() {
+        let (entities, mut wants_melee, codes, attributes, skills,
+             mut inflict_damage, pools, mut log, equipped_items,
+             melee_weapons, mut rng) = data;
+
+        for (entity, wants_melee, code, attacker_attributes, attacker_skills, attacker_pools)
+            in (&entities, &wants_melee, &codes, &attributes, &skills, &pools).join() {
 
             let target_pools = pools.get(wants_melee.target).unwrap();
             let target_attributes = attributes.get(wants_melee.target).unwrap();
@@ -41,10 +50,27 @@ impl<'a> System<'a> for MeleeCombatSystem {
             if attacker_pools.hp.current > 0 && target_pools.hp.current > 0 {
                 let target_code = codes.get(wants_melee.target).unwrap();
 
+                let mut weapon_info = MeleeWeapon {
+                    range: 0,
+                    attribute: WeaponAttribute::Might,
+                    damage_dice: (1, 4, 0),
+                    hit_bonus:0,
+                };
+
+                for (wielded, melee) in (&equipped_items, &melee_weapons).join() {
+                    if wielded.owner == entity && wielded.slot == EquipmentSlot::Melee {
+                        weapon_info = melee.clone();
+                    }
+                }
+
                 let natural_roll = rng.roll_dice(1, 20, 0);
-                let attr_hit_bonus = attacker_attributes.might.bonus;
+                let attr_hit_bonus = if weapon_info.attribute == WeaponAttribute::Might {
+                    attacker_attributes.might.bonus
+                } else {
+                    attacker_attributes.quickness.bonus
+                };
                 let skill_hit_bonus = skill_bonus(Skill::Melee, &*attacker_skills);
-                let weapon_hit_bonus = 0; // TODO
+                let weapon_hit_bonus = weapon_info.hit_bonus;
                 let modified_hit_roll = natural_roll + attr_hit_bonus
                     + skill_hit_bonus + weapon_hit_bonus;
 
@@ -55,10 +81,11 @@ impl<'a> System<'a> for MeleeCombatSystem {
                     + armour_item_bonus;
 
                 if natural_roll != 1 && (natural_roll == 20 || modified_hit_roll > armour_class) {
-                    let base_damage = rng.roll_dice(1, 4, 0);
+                    let (n, d, damage_bonus) = weapon_info.damage_dice;
+                    let base_damage = rng.roll_dice(n, d, 0);
                     let attr_damage_bonus = attacker_attributes.might.bonus;
                     let skill_damage_bonus = skill_bonus(Skill::Melee, &*attacker_skills);
-                    let weapon_damage_bonus = 0;
+                    let weapon_damage_bonus = damage_bonus;
 
                     let damage = i32::max(0, base_damage + attr_damage_bonus + skill_hit_bonus
                         + skill_damage_bonus + weapon_damage_bonus);

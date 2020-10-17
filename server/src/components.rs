@@ -124,43 +124,49 @@ pub struct Confusion {
     pub turns: i32,
 }
 
-#[derive(PartialEq, Debug, Copy, Clone, Serialize, Deserialize)]
+#[derive(PartialEq, Debug, Eq, Hash, Copy, Clone, Serialize, Deserialize)]
 #[repr(u8)]
-pub enum ArmourSlot {
+pub enum EquipmentSlot {
     Melee = 1,
     Shield = 2,
     Helmet = 3,
     Body = 4,
-    Boots = 5,
-    Gloves = 6,
-    Pendant = 7,
-    Ring1 = 8,
-    Ring2 = 9,
-    Ring3 = 10,
-    Ring4 = 11,
-    Ring5 = 12,
-    Ring6 = 13,
+    Legs = 5,
+    Boots = 6,
+    Gloves = 7,
+    Pendant = 8,
+    Ring = 9,
 }
 
 #[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
 pub struct Equippable {
-    pub slot: ArmourSlot,
+    pub slot: EquipmentSlot,
 }
 
 #[derive(Component, Debug, Clone)]
 pub struct Equipped {
     pub owner: Entity,
-    pub slot: ArmourSlot,
+    pub slot: EquipmentSlot,
+}
+
+#[derive(PartialEq, Debug, Copy, Clone, Serialize, Deserialize)]
+pub enum WeaponAttribute {
+    Might,
+    Quickness,
 }
 
 #[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
-pub struct MeleePowerBonus {
-    pub power: i32,
+pub struct MeleeWeapon {
+    pub range: i32,
+    pub attribute: WeaponAttribute,
+    pub damage_dice: (i32, i32, i32),
+    pub hit_bonus: i32,
 }
 
 #[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
-pub struct DefenseBonus {
-    pub defense: i32,
+pub struct Wearable {
+    pub slot: EquipmentSlot,
+    pub armour_class: f32,
 }
 
 #[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
