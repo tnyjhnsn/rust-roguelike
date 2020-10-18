@@ -55,7 +55,6 @@ pub struct RawEntity {
     pub inflicts_damage: Option<InflictsDamage>,
     pub area_of_effect: Option<AreaOfEffect>,
     pub confusion: Option<Confusion>,
-    pub equippable: Option<Equippable>,
     pub weapon: Option<MeleeWeapon>,
     pub wearable: Option<Wearable>,
     pub field_of_view: Option<i32>,
@@ -63,6 +62,7 @@ pub struct RawEntity {
     pub door: Option<Door>,
     pub blocks_visibility: Option<BlocksVisibility>,
     pub level: Option<i32>,
+    pub equipped: Option<Vec<(i32, EquipmentSlot)>>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -76,10 +76,10 @@ pub struct SpawnTableEntry {
 
 const ATTR_BASE: i32 = 11;
 
-pub fn spawn_from_raws(raws: &Raws, new_entity: EntityBuilder, code: &i32,
+pub fn spawn_from_raws(raws: &Raws, ecs: &mut World, code: &i32,
     pos: SpawnType) {
 
-    let mut entity = new_entity;
+    let mut entity = ecs.create_entity();
 
     match pos {
         SpawnType::AtPosition{ x, y } => entity = entity.with(Position { x, y }),
@@ -101,7 +101,6 @@ pub fn spawn_from_raws(raws: &Raws, new_entity: EntityBuilder, code: &i32,
         if let Some(inflicts_damage) = t.inflicts_damage { entity = entity.with(inflicts_damage); }
         if let Some(area_of_effect) = t.area_of_effect { entity = entity.with(area_of_effect); }
         if let Some(confusion) = t.confusion { entity = entity.with(confusion); }
-        if let Some(equippable) = t.equippable { entity = entity.with(equippable); }
         if let Some(entry_trigger) = t.entry_trigger { entity = entity.with(entry_trigger); }
         if let Some(door) = t.door { entity = entity.with(door); }
         if let Some(blocks_visibility) = t.blocks_visibility { entity = entity.with(blocks_visibility); }
@@ -166,7 +165,15 @@ pub fn spawn_from_raws(raws: &Raws, new_entity: EntityBuilder, code: &i32,
             mana: Pool { current: mob_mana, max: mob_mana },
         };
         entity = entity.with(pools);
-        entity.build();
+
+        let mob = entity.build();
+
+        // TODO Needs testing
+        if let Some(equipped) = &t.equipped {
+            for (code, slot) in equipped {
+                spawn_from_raws(raws, ecs, code, SpawnType::Equipped{ owner: mob, slot: *slot });
+            }
+        }
     }
 }
 

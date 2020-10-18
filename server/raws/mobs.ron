@@ -52,5 +52,6 @@
         skills: Some({ Magic: 2 }),
         blocks_tile: Some(()),
         field_of_view: Some(6),
+        equipped: Some([(3000, Melee), (3300, Body)]),
     ),
 ]

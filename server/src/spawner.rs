@@ -56,13 +56,13 @@ pub fn player(ecs: &mut World, x: i32, y: i32) -> PlayerEntity {
         })
         .build();
 
-        spawn_from_raws(&RAWS.lock().unwrap(), ecs.create_entity(), &3001,
+        spawn_from_raws(&RAWS.lock().unwrap(), ecs, &3001,
             SpawnType::Equipped{ owner: player, slot: EquipmentSlot::Melee });
-        spawn_from_raws(&RAWS.lock().unwrap(), ecs.create_entity(), &3300,
+        spawn_from_raws(&RAWS.lock().unwrap(), ecs, &3300,
             SpawnType::Equipped{ owner: player, slot: EquipmentSlot::Body });
-        spawn_from_raws(&RAWS.lock().unwrap(), ecs.create_entity(), &3400,
+        spawn_from_raws(&RAWS.lock().unwrap(), ecs, &3400,
             SpawnType::Equipped{ owner: player, slot: EquipmentSlot::Legs });
-        spawn_from_raws(&RAWS.lock().unwrap(), ecs.create_entity(), &3500,
+        spawn_from_raws(&RAWS.lock().unwrap(), ecs, &3500,
             SpawnType::Equipped{ owner: player, slot: EquipmentSlot::Feet });
 
         player
@@ -90,7 +90,7 @@ pub fn spawn_map(map: &mut Map, ecs: &mut World) {
     for spawn in &spawn_points {
         let pos = *spawn.0;
         if spawn.1.is_some() {
-            spawn_from_raws(&RAWS.lock().unwrap(), ecs.create_entity(),
+            spawn_from_raws(&RAWS.lock().unwrap(), ecs,
                 &spawn.1.unwrap(), SpawnType::AtPosition{ x: pos.x, y: pos.y });
         }
     }
@@ -100,11 +100,11 @@ pub fn spawn_map(map: &mut Map, ecs: &mut World) {
         let (x, y) = (pos.x, pos.y);
         match i {
             TileType::Door => spawn_from_raws(&RAWS.lock().unwrap(),
-                ecs.create_entity(), &OTHER_DOOR, SpawnType::AtPosition{ x, y }),
+                ecs, &OTHER_DOOR, SpawnType::AtPosition{ x, y }),
             TileType::Chasm => spawn_from_raws(&RAWS.lock().unwrap(),
-                ecs.create_entity(), &TRAP_CHASM, SpawnType::AtPosition{ x, y }),
+                ecs, &TRAP_CHASM, SpawnType::AtPosition{ x, y }),
             TileType::Lava => spawn_from_raws(&RAWS.lock().unwrap(),
-                ecs.create_entity(), &TRAP_LAVA, SpawnType::AtPosition{ x, y }),
+                ecs, &TRAP_LAVA, SpawnType::AtPosition{ x, y }),
             _ => {},
         }
     }
