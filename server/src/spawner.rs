@@ -11,6 +11,7 @@ use super::{
     Skill,
     Pools,
     Pool,
+    EquipmentSlot,
     raws::*,
 };
 use std::collections::HashMap;
@@ -32,7 +33,7 @@ pub fn player(ecs: &mut World, x: i32, y: i32) -> PlayerEntity {
         current: mana_at_level(ATTR_BASE, 1),
         max: mana_at_level(ATTR_BASE, 1),
     };
-    ecs.create_entity()
+    let player = ecs.create_entity()
         .with(Player {})
         .with(Code { code: 0 })
         .with(Position { x, y })
@@ -53,7 +54,12 @@ pub fn player(ecs: &mut World, x: i32, y: i32) -> PlayerEntity {
             xp: 0,
             level: 1,
         })
-        .build()
+        .build();
+
+        spawn_from_raws(&RAWS.lock().unwrap(), ecs.create_entity(), &3001,
+            SpawnType::Equipped{ owner: player, slot: EquipmentSlot::Melee });
+
+        player
 }
 
 pub fn spawn_map(map: &mut Map, ecs: &mut World) {

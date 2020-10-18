@@ -23,7 +23,7 @@ impl Dictionary {
         dict.insert(ITEM_ACID_RAIN, ("Acid Rain", "acid-rain"));
         dict.insert(ITEM_CONFUSION_SCROLL, ("Scroll of Confusion", "scroll-unlock"));
         dict.insert(WEAP_DAGGER, ("Dagger", "dagger"));
-        dict.insert(WEAP_RUSTY_SWORD, ("Rusty Sword", "long-sword"));
+        dict.insert(WEAP_RUSTY_SWORD, ("Rusty Old Sword", "long-sword"));
         dict.insert(WEAP_LONG_SWORD, ("Long Sword", "long-sword"));
         dict.insert(WEAP_SHIELD, ("Shield", "shield"));
         dict.insert(TRAP_CHASM, ("Chasm", ""));
