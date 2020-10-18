@@ -3,7 +3,7 @@
         // WHITE_CENTIPEDE
         code: (code: 10),
         monster: Some(()),
-        attributes: Some(()),
+        attributes: Some({}),
         skills: Some({}),
         blocks_tile: Some(()),
         field_of_view: Some(6),
@@ -12,7 +12,7 @@
         // RED_ANT
         code: (code: 11),
         monster: Some(()),
-        attributes: Some(()),
+        attributes: Some({}),
         skills: Some({}),
         blocks_tile: Some(()),
         field_of_view: Some(6),
@@ -21,7 +21,7 @@
         // GHOST
         code: (code: 12),
         monster: Some(()),
-        attributes: Some(()),
+        attributes: Some({}),
         skills: Some({}),
         blocks_tile: Some(()),
         field_of_view: Some(20),
@@ -30,7 +30,7 @@
         // GREY_MOULD
         code: (code: 13),
         monster: Some(()),
-        attributes: Some(()),
+        attributes: Some({}),
         skills: Some({}),
         blocks_tile: Some(()),
         field_of_view: Some(4),
@@ -39,7 +39,7 @@
         // KOBOLD
         code: (code: 14),
         monster: Some(()),
-        attributes: Some(()),
+        attributes: Some({}),
         skills: Some({}),
         blocks_tile: Some(()),
         field_of_view: Some(6),
@@ -48,7 +48,7 @@
         // TODO - THIEF IS TEST !!!!
         code: (code: 15),
         vendor: Some(()),
-        attributes: Some((intelligence: Some(13))),
+        attributes: Some({ Intelligence: 13 }),
         skills: Some({ Magic: 2 }),
         blocks_tile: Some(()),
         field_of_view: Some(6),

@@ -31,12 +31,12 @@ impl Raws {
     }
 }
 
-#[derive(Copy, Clone, Debug, Deserialize)]
-pub struct MobAttributes {
-    pub might: Option<i32>,
-    pub fitness: Option<i32>,
-    pub quickness: Option<i32>,
-    pub intelligence: Option<i32>,
+#[derive(PartialEq, Eq, Hash, Clone, Debug, Deserialize)]
+pub enum MobAttributes {
+    Might,
+    Fitness,
+    Quickness,
+    Intelligence,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -46,7 +46,7 @@ pub struct RawEntity {
     pub monster: Option<Monster>,
     pub bystander: Option<Bystander>,
     pub vendor: Option<Vendor>,
-    pub attributes: Option<MobAttributes>,
+    pub attributes: Option<HashMap<MobAttributes, i32>>,
     pub skills: Option<HashMap<Skill, i32>>,
     pub blocks_tile: Option<BlocksTile>,
     pub consumeable: Option<Consumeable>,
@@ -128,26 +128,30 @@ pub fn spawn_from_raws(raws: &Raws, new_entity: EntityBuilder, code: &i32,
         }
         let mut mob_fitness = ATTR_BASE;
         let mut mob_intelligence = ATTR_BASE;
-        if let Some(attributes) = t.attributes {
+        if let Some(attributes) = &t.attributes {
             let mut attr = Attributes {
                 might: Attribute { base: ATTR_BASE, modifiers: 0, bonus: attr_bonus(ATTR_BASE) },
                 fitness: Attribute { base: ATTR_BASE, modifiers: 0, bonus: attr_bonus(ATTR_BASE) },
                 quickness: Attribute { base: ATTR_BASE, modifiers: 0, bonus: attr_bonus(ATTR_BASE) },
                 intelligence: Attribute { base: ATTR_BASE, modifiers: 0, bonus: attr_bonus(ATTR_BASE) },
             };
-            if let Some(might) = attributes.might {
-                attr.might = Attribute { base: might, modifiers: 0, bonus: attr_bonus(might) };
+            if attributes.contains_key(&MobAttributes::Might) {
+                let value = attributes[&MobAttributes::Might];
+                attr.might = Attribute { base: value, modifiers: 0, bonus: attr_bonus(value) };
             }
-            if let Some(fitness) = attributes.fitness {
-                attr.fitness = Attribute { base: fitness, modifiers: 0, bonus: attr_bonus(fitness) };
-                mob_fitness = fitness;
+            if attributes.contains_key(&MobAttributes::Fitness) {
+                let value = attributes[&MobAttributes::Fitness];
+                attr.fitness = Attribute { base: value, modifiers: 0, bonus: attr_bonus(value) };
+                mob_fitness = value;
             }
-            if let Some(quickness) = attributes.quickness {
-                attr.quickness = Attribute { base: quickness, modifiers: 0, bonus: attr_bonus(quickness) };
+            if attributes.contains_key(&MobAttributes::Quickness) {
+                let value = attributes[&MobAttributes::Quickness];
+                attr.quickness = Attribute { base: value, modifiers: 0, bonus: attr_bonus(value) };
+                mob_intelligence = value;
             }
-            if let Some(intelligence) = attributes.intelligence {
-                attr.intelligence = Attribute { base: intelligence, modifiers: 0, bonus: attr_bonus(intelligence) };
-                mob_intelligence = intelligence
+            if attributes.contains_key(&MobAttributes::Intelligence) {
+                let value = attributes[&MobAttributes::Intelligence];
+                attr.intelligence = Attribute { base: value, modifiers: 0, bonus: attr_bonus(value) };
             }
             entity = entity.with(attr);
         }
