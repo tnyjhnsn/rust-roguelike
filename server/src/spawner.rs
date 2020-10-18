@@ -58,6 +58,12 @@ pub fn player(ecs: &mut World, x: i32, y: i32) -> PlayerEntity {
 
         spawn_from_raws(&RAWS.lock().unwrap(), ecs.create_entity(), &3001,
             SpawnType::Equipped{ owner: player, slot: EquipmentSlot::Melee });
+        spawn_from_raws(&RAWS.lock().unwrap(), ecs.create_entity(), &3300,
+            SpawnType::Equipped{ owner: player, slot: EquipmentSlot::Body });
+        spawn_from_raws(&RAWS.lock().unwrap(), ecs.create_entity(), &3400,
+            SpawnType::Equipped{ owner: player, slot: EquipmentSlot::Legs });
+        spawn_from_raws(&RAWS.lock().unwrap(), ecs.create_entity(), &3500,
+            SpawnType::Equipped{ owner: player, slot: EquipmentSlot::Feet });
 
         player
 }

@@ -60,13 +60,17 @@ pub const WEAP_DAGGER: i32 = 3000;
 pub const WEAP_RUSTY_SWORD: i32 = 3001;
 pub const WEAP_LONG_SWORD: i32 = 3002;
 // Shield 3100 - 3199
-pub const WEAP_SHIELD: i32 = 3100;
+pub const ARMOUR_SHIELD: i32 = 3100;
 // Head 3200 - 3299
 // Body 3300 - 3399
-// Feet 3400 - 3499
-// Gloves 3500 - 3599
-// Pendant 3600 - 3699
-// Ring 3700 - 3799
+pub const ARMOUR_TUNIC: i32 = 3300;
+// Legs 3400 - 3499
+pub const ARMOUR_PANTS: i32 = 3400;
+// Feet 3500 - 3599
+pub const ARMOUR_OLD_BOOTS: i32 = 3500;
+// Gloves 3600 - 3699
+// Pendant 3700 - 3799
+// Ring 3800 - 3899
 
 // TRAPS 5000 - 5099
 pub const TRAP_CHASM: i32 = 5000;

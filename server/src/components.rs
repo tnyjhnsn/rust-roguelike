@@ -129,13 +129,13 @@ pub struct Confusion {
 pub enum EquipmentSlot {
     Melee = 1,
     Shield = 2,
-    Helmet = 3,
+    Head = 3,
     Body = 4,
     Legs = 5,
-    Boots = 6,
-    Gloves = 7,
-    Pendant = 8,
-    Ring = 9,
+    Feet = 6,
+    Hands = 7,
+    Neck = 8,
+    Fingers = 9,
 }
 
 #[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]

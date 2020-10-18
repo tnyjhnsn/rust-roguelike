@@ -15,7 +15,7 @@ pub fn load_raws() {
     let paths = vec![
         "raws/mobs.ron",
         "raws/items.ron",
-        "raws/weapons.ron",
+        "raws/weapons_armour.ron",
         "raws/traps.ron",
     ];
 

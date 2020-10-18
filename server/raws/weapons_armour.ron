@@ -26,4 +26,22 @@
         item: Some(()),
         wearable: Some((slot: Shield, armour_class: 1.0)),
     ),
+    (
+        // TUNIC
+        code: (code: 3300),
+        item: Some(()),
+        wearable: Some((slot: Body, armour_class: 0.1)),
+    ),
+    (
+        // PANTS
+        code: (code: 3400),
+        item: Some(()),
+        wearable: Some((slot: Legs, armour_class: 0.1)),
+    ),
+    (
+        // OLD_BOOTS
+        code: (code: 3500),
+        item: Some(()),
+        wearable: Some((slot: Feet, armour_class: 0.1)),
+    ),
 ]

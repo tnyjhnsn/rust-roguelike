@@ -25,7 +25,10 @@ impl Dictionary {
         dict.insert(WEAP_DAGGER, ("Dagger", "dagger"));
         dict.insert(WEAP_RUSTY_SWORD, ("Rusty Old Sword", "long-sword"));
         dict.insert(WEAP_LONG_SWORD, ("Long Sword", "long-sword"));
-        dict.insert(WEAP_SHIELD, ("Shield", "shield"));
+        dict.insert(ARMOUR_SHIELD, ("Shield", "shield"));
+        dict.insert(ARMOUR_TUNIC, ("Stained Tunic", "leather"));
+        dict.insert(ARMOUR_PANTS, ("Torn Trousers", "leather"));
+        dict.insert(ARMOUR_OLD_BOOTS, ("Old Boots", "leather"));
         dict.insert(TRAP_CHASM, ("Chasm", ""));
         dict.insert(TRAP_LAVA, ("Lava", ""));
 

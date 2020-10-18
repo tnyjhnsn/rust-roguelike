@@ -10,6 +10,7 @@ use super::{
     Pools,
     Equipped,
     MeleeWeapon,
+    Wearable,
     WeaponAttribute,
     EquipmentSlot,
     skill_bonus,
@@ -32,13 +33,14 @@ impl<'a> System<'a> for MeleeCombatSystem {
         WriteExpect<'a, GameLog>,
         ReadStorage<'a, Equipped>,
         ReadStorage<'a, MeleeWeapon>,
+        ReadStorage<'a, Wearable>,
         WriteExpect<'a, RandomNumberGenerator>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
         let (entities, mut wants_melee, codes, attributes, skills,
              mut inflict_damage, pools, mut log, equipped_items,
-             melee_weapons, mut rng) = data;
+             melee_weapons, wearables, mut rng) = data;
 
         for (entity, wants_melee, code, attacker_attributes, attacker_skills, attacker_pools)
             in (&entities, &wants_melee, &codes, &attributes, &skills, &pools).join() {
@@ -74,9 +76,15 @@ impl<'a> System<'a> for MeleeCombatSystem {
                 let modified_hit_roll = natural_roll + attr_hit_bonus
                     + skill_hit_bonus + weapon_hit_bonus;
 
+                let mut armour_item_bonus_f = 0.0;
+                for (wielded,armour) in (&equipped_items, &wearables).join() {
+                    if wielded.owner == wants_melee.target {
+                        armour_item_bonus_f += armour.armour_class;
+                    }
+                }
                 let armour_quickness_bonus = target_attributes.quickness.bonus;
                 let armour_skill_bonus = skill_bonus(Skill::Defense, &*target_skills);
-                let armour_item_bonus = 0; // TODO
+                let armour_item_bonus = armour_item_bonus_f as i32;
                 let armour_class = BASE_AC + armour_quickness_bonus + armour_skill_bonus
                     + armour_item_bonus;
 
