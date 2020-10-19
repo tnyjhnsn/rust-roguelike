@@ -20,7 +20,7 @@ impl Log {
         let attacker_css = self.props.dict.get_css(attacker);
         let target_name = self.props.dict.get_name(target);
         let content = format!("The {} considers attacking the {}, but misjudges the timing", attacker_name, target_name);
-        create_attack_tile(attacker_css, content)
+        create_attack_tile(&attacker_css, &content)
     }
 
     fn get_miss_msg(&self, attacker: i32, target: i32) -> Html {
@@ -28,7 +28,7 @@ impl Log {
         let attacker_css = self.props.dict.get_css(attacker);
         let target_name = self.props.dict.get_name(target);
         let content = format!("The {} attacks the {}, but can't connect", attacker_name, target_name);
-        create_attack_tile(attacker_css, content)
+        create_attack_tile(&attacker_css, &content)
     }
 
     fn get_attack_msg(&self, attacker: i32, target: i32, damage: i32) -> Html {
@@ -36,7 +36,7 @@ impl Log {
         let attacker_css = self.props.dict.get_css(attacker);
         let target_name = self.props.dict.get_name(target);
         let content = format!("The {} attacks the {} causing {} damage", attacker_name, target_name, damage);
-        create_attack_tile(attacker_css, content)
+        create_attack_tile(&attacker_css, &content)
     }
 
     fn get_dead_msg(&self, deceased: i32) -> String {
@@ -172,7 +172,7 @@ impl Component for Log {
     }
 }
 
-fn create_attack_tile(attacker_css: String, content: String) -> Html {
+fn create_attack_tile(attacker_css: &String, content: &String) -> Html {
     html! {
         <>
             <div class="tile-box">
