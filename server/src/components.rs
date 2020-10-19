@@ -155,12 +155,30 @@ pub enum WeaponAttribute {
     Quickness,
 }
 
+#[derive(PartialEq, Debug, Copy, Clone, Serialize, Deserialize)]
+pub enum HitDesc {
+    Attack,
+    CutStab,
+    Hit,
+    Claw,
+    Bite,
+    Sting,
+}
+
 #[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
 pub struct MeleeWeapon {
     pub range: i32,
+    pub hit_desc: HitDesc,
     pub attribute: WeaponAttribute,
     pub damage_dice: (i32, i32, i32),
     pub hit_bonus: i32,
+    pub damage_bonus: i32,
+}
+
+#[derive(Component, Debug, Clone, Serialize, Deserialize)]
+pub struct NaturalAttackDefense {
+    pub armour_class: Option<i32>,
+    pub attacks: Vec<MeleeWeapon>,
 }
 
 #[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]

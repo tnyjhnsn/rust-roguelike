@@ -10,9 +10,11 @@ use super::{
     Pools,
     Equipped,
     MeleeWeapon,
+    NaturalAttackDefense,
     Wearable,
     WeaponAttribute,
     EquipmentSlot,
+    HitDesc,
     skill_bonus,
 };
 use roguelike_common::*;
@@ -33,6 +35,7 @@ impl<'a> System<'a> for MeleeCombatSystem {
         WriteExpect<'a, GameLog>,
         ReadStorage<'a, Equipped>,
         ReadStorage<'a, MeleeWeapon>,
+        ReadStorage<'a, NaturalAttackDefense>,
         ReadStorage<'a, Wearable>,
         WriteExpect<'a, RandomNumberGenerator>,
     );
@@ -40,7 +43,7 @@ impl<'a> System<'a> for MeleeCombatSystem {
     fn run(&mut self, data: Self::SystemData) {
         let (entities, mut wants_melee, codes, attributes, skills,
              mut inflict_damage, pools, mut log, equipped_items,
-             melee_weapons, wearables, mut rng) = data;
+             melee_weapons, natural, wearables, mut rng) = data;
 
         for (entity, wants_melee, code, attacker_attributes, attacker_skills, attacker_pools)
             in (&entities, &wants_melee, &codes, &attributes, &skills, &pools).join() {
@@ -54,10 +57,24 @@ impl<'a> System<'a> for MeleeCombatSystem {
 
                 let mut weapon_info = MeleeWeapon {
                     range: 0,
+                    hit_desc: HitDesc::Attack,
                     attribute: WeaponAttribute::Might,
                     damage_dice: (1, 4, 0),
-                    hit_bonus:0,
+                    hit_bonus: 0,
+                    damage_bonus: 0,
                 };
+
+                if let Some(natural) = natural.get(entity) {
+                    if !natural.attacks.is_empty() {
+                        let idx = if natural.attacks.len() == 1 { 0 } else {
+                            rng.roll_dice(1, natural.attacks.len() as i32, -1) as usize 
+                        };
+                        let attacks = natural.attacks[idx];
+                        weapon_info.hit_bonus = attacks.hit_bonus;
+                        weapon_info.damage_dice = attacks.damage_dice;
+                        weapon_info.damage_bonus = attacks.damage_bonus;
+                    }
+                }
 
                 for (wielded, melee) in (&equipped_items, &melee_weapons).join() {
                     if wielded.owner == entity && wielded.slot == EquipmentSlot::Melee {
@@ -82,10 +99,14 @@ impl<'a> System<'a> for MeleeCombatSystem {
                         armour_item_bonus_f += armour.armour_class;
                     }
                 }
+                let base_armour_class = match natural.get(wants_melee.target) {
+                    None => BASE_AC,
+                    Some(natural) => natural.armour_class.unwrap_or(BASE_AC),
+                };
                 let armour_quickness_bonus = target_attributes.quickness.bonus;
                 let armour_skill_bonus = skill_bonus(Skill::Defense, &*target_skills);
                 let armour_item_bonus = armour_item_bonus_f as i32;
-                let armour_class = BASE_AC + armour_quickness_bonus + armour_skill_bonus
+                let armour_class = base_armour_class + armour_quickness_bonus + armour_skill_bonus
                     + armour_item_bonus;
 
                 if natural_roll != 1 && (natural_roll == 20 || modified_hit_roll > armour_class) {

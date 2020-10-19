@@ -63,6 +63,7 @@ pub struct RawEntity {
     pub blocks_visibility: Option<BlocksVisibility>,
     pub level: Option<i32>,
     pub equipped: Option<Vec<(i32, EquipmentSlot)>>,
+    pub natural: Option<NaturalAttackDefense>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -165,6 +166,16 @@ pub fn spawn_from_raws(raws: &Raws, ecs: &mut World, code: &i32,
             mana: Pool { current: mob_mana, max: mob_mana },
         };
         entity = entity.with(pools);
+        if let Some(natural) = &t.natural {
+            let mut nat = NaturalAttackDefense {
+                armour_class: natural.armour_class,
+                attacks: Vec::new(),
+            };
+            for a in &natural.attacks {
+                nat.attacks.push(*a);
+            }
+            entity = entity.with(nat);
+        }
 
         let mob = entity.build();
 
