@@ -172,7 +172,6 @@ pub struct MeleeWeapon {
     pub attribute: WeaponAttribute,
     pub damage_dice: (i32, i32, i32),
     pub hit_bonus: i32,
-    pub damage_bonus: i32,
 }
 
 #[derive(Component, Debug, Clone, Serialize, Deserialize)]

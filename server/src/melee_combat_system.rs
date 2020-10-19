@@ -61,7 +61,6 @@ impl<'a> System<'a> for MeleeCombatSystem {
                     attribute: WeaponAttribute::Might,
                     damage_dice: (1, 4, 0),
                     hit_bonus: 0,
-                    damage_bonus: 0,
                 };
 
                 if let Some(natural) = natural.get(entity) {
@@ -72,7 +71,6 @@ impl<'a> System<'a> for MeleeCombatSystem {
                         let attacks = natural.attacks[idx];
                         weapon_info.hit_bonus = attacks.hit_bonus;
                         weapon_info.damage_dice = attacks.damage_dice;
-                        weapon_info.damage_bonus = attacks.damage_bonus;
                     }
                 }
 
@@ -110,14 +108,13 @@ impl<'a> System<'a> for MeleeCombatSystem {
                     + armour_item_bonus;
 
                 if natural_roll != 1 && (natural_roll == 20 || modified_hit_roll > armour_class) {
-                    let (n, d, damage_bonus) = weapon_info.damage_dice;
-                    let base_damage = rng.roll_dice(n, d, 0);
+                    let (n, d, b) = weapon_info.damage_dice;
+                    let base_damage = rng.roll_dice(n, d, b);
                     let attr_damage_bonus = attacker_attributes.might.bonus;
                     let skill_damage_bonus = skill_bonus(Skill::Melee, &*attacker_skills);
-                    let weapon_damage_bonus = damage_bonus;
 
                     let damage = i32::max(0, base_damage + attr_damage_bonus + skill_hit_bonus
-                        + skill_damage_bonus + weapon_damage_bonus);
+                        + skill_damage_bonus);
                     SufferDamage::new_damage(&mut inflict_damage, wants_melee.target, damage);
                     log.add_log(vec![LogType::Melee as i32, code.code, target_code.code, damage]);
                 } else if natural_roll == 1 {
