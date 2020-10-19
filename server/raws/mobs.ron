@@ -53,9 +53,10 @@
         blocks_tile: Some(()),
         field_of_view: Some(6),
         equipped: Some([(3000, Melee), (3300, Body)]),
-        natural: Some((armour_class: Some(12), attacks: [
+        natural: Some((armour_class: Some(8), attacks: [
             (range: 0, hit_desc: Claw, attribute: Might,
-                damage_dice: (1, 6, 0), hit_bonus: 0, damage_bonus: 0),
+                damage_dice: (1, 4, 0), hit_bonus: 0, damage_bonus: 0),
         ])),
+        level: Some(2),
     ),
 ]

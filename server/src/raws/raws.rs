@@ -126,9 +126,9 @@ pub fn spawn_from_raws(raws: &Raws, ecs: &mut World, code: &i32,
             }
             entity = entity.with(skills);
         }
-        let mut mob_fitness = ATTR_BASE;
-        let mut mob_intelligence = ATTR_BASE;
         if let Some(attributes) = &t.attributes {
+            let mut mob_fitness = ATTR_BASE;
+            let mut mob_intelligence = ATTR_BASE;
             let mut attr = Attributes {
                 might: Attribute { base: ATTR_BASE, modifiers: 0, bonus: attr_bonus(ATTR_BASE) },
                 fitness: Attribute { base: ATTR_BASE, modifiers: 0, bonus: attr_bonus(ATTR_BASE) },
@@ -154,18 +154,19 @@ pub fn spawn_from_raws(raws: &Raws, ecs: &mut World, code: &i32,
                 attr.intelligence = Attribute { base: value, modifiers: 0, bonus: attr_bonus(value) };
             }
             entity = entity.with(attr);
+
+            let mut mob_level = 1;
+            if let Some(level) = t.level { mob_level = level; };
+            let mob_hp = npc_hp(mob_fitness, mob_level);
+            let mob_mana = mana_at_level(mob_intelligence, mob_level);
+            let pools = Pools {
+                level: mob_level,
+                xp: 0,
+                hp: Pool { current: mob_hp, max: mob_hp },
+                mana: Pool { current: mob_mana, max: mob_mana },
+            };
+            entity = entity.with(pools);
         }
-        let mut mob_level = 1;
-        if let Some(level) = t.level { mob_level = level; };
-        let mob_hp = npc_hp(mob_fitness, mob_level);
-        let mob_mana = mana_at_level(mob_intelligence, mob_level);
-        let pools = Pools {
-            level: mob_level,
-            xp: 0,
-            hp: Pool { current: mob_hp, max: mob_hp },
-            mana: Pool { current: mob_mana, max: mob_mana },
-        };
-        entity = entity.with(pools);
         if let Some(natural) = &t.natural {
             let mut nat = NaturalAttackDefense {
                 armour_class: natural.armour_class,
