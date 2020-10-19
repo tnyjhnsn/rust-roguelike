@@ -74,6 +74,8 @@ pub enum LogType {
     Equip = 10,
     Remove = 11,
     Trap = 12,
+    NaturalMiss = 13,
+    Miss = 14,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

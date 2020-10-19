@@ -118,11 +118,9 @@ impl<'a> System<'a> for MeleeCombatSystem {
                     SufferDamage::new_damage(&mut inflict_damage, wants_melee.target, damage);
                     log.add_log(vec![LogType::Melee as i32, code.code, target_code.code, damage]);
                 } else if natural_roll == 1 {
-                    // TODO Log message for natural miss
-                    log.add_log(vec![LogType::Melee as i32, code.code, target_code.code, 0]);
+                    log.add_log(vec![LogType::NaturalMiss as i32, code.code, target_code.code]);
                 } else {
-                    // TODO Check log message for 0 damage
-                    log.add_log(vec![LogType::Melee as i32, code.code, target_code.code, 0]);
+                    log.add_log(vec![LogType::Miss as i32, code.code, target_code.code]);
                 }
             
             }

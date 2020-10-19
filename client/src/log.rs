@@ -15,19 +15,28 @@ impl Log {
         }
     }
 
+    fn get_natural_miss_msg(&self, attacker: i32, target: i32) -> Html {
+        let attacker_name = self.props.dict.get_name(attacker);
+        let attacker_css = self.props.dict.get_css(attacker);
+        let target_name = self.props.dict.get_name(target);
+        let content = format!("The {} considers attacking the {}, but misjudges the timing", attacker_name, target_name);
+        create_attack_tile(attacker_css, content)
+    }
+
+    fn get_miss_msg(&self, attacker: i32, target: i32) -> Html {
+        let attacker_name = self.props.dict.get_name(attacker);
+        let attacker_css = self.props.dict.get_css(attacker);
+        let target_name = self.props.dict.get_name(target);
+        let content = format!("The {} attacks the {}, but can't connect", attacker_name, target_name);
+        create_attack_tile(attacker_css, content)
+    }
+
     fn get_attack_msg(&self, attacker: i32, target: i32, damage: i32) -> Html {
         let attacker_name = self.props.dict.get_name(attacker);
         let attacker_css = self.props.dict.get_css(attacker);
         let target_name = self.props.dict.get_name(target);
         let content = format!("The {} attacks the {} causing {} damage", attacker_name, target_name, damage);
-        html! {
-            <>
-                <div class="tile-box">
-                    <div class=("tile", attacker_css)></div>
-                </div>
-                <div class="content">{ content }</div>
-            </>
-        }
+        create_attack_tile(attacker_css, content)
     }
 
     fn get_dead_msg(&self, deceased: i32) -> String {
@@ -144,6 +153,8 @@ impl Component for Log {
                             10 => html! { self.get_equips_msg(log[1], log[2]) },
                             11 => html! { self.get_removes_msg(log[1], log[2]) },
                             12 => html! { self.get_trap_msg(log[1], log[2], log[3]) },
+                            13 => self.get_natural_miss_msg(log[1], log[2]),
+                            14 => self.get_miss_msg(log[1], log[2]),
                             _ => html! { "Unknown log message" },
                         }
                     }
@@ -158,6 +169,17 @@ impl Component for Log {
                     .map(render_log)}
             </ul>
         }
+    }
+}
+
+fn create_attack_tile(attacker_css: String, content: String) -> Html {
+    html! {
+        <>
+            <div class="tile-box">
+                <div class=("tile", attacker_css)></div>
+            </div>
+            <div class="content">{ content }</div>
+        </>
     }
 }
 

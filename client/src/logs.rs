@@ -51,7 +51,7 @@ impl Component for Logs {
                 { for self.props.logs.logs
                     .iter()
                     .rev()
-                    .take(3)
+                    .take(5)
                     .map(render_log) }
             </div>
         }
