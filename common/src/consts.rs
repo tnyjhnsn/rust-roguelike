@@ -68,9 +68,9 @@ pub const ARMOUR_TUNIC: i32 = 3300;
 pub const ARMOUR_PANTS: i32 = 3400;
 // Feet 3500 - 3599
 pub const ARMOUR_OLD_BOOTS: i32 = 3500;
-// Gloves 3600 - 3699
-// Pendant 3700 - 3799
-// Ring 3800 - 3899
+// Hands 3600 - 3699
+// Neck 3700 - 3799
+// Fingers 3800 - 3899
 
 // TRAPS 5000 - 5099
 pub const TRAP_CHASM: i32 = 5000;

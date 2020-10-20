@@ -11,7 +11,6 @@ use super::{
     Skill,
     Pools,
     Pool,
-    EquipmentSlot,
     raws::*,
 };
 use std::collections::HashMap;
@@ -57,13 +56,13 @@ pub fn player(ecs: &mut World, x: i32, y: i32) -> PlayerEntity {
         .build();
 
         spawn_from_raws(&RAWS.lock().unwrap(), ecs, &3001,
-            SpawnType::Equipped{ owner: player, slot: EquipmentSlot::Melee });
+            SpawnType::Equipped{ owner: player });
         spawn_from_raws(&RAWS.lock().unwrap(), ecs, &3300,
-            SpawnType::Equipped{ owner: player, slot: EquipmentSlot::Body });
+            SpawnType::Equipped{ owner: player });
         spawn_from_raws(&RAWS.lock().unwrap(), ecs, &3400,
-            SpawnType::Equipped{ owner: player, slot: EquipmentSlot::Legs });
+            SpawnType::Equipped{ owner: player });
         spawn_from_raws(&RAWS.lock().unwrap(), ecs, &3500,
-            SpawnType::Equipped{ owner: player, slot: EquipmentSlot::Feet });
+            SpawnType::Equipped{ owner: player });
 
         player
 }

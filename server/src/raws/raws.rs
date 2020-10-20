@@ -6,8 +6,8 @@ use std::collections::HashMap;
 #[derive(PartialEq, Eq, Hash, Copy, Clone)]
 pub enum SpawnType {
     AtPosition { x: i32, y: i32 },
-    Equipped { owner: Entity, slot: EquipmentSlot },
     Carried { owner: Entity },
+    Equipped { owner: Entity },
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -62,7 +62,7 @@ pub struct RawEntity {
     pub door: Option<Door>,
     pub blocks_visibility: Option<BlocksVisibility>,
     pub level: Option<i32>,
-    pub equipped: Option<Vec<(i32, EquipmentSlot)>>,
+    pub equipped: Option<Vec<i32>>,
     pub natural: Option<NaturalAttackDefense>,
 }
 
@@ -85,7 +85,7 @@ pub fn spawn_from_raws(raws: &Raws, ecs: &mut World, code: &i32,
     match pos {
         SpawnType::AtPosition{ x, y } => entity = entity.with(Position { x, y }),
         SpawnType::Carried{ owner } => entity = entity.with(InInventory { owner }),
-        SpawnType::Equipped{ owner, slot } => entity = entity.with(Equipped { owner, slot }),
+        SpawnType::Equipped{ owner } => entity = entity.with(Equipped { owner, slot: get_slot_from_code(&code) }),
     };
 
     let template = &raws.entities.iter().find(|e| e.code.code == *code);
@@ -182,8 +182,8 @@ pub fn spawn_from_raws(raws: &Raws, ecs: &mut World, code: &i32,
 
         // TODO Needs testing
         if let Some(equipped) = &t.equipped {
-            for (code, slot) in equipped {
-                spawn_from_raws(raws, ecs, code, SpawnType::Equipped{ owner: mob, slot: *slot });
+            for code in equipped {
+                spawn_from_raws(raws, ecs, code, SpawnType::Equipped{ owner: mob });
             }
         }
     }
@@ -204,3 +204,18 @@ pub fn get_spawn_table(raws: &Raws, difficulty: i32) -> RandomTable {
     }
     table
 }
+
+fn get_slot_from_code(code: &i32) -> EquipmentSlot {
+    match code {
+        3000..=3099 => EquipmentSlot::Melee,
+        3100..=3199 => EquipmentSlot::Shield,
+        3200..=3299 => EquipmentSlot::Head,
+        3300..=3399 => EquipmentSlot::Body,
+        3400..=3499 => EquipmentSlot::Legs,
+        3500..=3599 => EquipmentSlot::Feet,
+        3600..=3699 => EquipmentSlot::Hands,
+        3700..=3799 => EquipmentSlot::Neck,
+        _ => EquipmentSlot::Fingers,
+    }
+}
+
