@@ -3,37 +3,56 @@
         // WHITE_CENTIPEDE
         code: (code: 10),
         monster: Some(()),
-        attributes: Some({}),
-        skills: Some({}),
+        attributes: Some({ Might: 3, Fitness: 3, Quickness: 3 }),
+        skills: Some({ Melee: -1, Defense: -1 }),
+        natural: Some((armour_class: Some(11), attacks: [
+            (range: 0, hit_desc: Bite, attribute: Quickness,
+                damage_dice: (1, 4, 0), hit_bonus: 0),
+        ])),
         blocks_tile: Some(()),
-        field_of_view: Some(6),
+        field_of_view: Some(8),
     ),
     (
         // RED_ANT
         code: (code: 11),
         monster: Some(()),
-        attributes: Some({}),
-        skills: Some({}),
+        attributes: Some({ Might: 3, Fitness: 3, Quickness: 3 }),
+        skills: Some({ Melee: -1, Defense: -1 }),
+        natural: Some((armour_class: Some(10), attacks: [
+            (range: 0, hit_desc: Bite, attribute: Quickness,
+                damage_dice: (1, 4, 0), hit_bonus: 0),
+            (range: 0, hit_desc: Sting, attribute: Quickness,
+                damage_dice: (1, 4, 0), hit_bonus: 0),
+        ])),
         blocks_tile: Some(()),
-        field_of_view: Some(6),
+        field_of_view: Some(8),
     ),
     (
-        // GHOST
+        // BLACK_RAT
         code: (code: 12),
         monster: Some(()),
-        attributes: Some({}),
-        skills: Some({}),
+        attributes: Some({ Might: 3, Fitness: 3, Quickness: 3 }),
+        skills: Some({ Melee: -1, Defense: -1 }),
+        natural: Some((armour_class: Some(11), attacks: [
+            (range: 0, hit_desc: Bite, attribute: Quickness,
+                damage_dice: (1, 4, 0), hit_bonus: 0),
+        ])),
         blocks_tile: Some(()),
-        field_of_view: Some(20),
+        field_of_view: Some(8),
     ),
     (
-        // GREY_MOULD
+        // WOLF
         code: (code: 13),
         monster: Some(()),
-        attributes: Some({}),
-        skills: Some({}),
+        attributes: Some({ Might: 3, Fitness: 3, Quickness: 3 }),
+        skills: Some({ Melee: -1, Defense: -1 }),
+        natural: Some((armour_class: Some(13), attacks: [
+            (range: 0, hit_desc: Bite, attribute: Quickness,
+                damage_dice: (1, 6, 0), hit_bonus: 0),
+        ])),
         blocks_tile: Some(()),
-        field_of_view: Some(4),
+        field_of_view: Some(10),
+        loot_table: Some((key: Animal)),
     ),
     (
         // KOBOLD

@@ -1,6 +1,7 @@
 use std::fs::File;
 use std::sync::Mutex;
 use ron::de::from_reader;
+use std::collections::HashMap;
 
 use super::*;
 
@@ -25,9 +26,13 @@ pub fn load_raws() {
         &RAWS.lock().unwrap().load_entities(raws);
     }
 
-    let file = File::open("raws/spawn_table.ron").expect("Cannot open file");
+    let mut file = File::open("raws/spawn_table.ron").expect("Cannot open file");
     let spawns: Vec<SpawnTableEntry> = from_reader(file).expect("Cannot read from file");
     &RAWS.lock().unwrap().load_spawn_table(spawns);
+
+    file = File::open("raws/loot_table.ron").expect("Cannot open file");
+    let loots: HashMap<LootTableKey, Vec<LootDrop>> = from_reader(file).expect("Cannot read from file");
+    &RAWS.lock().unwrap().load_loot_table(loots);
 
     // testing
     //println!("{:?}", &RAWS.lock().unwrap().entities);

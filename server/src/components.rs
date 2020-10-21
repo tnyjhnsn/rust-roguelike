@@ -186,6 +186,16 @@ pub struct Wearable {
     pub armour_class: f32,
 }
 
+#[derive(Hash, PartialEq, Eq, Debug, Copy, Clone, Serialize, Deserialize)]
+pub enum LootTableKey {
+    Animal,
+}
+
+#[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
+pub struct LootTable {
+    pub key: LootTableKey,
+}
+
 #[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
 pub struct EntryTrigger {}
 

@@ -6,6 +6,9 @@ use super::{
     Code,
     RunState,
     Pools,
+    Equipped,
+    InInventory,
+    Position,
 };
 use roguelike_common::*;
 
@@ -61,6 +64,29 @@ pub fn delete_the_dead(ecs : &mut World) {
                     }
                 }
             }
+        }
+    }
+
+    {
+        let mut to_drop = Vec::new();
+        let entities = ecs.entities();
+        let mut equipped = ecs.write_storage::<Equipped>();
+        let mut carried = ecs.write_storage::<InInventory>();
+        let mut positions = ecs.write_storage::<Position>();
+        for victim in &dead {
+            for (entity, equipped) in (&entities, &equipped).join() {
+                if equipped.owner == *victim {
+                    let pos = positions.get(*victim);
+                    if let Some(pos) = pos {
+                        to_drop.push((entity, pos.clone()));
+                    }
+                }
+            }
+        }
+        for drop in &to_drop {
+            equipped.remove(drop.0);
+            carried.remove(drop.0);
+            positions.insert(drop.0, drop.1.clone()).expect("Unable to insert Position");
         }
     }
 

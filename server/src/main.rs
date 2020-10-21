@@ -107,6 +107,7 @@ impl GameSocket {
         gs.ecs.register::<OtherLevelPosition>(); 
         gs.ecs.register::<BlocksVisibility>(); 
         gs.ecs.register::<Door>(); 
+        gs.ecs.register::<LootTable>(); 
         gs
     }
 }

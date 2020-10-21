@@ -1,0 +1,6 @@
+{
+    Animal: [
+        (code: 123, weight: 10),
+        (code: 123, weight: 10),
+    ],
+}

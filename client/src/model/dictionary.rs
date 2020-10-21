@@ -13,8 +13,8 @@ impl Dictionary {
         dict.insert(0, ("Hero", "player-m"));
         dict.insert(MOB_WHITE_CENTIPEDE, ("Carnivorous White Centipede", "white-centipede"));
         dict.insert(MOB_RED_ANT, ("Giant Red Ant", "red-ant"));
-        dict.insert(MOB_GHOST, ("Scary Ghost", "ghost"));
-        dict.insert(MOB_GREY_MOULD, ("Shambling Grey Mould", "grey-mould"));
+        dict.insert(MOB_BLACK_RAT, ("Black Rat", "black-rat"));
+        dict.insert(MOB_WOLF, ("Mangy Wolf", "wolf"));
         dict.insert(MOB_KOBOLD, ("Annoying Kobold", "kobold"));
         dict.insert(MOB_THIEF, ("Sneaky Thief", "Thief"));
         dict.insert(ITEM_HEALTH_POTION, ("Health Potion", "health-potion"));

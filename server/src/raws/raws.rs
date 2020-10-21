@@ -14,6 +14,7 @@ pub enum SpawnType {
 pub struct Raws {
     pub entities: Vec<RawEntity>,
     pub spawn_table: Vec<SpawnTableEntry>,
+    pub loot_table: HashMap<LootTableKey, Vec<LootDrop>>,
 }
 
 impl Raws {
@@ -21,6 +22,7 @@ impl Raws {
         Self {
             entities: Vec::new(),
             spawn_table: Vec::new(),
+            loot_table: HashMap::new(),
         }
     }
     pub fn load_entities(&mut self, mut entities: Vec<RawEntity>) {
@@ -28,6 +30,9 @@ impl Raws {
     }
     pub fn load_spawn_table(&mut self, mut spawn_table: Vec<SpawnTableEntry>) {
         self.spawn_table.append(&mut spawn_table);
+    }
+    pub fn load_loot_table(&mut self, loot_table: HashMap<LootTableKey, Vec<LootDrop>>) {
+        self.loot_table = loot_table;
     }
 }
 
@@ -64,6 +69,7 @@ pub struct RawEntity {
     pub level: Option<i32>,
     pub equipped: Option<Vec<i32>>,
     pub natural: Option<NaturalAttackDefense>,
+    pub loot_table: Option<LootTable>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -73,6 +79,12 @@ pub struct SpawnTableEntry {
     pub min_difficulty: i32,
     pub max_difficulty: i32,
     pub add_diff_to_weight: Option<bool>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+pub struct LootDrop {
+    pub code: i32,
+    pub weight: i32,
 }
 
 const ATTR_BASE: i32 = 11;
@@ -177,6 +189,7 @@ pub fn spawn_from_raws(raws: &Raws, ecs: &mut World, code: &i32,
             }
             entity = entity.with(nat);
         }
+        if let Some(loot_table) = t.loot_table { entity = entity.with(loot_table); }
 
         let mob = entity.build();
 

@@ -37,8 +37,8 @@ pub const KEY_LT: u32 = 188;
 // MONSTERS 10 - 999
 pub const MOB_WHITE_CENTIPEDE: i32 = 10;
 pub const MOB_RED_ANT: i32 = 11;
-pub const MOB_GHOST: i32 = 12;
-pub const MOB_GREY_MOULD: i32 = 13;
+pub const MOB_BLACK_RAT: i32 = 12;
+pub const MOB_WOLF: i32 = 13;
 pub const MOB_KOBOLD: i32 = 14;
 pub const MOB_THIEF: i32 = 15;
 
