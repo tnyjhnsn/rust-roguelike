@@ -218,6 +218,18 @@ pub fn get_spawn_table(raws: &Raws, difficulty: i32) -> RandomTable {
     table
 }
 
+pub fn get_item_drop(raws: &Raws, rng: &mut RandomNumberGenerator, key: LootTableKey) -> Option<i32> {
+    if raws.loot_table.contains_key(&key) {
+        let mut table = RandomTable::new();
+        let available_drops = &raws.loot_table[&key];
+        for drop in available_drops.iter() {
+            table = table.add(drop.code, drop.weight);
+        }
+        return table.roll(rng)
+    }
+    None
+}
+
 fn get_slot_from_code(code: &i32) -> EquipmentSlot {
     match code {
         3000..=3099 => EquipmentSlot::Melee,

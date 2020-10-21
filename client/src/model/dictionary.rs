@@ -22,6 +22,8 @@ impl Dictionary {
         dict.insert(ITEM_DRAGON_BREATH, ("Dragon Breath", "dragon-breath"));
         dict.insert(ITEM_ACID_RAIN, ("Acid Rain", "acid-rain"));
         dict.insert(ITEM_CONFUSION_SCROLL, ("Scroll of Confusion", "scroll-unlock"));
+        dict.insert(LOOT_MEAT, ("Delicious Meat", "trippy-mushroom"));
+        dict.insert(LOOT_HIDE, ("Leather Hide", "yellow-mushroom"));
         dict.insert(WEAP_DAGGER, ("Dagger", "dagger"));
         dict.insert(WEAP_RUSTY_SWORD, ("Rusty Old Sword", "long-sword"));
         dict.insert(WEAP_LONG_SWORD, ("Long Sword", "long-sword"));

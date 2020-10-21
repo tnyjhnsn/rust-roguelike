@@ -9,6 +9,8 @@ use super::{
     Equipped,
     InInventory,
     Position,
+    LootTable,
+    raws::*,
 };
 use roguelike_common::*;
 
@@ -67,18 +69,40 @@ pub fn delete_the_dead(ecs : &mut World) {
         }
     }
 
+    let mut to_spawn = Vec::new();
     {
         let mut to_drop = Vec::new();
         let entities = ecs.entities();
         let mut equipped = ecs.write_storage::<Equipped>();
         let mut carried = ecs.write_storage::<InInventory>();
         let mut positions = ecs.write_storage::<Position>();
+        let loot_table = ecs.read_storage::<LootTable>();
+        let mut rng = ecs.write_resource::<RandomNumberGenerator>();
         for victim in &dead {
+            let pos = positions.get(*victim);
             for (entity, equipped) in (&entities, &equipped).join() {
                 if equipped.owner == *victim {
-                    let pos = positions.get(*victim);
                     if let Some(pos) = pos {
                         to_drop.push((entity, pos.clone()));
+                    }
+                }
+            }
+            for (entity, inventory) in (&entities, &carried).join() {
+                if inventory.owner == *victim {
+                    if let Some(pos) = pos {
+                        to_drop.push((entity, pos.clone()));
+                    }
+                }
+            }
+            if let Some(table) = loot_table.get(*victim) {
+                let drop_finder = get_item_drop(
+                    &RAWS.lock().unwrap(),
+                    &mut rng,
+                    table.key
+                );
+                if let Some(drop) = drop_finder {
+                    if let Some(pos) = pos {
+                        to_spawn.push((drop, pos.clone()));
                     }
                 }
             }
@@ -87,6 +111,14 @@ pub fn delete_the_dead(ecs : &mut World) {
             equipped.remove(drop.0);
             carried.remove(drop.0);
             positions.insert(drop.0, drop.1.clone()).expect("Unable to insert Position");
+        }
+    }
+
+    {
+        for drop in &to_spawn {
+            let (x, y) = (drop.1.x, drop.1.y);
+            spawn_from_raws(&RAWS.lock().unwrap(), ecs, &drop.0,
+                SpawnType::AtPosition{ x, y });
         }
     }
 

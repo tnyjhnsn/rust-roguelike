@@ -47,4 +47,16 @@
         ranged: Some((range: 6)),
         confusion: Some((turns: 3)),
     ),
+    (
+        // MEAT
+        code: (code: 2200),
+        item: Some(()),
+        consumeable: Some(()),
+    ),
+    (
+        // HIDE
+        code: (code: 2201),
+        item: Some(()),
+        consumeable: Some(()),
+    ),
 ]

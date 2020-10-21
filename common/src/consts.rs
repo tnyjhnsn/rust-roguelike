@@ -53,6 +53,9 @@ pub const ITEM_MAGIC_MISSILE: i32 = 2100;
 pub const ITEM_DRAGON_BREATH: i32 = 2101;
 pub const ITEM_ACID_RAIN: i32 = 2102;
 pub const ITEM_CONFUSION_SCROLL: i32 = 2103;
+// Special loot 2200 - 2299
+pub const LOOT_MEAT: i32 = 2200;
+pub const LOOT_HIDE: i32 = 2201;
 
 // WEAPONS
 // Melee 3000 - 3099
