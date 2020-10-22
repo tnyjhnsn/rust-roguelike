@@ -44,14 +44,14 @@
         // WOLF
         code: (code: 13),
         monster: Some(()),
-        attributes: Some({ Might: 3, Fitness: 3, Quickness: 3 }),
-        skills: Some({ Melee: -1, Defense: -1 }),
-        natural: Some((armour_class: Some(13), attacks: [
-            (range: 0, hit_desc: Bite, attribute: Quickness,
+        attributes: Some({ Might: 3, Fitness: 3 }),
+        skills: Some({ Melee: 0, Defense: 0 }),
+        natural: Some((armour_class: Some(12), attacks: [
+            (range: 0, hit_desc: Bite, attribute: Might,
                 damage_dice: (1, 6, 0), hit_bonus: 0),
         ])),
         blocks_tile: Some(()),
-        field_of_view: Some(10),
+        field_of_view: Some(8),
         loot_table: Some((key: Animal)),
     ),
     (

@@ -69,6 +69,8 @@ impl<'a> System<'a> for MeleeCombatSystem {
                             rng.roll_dice(1, natural.attacks.len() as i32, -1) as usize 
                         };
                         let attacks = natural.attacks[idx];
+                        weapon_info.range = attacks.range;
+                        weapon_info.hit_desc = attacks.hit_desc;
                         weapon_info.attribute = attacks.attribute;
                         weapon_info.damage_dice = attacks.damage_dice;
                         weapon_info.hit_bonus = attacks.hit_bonus;
