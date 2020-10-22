@@ -193,7 +193,6 @@ pub fn spawn_from_raws(raws: &Raws, ecs: &mut World, code: &i32,
 
         let mob = entity.build();
 
-        // TODO Needs testing
         if let Some(equipped) = &t.equipped {
             for code in equipped {
                 spawn_from_raws(raws, ecs, code, SpawnType::Equipped{ owner: mob });

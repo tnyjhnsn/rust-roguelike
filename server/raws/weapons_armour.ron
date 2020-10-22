@@ -17,8 +17,8 @@
         // LONG_SWORD
         code: (code: 3002),
         item: Some(()),
-        weapon: Some((range: 0, hit_desc: CutStab, attribute: Quickness,
-                      damage_dice: (1, 6, 0), hit_bonus: 0)),
+        weapon: Some((range: 0, hit_desc: CutStab, attribute: Might,
+                      damage_dice: (1, 8, 0), hit_bonus: 0)),
     ),
     (
         // SHIELD
