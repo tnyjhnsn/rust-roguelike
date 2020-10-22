@@ -118,6 +118,12 @@ impl Component for Game {
                         "PARTICLES" => {
                             self.game.map.set_particles(d);
                         }
+                        "STATS_COMBAT" => {
+                            self.game.stats.set_combat(d);
+                        }
+                        "STATS_ATTR" => {
+                            self.game.stats.set_attributes(d);
+                        }
                         _ => {
                             //ConsoleService::info(&format!("{:?}", gm.d));
                             return false;

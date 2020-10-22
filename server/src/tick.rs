@@ -150,6 +150,16 @@ impl GameSocket {
             hm.entry(String::from("LOG")).or_insert(logs);
         }
 
+        // WIP Combat and Attribute Stats
+        let pools = self.ecs.read_storage::<Pools>();
+        let player_pools = pools.get(*player_entity).unwrap();
+        let health = (player_pools.hp.current, player_pools.hp.max);
+        let mana = (player_pools.mana.current, player_pools.mana.max);
+        let stats = vec![health, mana];
+        let s = serde_json::to_value(stats).unwrap();
+        hm.entry(String::from("STATS_COMBAT")).or_insert(s);
+        // ---
+
         if hm.len() > 0 {
             let gm = GameMsg {
                 data: json!(hm),
