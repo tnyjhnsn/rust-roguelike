@@ -118,10 +118,10 @@ impl Component for Game {
                         "PARTICLES" => {
                             self.game.map.set_particles(d);
                         }
-                        "STATS_COMBAT" => {
+                        "COMBAT_STATS" => {
                             self.game.stats.set_combat(d);
                         }
-                        "STATS_ATTR" => {
+                        "ATTR_STATS" => {
                             self.game.stats.set_attributes(d);
                         }
                         _ => {

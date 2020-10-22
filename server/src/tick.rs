@@ -51,6 +51,8 @@ impl GameSocket {
         let mut state = RunState::new(WAITING);
         state.add_state(INVENTORY_CHANGE);
         state.add_state(ARMOUR_CHANGE);
+        state.add_state(COMBAT_STATS_CHANGE);
+        state.add_state(ATTR_STATS_CHANGE);
 
         self.ecs.insert(GameLog::new());
         self.ecs.insert(Particles::new());
@@ -145,20 +147,30 @@ impl GameSocket {
             state.remove_state(ARMOUR_CHANGE);
         }
 
+        if state.check_state(COMBAT_STATS_CHANGE) {
+            let pools = self.ecs.read_storage::<Pools>();
+            let player_pools = pools.get(*player_entity).unwrap();
+            let stats = vec![
+                player_pools.hp.get_pool(),
+                player_pools.mana.get_pool(),
+            ];
+            let s = serde_json::to_value(stats).unwrap();
+            hm.entry(String::from("COMBAT_STATS")).or_insert(s);
+            state.remove_state(COMBAT_STATS_CHANGE);
+        }
+
+        if state.check_state(ATTR_STATS_CHANGE) {
+            let attributes = self.ecs.read_storage::<Attributes>();
+            let attr = attributes.get(*player_entity).unwrap();
+            let s = serde_json::to_value(attr.get_attributes()).unwrap();
+            hm.entry(String::from("ATTR_STATS")).or_insert(s);
+            state.remove_state(ATTR_STATS_CHANGE);
+        }
+
         let mut gl = self.ecs.write_resource::<GameLog>();
         if let Some(logs) = gl.get_logs() {
             hm.entry(String::from("LOG")).or_insert(logs);
         }
-
-        // WIP Combat and Attribute Stats
-        let pools = self.ecs.read_storage::<Pools>();
-        let player_pools = pools.get(*player_entity).unwrap();
-        let health = (player_pools.hp.current, player_pools.hp.max);
-        let mana = (player_pools.mana.current, player_pools.mana.max);
-        let stats = vec![health, mana];
-        let s = serde_json::to_value(stats).unwrap();
-        hm.entry(String::from("STATS_COMBAT")).or_insert(s);
-        // ---
 
         if hm.len() > 0 {
             let gm = GameMsg {

@@ -26,6 +26,12 @@ pub struct Pool {
     pub current: i32,
 }
 
+impl Pool {
+    pub fn get_pool(&self) -> (i32, i32) {
+        (self.current, self.max)
+    }
+}
+
 #[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
 pub struct Pools {
     pub hp: Pool,
@@ -41,12 +47,28 @@ pub struct Attribute {
     pub bonus: i32,
 }
 
+impl Attribute {
+    pub fn get_attribute(&self) -> (i32, i32, i32) {
+        (self.base, self.modifiers, self.bonus)
+    }
+}
 #[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
 pub struct Attributes {
     pub might: Attribute,
     pub fitness: Attribute,
     pub quickness: Attribute,
     pub intelligence: Attribute,
+}
+
+impl Attributes {
+    pub fn get_attributes(&self) -> Vec<(i32, i32, i32)> {
+        vec![
+            self.might.get_attribute(),
+            self.fitness.get_attribute(),
+            self.quickness.get_attribute(),
+            self.intelligence.get_attribute(),
+        ]
+    }
 }
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash, Serialize, Deserialize)]

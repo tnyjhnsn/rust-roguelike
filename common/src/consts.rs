@@ -8,8 +8,10 @@ pub const FOV_CHANGE: i32 = 1;
 pub const CONTENTS_CHANGE: i32 = 2;
 pub const INVENTORY_CHANGE: i32 = 4;
 pub const ARMOUR_CHANGE: i32 = 8;
-pub const EXIT_MAP: i32 = 16;
-pub const GAME_OVER: i32 = 32;
+pub const COMBAT_STATS_CHANGE: i32 = 16;
+pub const ATTR_STATS_CHANGE: i32 = 32;
+pub const EXIT_MAP: i32 = 64;
+pub const GAME_OVER: i32 = 128;
 
 // key codes
 // sections
