@@ -63,25 +63,21 @@ fn get_combat_stats(title: &str, colour: &str, value: i32) -> Html {
 }
 
 fn get_attr_stats(title: &str, attr: (i32, i32, i32)) -> Html {
-    let a = calc_attributes(attr);
-    let style = if a.1 < 0 { "color:red" } else { "" };
+    let (modified, bonus) = (attr.0 + attr.1, attr.2);
+    let style = if bonus < 0 { "color:red" } else { "" };
     html! {
         <div class="attr-stats">
-            <div class="a-title">{title}</div>
-            <div class="value">{a.0}</div>
-            <div class="bonus" style=style>{a.1}</div>
+            <div class="a-title">{ title }</div>
+            <div class="value">{ modified }</div>
+            <div class="bonus" style=style>{ bonus }</div>
         </div>
     }
 }
 
-pub fn calc_attributes(attr: (i32, i32, i32)) -> (i32, i32) {
-    (attr.0 + attr.1, attr.2)
-}
-
-fn calc_combat_stats(stats: (i32, i32)) -> i32 {
-    match stats.1 {
+fn calc_combat_stats((current, max): (i32, i32)) -> i32 {
+    match max {
         0 => 0,
-        _ => (stats.0 / stats.1) * 100,
+        _ => (current / max) * 100,
     }
 }
 
