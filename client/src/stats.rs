@@ -54,7 +54,7 @@ fn get_combat_stats(title: &str, colour: &str, value: i32) -> Html {
     let style = format!("background-color:{};width:{}%", colour, value);
     html! {
         <>
-            <h4>{ title }</h4>
+            <div>{ title }</div>
             <div class="combat-stats-wrapper">
                 <div class="combat-stats" style=style></div>
             </div>
