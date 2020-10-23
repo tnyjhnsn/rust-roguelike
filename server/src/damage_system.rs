@@ -10,6 +10,7 @@ use super::{
     InInventory,
     Position,
     LootTable,
+    PlayerEntity,
     raws::*,
 };
 use roguelike_common::*;
@@ -18,15 +19,21 @@ pub struct DamageSystem {}
 
 impl<'a> System<'a> for DamageSystem {
     type SystemData = (
+        Entities<'a>,
         WriteStorage<'a, Pools>,
         WriteStorage<'a, SufferDamage>,
+        ReadExpect<'a, PlayerEntity>,
+        WriteExpect<'a, RunState>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (mut stats, mut damage) = data;
+        let (entities, mut stats, mut damage, player, mut state) = data;
 
-        for (mut stats, damage) in (&mut stats, &damage).join() {
+        for (entity, mut stats, damage) in (&entities, &mut stats, &damage).join() {
             stats.hp.current -= damage.amount.iter().sum::<i32>();
+            if entity == *player {
+                state.add_state(COMBAT_STATS_CHANGE);
+            }
         }
 
         damage.clear();

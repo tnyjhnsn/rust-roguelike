@@ -203,6 +203,7 @@ impl<'a> System<'a> for UseItemSystem {
                             stats.hp.current = i32::min(stats.hp.max, stats.hp.current + item.heal);
                             if entity == *player {
                                 gamelog.add_log(vec![LogType::Drink as i32, 0, item_code, item.heal]);
+                                state.add_state(COMBAT_STATS_CHANGE);
                             }
                         }
                     }

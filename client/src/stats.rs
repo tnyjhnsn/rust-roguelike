@@ -35,10 +35,8 @@ impl Component for Stats {
         html! {
             <div class="stats">
                 <h3>{ "Stats" }</h3>
-                { get_combat_stats("Health", "red",
-                    calc_combat_stats(self.props.stats.health)) }
-                { get_combat_stats("Mana", "blue",
-                    calc_combat_stats(self.props.stats.mana)) }
+                { get_combat_stats("Health", "red", self.props.stats.health) }
+                { get_combat_stats("Mana", "blue", self.props.stats.mana) }
                 <div class="attr-stats-wrapper">
                     { get_attr_stats("Might", self.props.stats.might) }
                     { get_attr_stats("Fitness", self.props.stats.fitness) }
@@ -50,11 +48,12 @@ impl Component for Stats {
     }
 }
 
-fn get_combat_stats(title: &str, colour: &str, value: i32) -> Html {
+fn get_combat_stats(title: &str, colour: &str, stats: (i32, i32)) -> Html {
+    let value = calc_combat_stats(stats);
     let style = format!("background-color:{};width:{}%", colour, value);
     html! {
         <>
-            <div>{ title }</div>
+            <div>{ format!("{} {}/{}", title, stats.0, stats.1) }</div>
             <div class="combat-stats-wrapper">
                 <div class="combat-stats" style=style></div>
             </div>
@@ -74,10 +73,10 @@ fn get_attr_stats(title: &str, attr: (i32, i32, i32)) -> Html {
     }
 }
 
-fn calc_combat_stats((current, max): (i32, i32)) -> i32 {
+fn calc_combat_stats((current, max): (i32, i32)) -> f64 {
     match max {
-        0 => 0,
-        _ => (current / max) * 100,
+        0 => 0.0,
+        _ => (current as f64 / max as f64) * 100.0,
     }
 }
 
