@@ -1,4 +1,6 @@
 use yew::prelude::*;
+use super::combat_stats::*;
+use super::attr_stats::*;
 use super::model::stats_model::*;
 
 pub struct Stats {
@@ -35,48 +37,16 @@ impl Component for Stats {
         html! {
             <div class="stats">
                 <h3>{ "Stats" }</h3>
-                { get_combat_stats("Health", "red", self.props.stats.health) }
-                { get_combat_stats("Mana", "blue", self.props.stats.mana) }
+                <CombatStats title="Health" colour="red" stats=&self.props.stats.health />
+                <CombatStats title="Mana" colour="blue" stats=&self.props.stats.mana />
                 <div class="attr-stats-wrapper">
-                    { get_attr_stats("Might", self.props.stats.might) }
-                    { get_attr_stats("Fitness", self.props.stats.fitness) }
-                    { get_attr_stats("Quickness", self.props.stats.quickness) }
-                    { get_attr_stats("Intelligence", self.props.stats.intelligence) }
+                    <AttrStats title="Might" stats=&self.props.stats.might />
+                    <AttrStats title="Fitness" stats=&self.props.stats.fitness />
+                    <AttrStats title="Quickness" stats=&self.props.stats.quickness />
+                    <AttrStats title="Intelligence" stats=&self.props.stats.intelligence />
                 </div>
             </div>
         }
-    }
-}
-
-fn get_combat_stats(title: &str, colour: &str, stats: (i32, i32)) -> Html {
-    let value = calc_combat_stats(stats);
-    let style = format!("background-color:{};width:{}%", colour, value);
-    html! {
-        <>
-            <div>{ format!("{} {}/{}", title, stats.0, stats.1) }</div>
-            <div class="combat-stats-wrapper">
-                <div class="combat-stats" style=style></div>
-            </div>
-        </>
-    }
-}
-
-fn get_attr_stats(title: &str, attr: (i32, i32, i32)) -> Html {
-    let (modified, bonus) = (attr.0 + attr.1, attr.2);
-    let style = if bonus < 0 { "color:red" } else { "" };
-    html! {
-        <div class="attr-stats">
-            <div class="a-title">{ title }</div>
-            <div class="value">{ modified }</div>
-            <div class="bonus" style=style>{ bonus }</div>
-        </div>
-    }
-}
-
-fn calc_combat_stats((current, max): (i32, i32)) -> f64 {
-    match max {
-        0 => 0.0,
-        _ => (current as f64 / max as f64) * 100.0,
     }
 }
 

@@ -23,6 +23,10 @@ mod inventory;
 pub use inventory::*;
 mod stats;
 pub use stats::*;
+mod combat_stats;
+pub use combat_stats::*;
+mod attr_stats;
+pub use attr_stats::*;
 
 #[cfg(feature = "wee_alloc")]
 #[global_allocator]
