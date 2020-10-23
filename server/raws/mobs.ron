@@ -44,7 +44,7 @@
         // WOLF
         code: (code: 13),
         monster: Some(()),
-        attributes: Some({ Might: 3, Fitness: 3 }),
+        attributes: Some({ Might: 3, Fitness: 3, Quickness: 3 }),
         skills: Some({ Melee: 0, Defense: 0 }),
         natural: Some((armour_class: Some(12), attacks: [
             (range: 0, hit_desc: Bite, attribute: Might,

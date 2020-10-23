@@ -16,6 +16,7 @@ use super::armour::*;
 use super::inventory::*;
 use super::map::*;
 use super::logs::*;
+use super::stats::*;
 
 pub struct Game {
     ws: Option<WebSocketTask>,
@@ -214,6 +215,9 @@ impl Component for Game {
         html! { 
             <div class="game">
                 <div class="holding left-panel">
+                    <Stats
+                        stats=&self.game.stats
+                    />
                     <Armour
                         armour=&self.game.armour
                         dict=&self.game.dict

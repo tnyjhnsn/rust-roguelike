@@ -21,6 +21,8 @@ mod armour;
 pub use armour::*;
 mod inventory;
 pub use inventory::*;
+mod stats;
+pub use stats::*;
 
 #[cfg(feature = "wee_alloc")]
 #[global_allocator]

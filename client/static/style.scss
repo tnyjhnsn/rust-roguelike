@@ -10,6 +10,14 @@ body {
   font-weight: 300;
 }
 
+h3 {
+  margin: 5px 0;
+}
+
+h4 {
+  margin: 2px 0;
+}
+
 .game {
   display: grid;
   width: 90vw;
@@ -64,6 +72,7 @@ body {
 
 .armour,
 .inventory,
+.stats,
 .log {
   font-size: 0.8rem;
   border: 1px solid white;
@@ -208,6 +217,32 @@ ul {
 
 .datetime {
   color: #7e9098;
+}
+
+.combat-stats-wrapper {
+  border: 1px solid #2f4f4f;
+}
+
+.combat-stats {
+  height: 10px;
+}
+
+.attr-stats-wrapper {
+  margin-top: 5px;
+}
+
+.attr-stats {
+  display: flex;
+  width: 100%;
+  .a-title {
+    width: 50%;
+  }
+  .value {
+    width: 25%;
+  }
+  .bonus {
+    width: 25%;
+  }
 }
 
 .flex-wrap {
