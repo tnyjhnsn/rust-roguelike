@@ -35,43 +35,42 @@ impl Component for Stats {
         html! {
             <div class="stats">
                 <h3>{ "Stats" }</h3>
-                { self.get_combat_stats("Health", "red",
+                { get_combat_stats("Health", "red",
                     calc_combat_stats(self.props.stats.health)) }
-                { self.get_combat_stats("Mana", "blue",
+                { get_combat_stats("Mana", "blue",
                     calc_combat_stats(self.props.stats.mana)) }
                 <div class="attr-stats-wrapper">
-                    { self.get_attr_stats("Might", self.props.stats.might) }
-                    { self.get_attr_stats("Fitness", self.props.stats.fitness) }
-                    { self.get_attr_stats("Quickness", self.props.stats.quickness) }
-                    { self.get_attr_stats("Intelligence", self.props.stats.intelligence) }
+                    { get_attr_stats("Might", self.props.stats.might) }
+                    { get_attr_stats("Fitness", self.props.stats.fitness) }
+                    { get_attr_stats("Quickness", self.props.stats.quickness) }
+                    { get_attr_stats("Intelligence", self.props.stats.intelligence) }
                 </div>
             </div>
         }
     }
 }
 
-impl Stats {
-    fn get_combat_stats(&self, title: &str, colour: &str, value: i32) -> Html {
-        let style = format!("background-color:{};width:{}%", colour, value);
-        html! {
-            <>
-                <h4>{ title }</h4>
-                <div class="combat-stats-wrapper">
-                    <div class="combat-stats" style=style></div>
-                </div>
-            </>
-        }
-    }
-    fn get_attr_stats(&self, title: &str, attr: (i32, i32, i32)) -> Html {
-        let a = calc_attributes(attr);
-        let style = if a.1 < 0 { "color:red" } else { "" };
-        html! {
-            <div class="attr-stats">
-                <div class="a-title">{title}</div>
-                <div class="value">{a.0}</div>
-                <div class="bonus" style=style>{a.1}</div>
+fn get_combat_stats(title: &str, colour: &str, value: i32) -> Html {
+    let style = format!("background-color:{};width:{}%", colour, value);
+    html! {
+        <>
+            <h4>{ title }</h4>
+            <div class="combat-stats-wrapper">
+                <div class="combat-stats" style=style></div>
             </div>
-        }
+        </>
+    }
+}
+
+fn get_attr_stats(title: &str, attr: (i32, i32, i32)) -> Html {
+    let a = calc_attributes(attr);
+    let style = if a.1 < 0 { "color:red" } else { "" };
+    html! {
+        <div class="attr-stats">
+            <div class="a-title">{title}</div>
+            <div class="value">{a.0}</div>
+            <div class="bonus" style=style>{a.1}</div>
+        </div>
     }
 }
 
