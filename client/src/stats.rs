@@ -35,8 +35,10 @@ impl Component for Stats {
         html! {
             <div class="stats">
                 <h3>{ "Stats" }</h3>
-                { self.get_combat_stats("Health", "red", 40) }
-                { self.get_combat_stats("Mana", "blue", 70) }
+                { self.get_combat_stats("Health", "red",
+                    calc_combat_stats(self.props.stats.health)) }
+                { self.get_combat_stats("Mana", "blue",
+                    calc_combat_stats(self.props.stats.mana)) }
                 <div class="attr-stats-wrapper">
                     { self.get_attr_stats("Might", self.props.stats.might) }
                     { self.get_attr_stats("Fitness", self.props.stats.fitness) }
@@ -72,3 +74,15 @@ impl Stats {
         }
     }
 }
+
+pub fn calc_attributes(attr: (i32, i32, i32)) -> (i32, i32) {
+    (attr.0 + attr.1, attr.2)
+}
+
+fn calc_combat_stats(stats: (i32, i32)) -> i32 {
+    match stats.1 {
+        0 => 0,
+        _ => (stats.0 / stats.1) * 100,
+    }
+}
+

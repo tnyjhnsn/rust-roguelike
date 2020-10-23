@@ -37,6 +37,3 @@ impl MStats {
     }
 }
 
-pub fn calc_attributes(attr: (i32, i32, i32)) -> (i32, i32) {
-    (attr.0 + attr.1, attr.2)
-}
