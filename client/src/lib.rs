@@ -27,6 +27,8 @@ mod combat_stats;
 pub use combat_stats::*;
 mod attr_stats;
 pub use attr_stats::*;
+mod level_stats;
+pub use level_stats::*;
 
 #[cfg(feature = "wee_alloc")]
 #[global_allocator]

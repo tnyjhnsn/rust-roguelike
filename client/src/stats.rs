@@ -1,6 +1,7 @@
 use yew::prelude::*;
 use super::combat_stats::*;
 use super::attr_stats::*;
+use super::level_stats::*;
 use super::model::stats_model::*;
 
 pub struct Stats {
@@ -34,11 +35,13 @@ impl Component for Stats {
     }
 
     fn view(&self) -> Html {
+        let level_xp = (self.props.stats.level, self.props.stats.xp);
         html! {
             <div class="stats">
                 <h3>{ "Stats" }</h3>
                 <CombatStats title="Health" colour="red" stats=&self.props.stats.health />
                 <CombatStats title="Mana" colour="blue" stats=&self.props.stats.mana />
+                <LevelStats title="Level" colour="gold" stats=level_xp />
                 <div class="attr-stats-wrapper">
                     <AttrStats title="Might" stats=&self.props.stats.might />
                     <AttrStats title="Fitness" stats=&self.props.stats.fitness />

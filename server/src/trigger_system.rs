@@ -40,7 +40,7 @@ impl<'a> System<'a> for TriggerSystem {
                         let the_trigger = codes.get(*entity_id).unwrap().code;
                         let damage = inflict_damage.get(*entity_id);
                         if let Some(damage) = damage {
-                            SufferDamage::new_damage(&mut suffer_damage, entity, damage.damage);
+                            SufferDamage::new_damage(&mut suffer_damage, entity, damage.damage, false);
                             gamelog.add_log(vec![LogType::Trap as i32, triggerer, the_trigger, damage.damage]);
                         }
                     }

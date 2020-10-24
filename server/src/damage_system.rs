@@ -11,9 +11,11 @@ use super::{
     Position,
     LootTable,
     PlayerEntity,
+    Attributes,
     raws::*,
 };
 use roguelike_common::*;
+use crate::{player_hp_at_level, mana_at_level};
 
 pub struct DamageSystem {}
 
@@ -24,16 +26,42 @@ impl<'a> System<'a> for DamageSystem {
         WriteStorage<'a, SufferDamage>,
         ReadExpect<'a, PlayerEntity>,
         WriteExpect<'a, RunState>,
+        ReadStorage<'a, Attributes>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (entities, mut stats, mut damage, player, mut state) = data;
+        let (entities, mut stats, mut damage, player, mut state, attributes) = data;
+        let mut xp_gain = 0;
 
         for (entity, mut stats, damage) in (&entities, &mut stats, &damage).join() {
-            stats.hp.current -= damage.amount.iter().sum::<i32>();
+            for dmg in damage.amount.iter() {
+                stats.hp.current -= dmg.0;
+                if stats.hp.current < 1 && dmg.1 {
+                    xp_gain += stats.level * 100;
+                }
+            }
             if entity == *player {
                 state.add_state(COMBAT_STATS_CHANGE);
             }
+        }
+
+        if xp_gain != 0 {
+            let mut player_stats = stats.get_mut(*player).unwrap();
+            let player_attr = attributes.get(*player).unwrap();
+            player_stats.xp += xp_gain;
+            if player_stats.xp >= player_stats.level * 1000 {
+                player_stats.level += 1;
+                player_stats.hp.max = player_hp_at_level(
+                    player_attr.fitness.base + player_attr.fitness.modifiers,
+                    player_stats.level);
+                player_stats.hp.current = player_stats.hp.max;
+                player_stats.mana.max = mana_at_level(
+                    player_attr.intelligence.base + player_attr.intelligence.modifiers, 
+                    player_stats.level
+                );
+                player_stats.mana.current = player_stats.mana.max;
+            }
+            state.add_state(XP_CHANGE);
         }
 
         damage.clear();

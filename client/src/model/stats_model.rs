@@ -8,6 +8,8 @@ pub struct MStats {
     pub fitness: (i32, i32, i32),
     pub quickness: (i32, i32, i32),
     pub intelligence: (i32, i32, i32),
+    pub level: i32,
+    pub xp: i32,
 }
 
 impl MStats {
@@ -19,6 +21,8 @@ impl MStats {
             fitness: (0, 0, 0),
             quickness: (0, 0, 0),
             intelligence: (0, 0, 0),
+            level: 1,
+            xp: 0,
         }
     }
 
@@ -34,6 +38,12 @@ impl MStats {
         self.fitness = stats[1];
         self.quickness = stats[2];
         self.intelligence = stats[3];
+    }
+
+    pub fn set_level_xp(&mut self, data: Value) {
+        let (level, xp): (i32, i32) = serde_json::from_value(data).unwrap();
+        self.level = level;
+        self.xp = xp;
     }
 }
 

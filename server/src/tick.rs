@@ -53,6 +53,7 @@ impl GameSocket {
         state.add_state(ARMOUR_CHANGE);
         state.add_state(COMBAT_STATS_CHANGE);
         state.add_state(ATTR_STATS_CHANGE);
+        state.add_state(XP_CHANGE);
 
         self.ecs.insert(GameLog::new());
         self.ecs.insert(Particles::new());
@@ -165,6 +166,15 @@ impl GameSocket {
             let s = serde_json::to_value(attr.get_attributes()).unwrap();
             hm.entry(String::from("ATTR_STATS")).or_insert(s);
             state.remove_state(ATTR_STATS_CHANGE);
+        }
+
+        if state.check_state(XP_CHANGE) {
+            let pools = self.ecs.read_storage::<Pools>();
+            let player_pools = pools.get(*player_entity).unwrap();
+            let stats = (player_pools.level, player_pools.xp);
+            let s = serde_json::to_value(stats).unwrap();
+            hm.entry(String::from("LEVEL_STATS")).or_insert(s);
+            state.remove_state(XP_CHANGE);
         }
 
         let mut gl = self.ecs.write_resource::<GameLog>();

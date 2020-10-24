@@ -125,6 +125,9 @@ impl Component for Game {
                         "ATTR_STATS" => {
                             self.game.stats.set_attributes(d);
                         }
+                        "LEVEL_STATS" => {
+                            self.game.stats.set_level_xp(d);
+                        }
                         _ => {
                             //ConsoleService::info(&format!("{:?}", gm.d));
                             return false;

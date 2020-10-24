@@ -15,6 +15,7 @@ use super::{
     WeaponAttribute,
     EquipmentSlot,
     HitDesc,
+    PlayerEntity,
     skill_bonus,
 };
 use roguelike_common::*;
@@ -38,12 +39,13 @@ impl<'a> System<'a> for MeleeCombatSystem {
         ReadStorage<'a, NaturalAttackDefense>,
         ReadStorage<'a, Wearable>,
         WriteExpect<'a, RandomNumberGenerator>,
+        ReadExpect<'a, PlayerEntity>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
         let (entities, mut wants_melee, codes, attributes, skills,
              mut inflict_damage, pools, mut log, equipped_items,
-             melee_weapons, natural, wearables, mut rng) = data;
+             melee_weapons, natural, wearables, mut rng, player) = data;
 
         for (entity, wants_melee, code, attacker_attributes, attacker_skills, attacker_pools)
             in (&entities, &wants_melee, &codes, &attributes, &skills, &pools).join() {
@@ -118,7 +120,8 @@ impl<'a> System<'a> for MeleeCombatSystem {
 
                     let damage = i32::max(0, base_damage + attr_damage_bonus + skill_hit_bonus
                         + skill_damage_bonus);
-                    SufferDamage::new_damage(&mut inflict_damage, wants_melee.target, damage);
+                    SufferDamage::new_damage(&mut inflict_damage, wants_melee.target,
+                        damage, entity == *player);
                     log.add_log(vec![LogType::Melee as i32, code.code, target_code.code, damage]);
                 } else if natural_roll == 1 {
                     log.add_log(vec![LogType::NaturalMiss as i32, code.code, target_code.code]);

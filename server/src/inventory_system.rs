@@ -215,7 +215,7 @@ impl<'a> System<'a> for UseItemSystem {
             match item_damages {
                 Some(item) => {
                     for mob in &targets {
-                        SufferDamage::new_damage(&mut suffer_damage, *mob, item.damage);
+                        SufferDamage::new_damage(&mut suffer_damage, *mob, item.damage, true);
                         if entity == *player {
                             let mob_code = codes.get(*mob).unwrap().code;
                             gamelog.add_log(vec![LogType::UseItem as i32, 0, item_code, mob_code, item.damage]);
