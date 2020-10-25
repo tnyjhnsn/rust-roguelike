@@ -17,6 +17,7 @@ pub struct Props {
     pub status: i32,
     pub content: Option<Vec<i32>>,
     pub particle: Option<(i32, u64)>,
+    pub opacity: Option<f64>,
     pub dict: Dictionary,
 }
 
@@ -56,8 +57,9 @@ impl Component for Tile {
             <div
                 class=("tile",
                     self.get_status_css(), 
-                    self.get_contents_css(), 
+                    self.get_contents_css(),
                     self.get_particle_css())
+                style=self.get_opacity()
                 onanimationend=self.link.callback(Msg::AnimationEnd)
             ></div>
         }
@@ -93,5 +95,13 @@ impl Tile {
             }
         }
         effects
+    }
+    fn get_opacity(&self) -> String {
+        let mut opacity = String::from("");
+        if let Some(o) = self.props.opacity {
+            let o = if o > 0.8 { 0.8 } else { o };
+            opacity = format!("background-color:rgba(30,30,30,{}", o);
+        }
+        opacity
     }
 }

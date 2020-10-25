@@ -11,7 +11,7 @@ pub struct MMap {
     pub status: Vec<i32>,
     pub particles: HashMap<usize, (i32, u64)>,
     pub particles_reset: bool,
-    pub fov: Vec<usize>,
+    pub fov: HashMap<usize, f64>,
     pub viewport: Vec<i32>,
     pub ppos: i32,
     pub target: i32,
@@ -30,7 +30,7 @@ impl MMap {
             status: Vec::new(),
             particles: HashMap::new(),
             particles_reset: true,
-            fov: Vec::new(),
+            fov: HashMap::new(),
             viewport: Vec::new(),
             ppos: 0,
             target: 0,
@@ -47,23 +47,28 @@ impl MMap {
         self.width = game.1;
         self.height = game.2;
         self.status = vec![0; self.get_dim()];
-        self.fov = Vec::new();
+        self.fov = HashMap::new();
         self.viewport = Vec::new();
     }
 
     pub fn set_fov(&mut self, data: Value) {
-        for c in &self.fov {
-            self.status[*c] &= !TARGETED;
-            self.status[*c] &= !VISIBLE;
-            self.status[*c] |= SEEN;
+        for (k, _) in &self.fov {
+            self.status[*k] &= !TARGETED;
+            self.status[*k] &= !VISIBLE;
+            self.status[*k] |= SEEN;
         }
         self.fov.clear();
-        self.ppos = serde_json::from_value(data[0].clone()).unwrap();
-        let fov: Vec<usize> = serde_json::from_value(data[1].clone()).unwrap();
+        let range: f64 = serde_json::from_value(data[0].clone()).unwrap();
+        self.ppos = serde_json::from_value(data[1].clone()).unwrap();
+        let f: Vec<usize> = serde_json::from_value(data[2].clone()).unwrap();
         self.set_viewport();
-        for idx in &fov {
+        for idx in &f {
             self.status[*idx] |= VISIBLE;
-            self.fov.push(*idx);
+            let p = self.idx_xy(self.ppos);
+            let mut distance = p.distance(self.idx_xy(*idx as i32));
+            distance = if distance > 8.0 { 8.0 } else { distance };
+            let opacity = 1.0 - (range - distance) / range;
+            self.fov.insert(*idx, opacity);
         }
         self.reset_particles();
     }
@@ -128,7 +133,7 @@ impl MMap {
     }
 
     pub fn set_single_target(&mut self, target: usize) {
-        for idx in self.fov.iter() {
+        for (idx, _) in &self.fov {
             self.status[*idx] &= !TARGETED;
         }
         self.status[target] |= TARGETED;
@@ -139,7 +144,7 @@ impl MMap {
         let pos = self.idx_xy(self.target);
         let new_pos = self.xy_idx(pos.x + x, pos.y + y);
         let p = new_pos as usize;
-        if self.fov.contains(&p) {
+        if self.fov.contains_key(&p) {
             self.target = new_pos;
             Some(new_pos)
         } else {

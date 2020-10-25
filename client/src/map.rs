@@ -76,6 +76,7 @@ impl Component for Map {
                     contents=&self.props.map.contents
                     particles=&self.props.map.particles
                     viewport=&self.props.map.viewport
+                    fov=&self.props.map.fov
                     background=&background
                     dict=&self.props.dict
                 />

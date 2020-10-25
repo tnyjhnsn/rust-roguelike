@@ -88,20 +88,22 @@ impl GameSocket {
         let mut hm = HashMap::new();
 
         if state.check_state(FOV_CHANGE) {
-            let idx = map.xy_idx(ppos.position.x, ppos.position.y);
-            let p = serde_json::to_value(idx).unwrap();
-            let mut v = vec![p];
-            let mut player_fov = Vec::new();
-            for (_p, fov) in (&player, &fov).join() {
+            for (_, fov) in (&player, &fov).join() {
+                let r = serde_json::to_value(fov.range).unwrap();
+                let mut v = vec![r];
+                let idx = map.xy_idx(ppos.position.x, ppos.position.y);
+                let p = serde_json::to_value(idx).unwrap();
+                v.push(p);
+                let mut player_fov = Vec::new();
                 for t in &fov.visible_tiles {
                     let idx = map.xy_idx(t.x, t.y);
                     player_fov.push(idx);
                 }
+                let f = serde_json::to_value(player_fov).unwrap();
+                v.push(f);
+                hm.entry(String::from("FOV")).or_insert(serde_json::to_value(v).unwrap());
+                state.remove_state(FOV_CHANGE);
             }
-            let f = serde_json::to_value(player_fov).unwrap();
-            v.push(f);
-            hm.entry(String::from("FOV")).or_insert(serde_json::to_value(v).unwrap());
-            state.remove_state(FOV_CHANGE);
         }
 
         if state.check_state(CONTENTS_CHANGE) {

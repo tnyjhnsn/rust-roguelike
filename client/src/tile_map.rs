@@ -13,6 +13,7 @@ pub struct Props {
     pub contents: HashMap<usize, Vec<i32>>,
     pub particles: HashMap<usize, (i32, u64)>,
     pub viewport: Vec<i32>,
+    pub fov: HashMap<usize, f64>,
     pub background: String,
     pub dict: Dictionary,
 }
@@ -39,12 +40,14 @@ impl Component for TileMap {
     }
 
     fn view(&self) -> Html {
-        let render_tile = |status: &i32, content: &Option<Vec<i32>>, particle: &Option<(i32, u64)>| {
+        let render_tile = |status: &i32, content: &Option<Vec<i32>>,
+            particle: &Option<(i32, u64)>, opacity: &Option<f64>| {
             html! {
                 <Tile
                     status=*status
                     content=content
                     particle=particle
+                    opacity=opacity
                     dict=&self.props.dict
                 />
             }
@@ -57,6 +60,7 @@ impl Component for TileMap {
                             &self.props.status[*i as usize],
                             &self.check_for_contents(*i as usize),
                             &self.check_for_particle(*i as usize),
+                            &self.check_for_opacity(*i as usize),
                             )) }
             </div>
         }
@@ -73,6 +77,12 @@ impl TileMap {
     fn check_for_contents(&self, idx: usize) -> Option<Vec<i32>> {
         match self.props.contents.contains_key(&idx) {
             true => Some(self.props.contents.get(&idx).unwrap().clone()),
+            false => None,
+        }
+    }
+    fn check_for_opacity(&self, idx: usize) -> Option<f64> {
+        match self.props.fov.contains_key(&idx) {
+            true => Some(*self.props.fov.get(&idx).unwrap()),
             false => None,
         }
     }
