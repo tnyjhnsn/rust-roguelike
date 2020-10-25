@@ -42,10 +42,10 @@ impl MMap {
     }
 
     pub fn set_map(&mut self, data: Value) {
-        let game: (String, i32, i32) = serde_json::from_value(data).unwrap();
-        self.key = game.0;
-        self.width = game.1;
-        self.height = game.2;
+        let d: (String, i32, i32) = serde_json::from_value(data).unwrap();
+        self.key = d.0;
+        self.width = d.1;
+        self.height = d.2;
         self.status = vec![0; self.get_dim()];
         self.fov = HashMap::new();
         self.viewport = Vec::new();
@@ -58,11 +58,12 @@ impl MMap {
             self.status[*k] |= SEEN;
         }
         self.fov.clear();
-        let range: f64 = serde_json::from_value(data[0].clone()).unwrap();
-        self.ppos = serde_json::from_value(data[1].clone()).unwrap();
-        let f: Vec<usize> = serde_json::from_value(data[2].clone()).unwrap();
+        let d: (f64, i32, Vec<usize>) = serde_json::from_value(data).unwrap();
+        let range = d.0;
+        self.ppos = d.1;
+        let fov = d.2;
         self.set_viewport();
-        for idx in &f {
+        for idx in &fov {
             self.status[*idx] |= VISIBLE;
             let p = self.idx_xy(self.ppos);
             let mut distance = p.distance(self.idx_xy(*idx as i32));
@@ -74,8 +75,8 @@ impl MMap {
     }
 
     pub fn set_contents(&mut self, data: Value) {
-        let contents: Vec<(usize, Vec<i32>)> = serde_json::from_value(data).unwrap();
-        self.contents = contents.into_iter().collect();
+        let d: Vec<(usize, Vec<i32>)> = serde_json::from_value(data).unwrap();
+        self.contents = d.into_iter().collect();
     }
 
     fn reset_particles(&mut self) {
@@ -86,12 +87,13 @@ impl MMap {
     }
 
     pub fn set_particles(&mut self, data: Value) {
-        let time = serde_json::from_value(data[0].clone()).unwrap();
-        let particles: Vec<(i32, Vec<usize>)> = serde_json::from_value(data[1].clone()).unwrap();
+        let d: (u64, Vec<(i32, Vec<usize>)>) = serde_json::from_value(data).unwrap();
+        let time = d.0;
+        let particles = d.1;
         self.reset_particles();
-        for (p, indexes) in &particles {
+        for (particle, indexes) in &particles {
             for idx in indexes {
-                self.particles.entry(*idx).or_insert((*p, time));
+                self.particles.entry(*idx).or_insert((*particle, time));
             }
         }
         self.particles_reset = false;
