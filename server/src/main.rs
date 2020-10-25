@@ -18,6 +18,8 @@ use roguelike_common::*;
 mod maps;
 pub use maps::*;
 
+mod ai;
+
 mod raws;
 pub use raws::*;
 
@@ -29,8 +31,6 @@ mod player;
 pub use player::*;
 mod visibility_system;
 pub use visibility_system::*;
-mod monster_ai_system;
-pub use monster_ai_system::*;
 mod gamelog;
 pub use gamelog::*;
 mod map_indexing_system;

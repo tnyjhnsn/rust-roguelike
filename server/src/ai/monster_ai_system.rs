@@ -1,10 +1,22 @@
 use specs::prelude::*;
 use roguelike_common::*;
-use super::*;
+use crate::{
+    PlayerPosition,
+    FieldOfView,
+    Map,
+    RunState,
+    Monster,
+    Position,
+    PlayerEntity,
+    WantsToMelee,
+    Confusion,
+    EntityMoved,
+    Particles,
+};
 
-pub struct MonsterAISystem {}
+pub struct MonsterAI {}
 
-impl<'a> System<'a> for MonsterAISystem {
+impl<'a> System<'a> for MonsterAI {
     type SystemData = (
         WriteExpect<'a, PlayerPosition>,
         ReadStorage<'a, FieldOfView>, 

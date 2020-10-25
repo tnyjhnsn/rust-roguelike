@@ -67,7 +67,7 @@ impl MMap {
             self.status[*idx] |= VISIBLE;
             let p = self.idx_xy(self.ppos);
             let mut distance = p.distance(self.idx_xy(*idx as i32));
-            distance = if distance > 8.0 { 8.0 } else { distance };
+            distance = if distance > range { range } else { distance };
             let opacity = 1.0 - (range - distance) / range;
             self.fov.insert(*idx, opacity);
         }

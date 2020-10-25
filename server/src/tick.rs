@@ -286,7 +286,7 @@ impl GameSocket {
     }
     
     fn run_systems_ai(&mut self) {
-        let mut mob = MonsterAISystem{};
+        let mut mob = ai::MonsterAI{};
         mob.run_now(&self.ecs);
         self.ecs.maintain();
     }
