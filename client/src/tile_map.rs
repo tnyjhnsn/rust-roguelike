@@ -57,32 +57,30 @@ impl Component for TileMap {
                 { for self.props.viewport
                     .iter()
                     .map(|i| render_tile(
-                            &self.props.status[*i as usize],
-                            &self.check_for_contents(*i as usize),
-                            &self.check_for_particle(*i as usize),
-                            &self.check_for_opacity(*i as usize),
-                            )) }
+                        &self.props.status[*i as usize],
+                        &self.check_for_contents(*i as usize),
+                        &self.check_for_param(*i as usize, &self.props.particles),
+                        &self.check_for_param(*i as usize, &self.props.fov),
+                    ))
+                }
             </div>
         }
     }
 }
 
 impl TileMap {
-    fn check_for_particle(&self, idx: usize) -> Option<(i32, u64)> {
-        match self.props.particles.contains_key(&idx) {
-            true => Some(*self.props.particles.get(&idx).unwrap()),
+    fn check_for_param<K, V>(&self, idx: K, h: &HashMap<K, V>) -> Option<V>
+    where K: std::cmp::Eq + std::hash::Hash,
+          V: std::marker::Copy
+    {
+        match h.contains_key(&idx) {
+            true => Some(*h.get(&idx).unwrap()),
             false => None,
         }
     }
     fn check_for_contents(&self, idx: usize) -> Option<Vec<i32>> {
         match self.props.contents.contains_key(&idx) {
             true => Some(self.props.contents.get(&idx).unwrap().clone()),
-            false => None,
-        }
-    }
-    fn check_for_opacity(&self, idx: usize) -> Option<f64> {
-        match self.props.fov.contains_key(&idx) {
-            true => Some(*self.props.fov.get(&idx).unwrap()),
             false => None,
         }
     }
