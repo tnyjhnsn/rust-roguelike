@@ -89,19 +89,16 @@ impl GameSocket {
 
         if state.check_state(FOV_CHANGE) {
             for (_, fov) in (&player, &fov).join() {
-                let r = serde_json::to_value(fov.range).unwrap();
-                let mut v = vec![r];
+                let mut v = vec![json!(fov.range)];
                 let idx = map.xy_idx(ppos.position.x, ppos.position.y);
-                let p = serde_json::to_value(idx).unwrap();
-                v.push(p);
+                v.push(json!(idx));
                 let mut player_fov = Vec::new();
                 for t in &fov.visible_tiles {
                     let idx = map.xy_idx(t.x, t.y);
                     player_fov.push(idx);
                 }
-                let f = serde_json::to_value(player_fov).unwrap();
-                v.push(f);
-                hm.entry(String::from("FOV")).or_insert(serde_json::to_value(v).unwrap());
+                v.push(json!(player_fov));
+                hm.entry(String::from("FOV")).or_insert(json!(v));
                 state.remove_state(FOV_CHANGE);
             }
         }
@@ -121,8 +118,7 @@ impl GameSocket {
                 content.sort();
                 v.push((idx, content));
             }
-            let contents = serde_json::to_value(v).unwrap();
-            hm.entry(String::from("CONTENTS")).or_insert(contents);
+            hm.entry(String::from("CONTENTS")).or_insert(json!(v));
             state.remove_state(CONTENTS_CHANGE);
         }
 
@@ -133,8 +129,7 @@ impl GameSocket {
                 .filter(|item| item.0.owner == *player_entity) {
                     pack.push((code.code, entity.id()));
                 }
-            let p = serde_json::to_value(pack).unwrap();
-            hm.entry(String::from("INVENTORY")).or_insert(p);
+            hm.entry(String::from("INVENTORY")).or_insert(json!(pack));
             state.remove_state(INVENTORY_CHANGE);
         }
 
@@ -145,8 +140,7 @@ impl GameSocket {
                 .filter(|item| item.0.owner == *player_entity) {
                     body.push((code.code, entity.id()));
                 }
-            let p = serde_json::to_value(body).unwrap();
-            hm.entry(String::from("ARMOUR")).or_insert(p);
+            hm.entry(String::from("ARMOUR")).or_insert(json!(body));
             state.remove_state(ARMOUR_CHANGE);
         }
 
@@ -157,16 +151,15 @@ impl GameSocket {
                 player_pools.hp.get_pool(),
                 player_pools.mana.get_pool(),
             ];
-            let s = serde_json::to_value(stats).unwrap();
-            hm.entry(String::from("COMBAT_STATS")).or_insert(s);
+            hm.entry(String::from("COMBAT_STATS")).or_insert(json!(stats));
             state.remove_state(COMBAT_STATS_CHANGE);
         }
 
         if state.check_state(ATTR_STATS_CHANGE) {
             let attributes = self.ecs.read_storage::<Attributes>();
             let attr = attributes.get(*player_entity).unwrap();
-            let s = serde_json::to_value(attr.get_attributes()).unwrap();
-            hm.entry(String::from("ATTR_STATS")).or_insert(s);
+            let a = attr.get_attributes();
+            hm.entry(String::from("ATTR_STATS")).or_insert(json!(a));
             state.remove_state(ATTR_STATS_CHANGE);
         }
 
@@ -174,8 +167,7 @@ impl GameSocket {
             let pools = self.ecs.read_storage::<Pools>();
             let player_pools = pools.get(*player_entity).unwrap();
             let stats = (player_pools.level, player_pools.xp);
-            let s = serde_json::to_value(stats).unwrap();
-            hm.entry(String::from("LEVEL_STATS")).or_insert(s);
+            hm.entry(String::from("LEVEL_STATS")).or_insert(json!(stats));
             state.remove_state(XP_CHANGE);
         }
 
@@ -253,10 +245,10 @@ impl GameSocket {
             return;
         }
         self.run_systems_ai();
+        self.run_systems();
         if let Some(p) = self.check_particles() {
             ctx.text(p);
         }
-        self.run_systems();
         delete_the_dead(&mut self.ecs);
         if let Some(s) = self.gui_tick() {
             ctx.text(s);
