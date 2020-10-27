@@ -100,6 +100,7 @@ impl Component for Game {
                     match msg.trim() {
                         "MAP" => {
                             self.game.map.set_map(d);
+                            set_focus("map");
                         }
                         "FOV" => {
                             self.game.map.set_fov(d);

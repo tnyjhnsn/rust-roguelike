@@ -171,7 +171,7 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for GameSocket {
             }
             _ => (),
         }
-        self.game_tick(ctx)
+        self.game_tick(ctx);
     }
 }
 
