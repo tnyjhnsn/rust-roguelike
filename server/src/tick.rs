@@ -7,26 +7,30 @@ use actix::{
 use serde_json::json;
 
 #[derive(PartialEq, Copy, Clone)]
-pub struct RunState {
+pub struct GuiState {
     state: i32,
 }
 
-impl RunState {
+impl GuiState {
     fn new(state: i32) -> Self {
         Self { state }
     }
-
     pub fn add_state(&mut self, state: i32) {
         self.state |= state;
     }
-
     pub fn remove_state(&mut self, state: i32) {
         self.state &= !state;
     }
-
     pub fn check_state(&self, state: i32) -> bool {
         self.state & state != 0
     }
+}
+
+#[derive(PartialEq, Copy, Clone)]
+pub enum GameState {
+    Waiting,
+    ExitMap,
+    GameOver,
 }
 
 impl GameSocket {
@@ -48,16 +52,17 @@ impl GameSocket {
         self.ecs.insert(map);
         self.ecs.insert(campaign);
 
-        let mut state = RunState::new(WAITING);
-        state.add_state(INVENTORY_CHANGE);
-        state.add_state(ARMOUR_CHANGE);
-        state.add_state(COMBAT_STATS_CHANGE);
-        state.add_state(ATTR_STATS_CHANGE);
-        state.add_state(XP_CHANGE);
+        let mut gui_state = GuiState::new(WAITING);
+        gui_state.add_state(INVENTORY_CHANGE);
+        gui_state.add_state(ARMOUR_CHANGE);
+        gui_state.add_state(COMBAT_STATS_CHANGE);
+        gui_state.add_state(ATTR_STATS_CHANGE);
+        gui_state.add_state(XP_CHANGE);
+        self.ecs.insert(gui_state);
 
+        self.ecs.insert(GameState::Waiting);
         self.ecs.insert(GameLog::new());
         self.ecs.insert(Particles::new());
-        self.ecs.insert(state);
     }
 
     fn game_over(&mut self) {
@@ -82,7 +87,7 @@ impl GameSocket {
         let equipped = self.ecs.read_storage::<Equipped>();
         let map = self.ecs.fetch::<Map>();
         let ppos = self.ecs.fetch::<PlayerPosition>();
-        let mut state = self.ecs.fetch_mut::<RunState>();
+        let mut state = self.ecs.fetch_mut::<GuiState>();
         let entities = self.ecs.entities();
 
         let mut hm = HashMap::new();
@@ -214,35 +219,40 @@ impl GameSocket {
         if let Some(s) = self.gui_tick() {
             ctx.text(s);
         }
-        let state;
+        let game_state;
         {
-            let s = self.ecs.fetch::<RunState>();
-            state = *s;
+            let s = self.ecs.fetch::<GameState>();
+            game_state = *s;
         }
-        if state.check_state(GAME_OVER) {
-            self.game_over();
-            ctx.text(self.draw_map());
-            self.run_systems();
-            if let Some(s) = self.gui_tick() {
-                ctx.text(s);
+        match game_state {
+            GameState::GameOver => {
+                self.game_over();
+                ctx.text(self.draw_map());
+                self.run_systems();
+                if let Some(s) = self.gui_tick() {
+                    ctx.text(s);
+                }
+                return;
             }
-            return;
-        }
-        if state.check_state(EXIT_MAP) {
-            freeze_entities(&mut self.ecs);
-            let (mut map, visited) = exit_map(&mut self.ecs);
-            if visited {
-                thaw_entities(map.key, &mut self.ecs);
-            } else {
-                spawn_map(&mut map, &mut self.ecs);
+            GameState::ExitMap => {
+                freeze_entities(&mut self.ecs);
+                let (mut map, visited) = exit_map(&mut self.ecs);
+                if visited {
+                    thaw_entities(map.key, &mut self.ecs);
+                } else {
+                    spawn_map(&mut map, &mut self.ecs);
+                }
+                self.ecs.insert(map);
+                ctx.text(self.draw_map());
+                self.run_systems();
+                if let Some(s) = self.gui_tick() {
+                    ctx.text(s);
+                }
+                let mut game_state = self.ecs.write_resource::<GameState>();
+                *game_state = GameState::Waiting;
+                return;
             }
-            self.ecs.insert(map);
-            ctx.text(self.draw_map());
-            self.run_systems();
-            if let Some(s) = self.gui_tick() {
-                ctx.text(s);
-            }
-            return;
+            _ => {}
         }
         self.run_systems_ai();
         self.run_systems();
@@ -284,11 +294,10 @@ impl GameSocket {
     }
 
     pub fn draw_map(&self) -> String {
-        let mut state = self.ecs.fetch_mut::<RunState>();
+        let mut state = self.ecs.fetch_mut::<GuiState>();
         state.add_state(FOV_CHANGE);
         state.add_state(CONTENTS_CHANGE);
         let map = self.ecs.fetch::<Map>();
         map.draw_map()
     }
 }
-

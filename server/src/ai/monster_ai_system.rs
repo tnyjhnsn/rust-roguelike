@@ -4,7 +4,7 @@ use crate::{
     PlayerPosition,
     FieldOfView,
     Map,
-    RunState,
+    GuiState,
     Monster,
     Position,
     PlayerEntity,
@@ -21,7 +21,7 @@ impl<'a> System<'a> for MonsterAI {
         WriteExpect<'a, PlayerPosition>,
         ReadStorage<'a, FieldOfView>, 
         WriteExpect<'a, Map>, 
-        WriteExpect<'a, RunState>, 
+        WriteExpect<'a, GuiState>, 
         ReadStorage<'a, Monster>,
         WriteStorage<'a, Position>,
         ReadExpect<'a, PlayerEntity>,
@@ -33,7 +33,7 @@ impl<'a> System<'a> for MonsterAI {
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (ppos, fov, mut map, mut state, monster, mut mpos, player_entity,
+        let (ppos, fov, mut map, mut gui_state, monster, mut mpos, player_entity,
              entities, mut wants_to_melee, mut confused,
              mut entity_moved, mut particles) = data;
 
@@ -64,7 +64,7 @@ impl<'a> System<'a> for MonsterAI {
                     entity_moved.insert(entity, EntityMoved {}).expect("Unable to insert move");
                     idx = map.xy_idx(mpos.x, mpos.y);
                     map.blocked[idx] = true;
-                    state.add_state(CONTENTS_CHANGE);
+                    gui_state.add_state(CONTENTS_CHANGE);
                 }
             }
         }

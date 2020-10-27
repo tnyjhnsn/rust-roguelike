@@ -18,7 +18,7 @@ use super::{
     Equipped,
     SufferDamage,
     Pools,
-    RunState,
+    GuiState,
     Particles,
 };
 use roguelike_common::*;
@@ -35,11 +35,12 @@ impl<'a> System<'a> for PickupItemSystem {
         WriteStorage<'a, Position>,
         ReadStorage<'a, Code>,
         WriteStorage<'a, InInventory>,
-        WriteExpect<'a, RunState>,
+        WriteExpect<'a, GuiState>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (player, mut gamelog, mut wants_pickup, mut positions, codes, mut inventory, mut state) = data;
+        let (player, mut gamelog, mut wants_pickup, mut positions, codes,
+             mut inventory, mut gui_state) = data;
 
         for pickup in wants_pickup.join() {
             positions.remove(pickup.item);
@@ -49,7 +50,7 @@ impl<'a> System<'a> for PickupItemSystem {
             if pickup.collected_by == *player {
                 let item_code = codes.get(pickup.item).unwrap().code;
                 gamelog.add_log(vec![LogType::Collect as i32, 0, item_code]);
-                state.add_state(INVENTORY_CHANGE);
+                gui_state.add_state(INVENTORY_CHANGE);
             }
         }
         wants_pickup.clear();
@@ -67,11 +68,12 @@ impl<'a> System<'a> for DropItemSystem {
         ReadStorage<'a, Code>,
         WriteStorage<'a, Position>,
         WriteStorage<'a, InInventory>,
-        WriteExpect<'a, RunState>,
+        WriteExpect<'a, GuiState>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (player, mut gamelog, entities, mut wants_drop, codes, mut positions, mut inventory, mut state) = data;
+        let (player, mut gamelog, entities, mut wants_drop, codes, mut positions,
+             mut inventory, mut gui_state) = data;
 
         for (entity, to_drop) in (&entities, &wants_drop).join() {
             let mut dropper_pos: Position = Position{ x: 0, y: 0 };
@@ -86,7 +88,7 @@ impl<'a> System<'a> for DropItemSystem {
             if entity == *player {
                 let item_code = codes.get(to_drop.item).unwrap().code;
                 gamelog.add_log(vec![LogType::Drop as i32, 0, item_code]);
-                state.add_state(INVENTORY_CHANGE);
+                gui_state.add_state(INVENTORY_CHANGE);
             }
         }
         wants_drop.clear();
@@ -113,7 +115,7 @@ impl<'a> System<'a> for UseItemSystem {
         ReadStorage<'a, Equippable>,
         WriteStorage<'a, Equipped>,
         WriteStorage<'a, InInventory>,
-        WriteExpect<'a, RunState>,
+        WriteExpect<'a, GuiState>,
         WriteExpect<'a, Particles>,
     );
 
@@ -121,7 +123,7 @@ impl<'a> System<'a> for UseItemSystem {
         let (player, mut gamelog, map, entities, mut wants_use, codes, consumeables,
              healing, inflict_damage, mut suffer_damage, mut combat_stats, aoe,
              mut confused, equippable, mut equipped, mut inventory,
-             mut state, mut particles) = data;
+             mut gui_state, mut particles) = data;
 
         for (entity, use_item) in (&entities, &wants_use).join() {
 
@@ -173,8 +175,8 @@ impl<'a> System<'a> for UseItemSystem {
                             if target == *player {
                                 let code = codes.get(item).unwrap().code;
                                 gamelog.add_log(vec![LogType::Unequip as i32, 0, code]);
-                                state.add_state(ARMOUR_CHANGE);
-                                state.add_state(INVENTORY_CHANGE);
+                                gui_state.add_state(ARMOUR_CHANGE);
+                                gui_state.add_state(INVENTORY_CHANGE);
                             }
                         }
                     }
@@ -188,8 +190,8 @@ impl<'a> System<'a> for UseItemSystem {
                     inventory.remove(use_item.item);
                     if target == *player {
                         gamelog.add_log(vec![LogType::Equip as i32, 0, item_code]);
-                        state.add_state(ARMOUR_CHANGE);
-                        state.add_state(INVENTORY_CHANGE);
+                        gui_state.add_state(ARMOUR_CHANGE);
+                        gui_state.add_state(INVENTORY_CHANGE);
                     }
                 }
             }
@@ -203,7 +205,7 @@ impl<'a> System<'a> for UseItemSystem {
                             stats.hp.current = i32::min(stats.hp.max, stats.hp.current + item.heal);
                             if entity == *player {
                                 gamelog.add_log(vec![LogType::Drink as i32, 0, item_code, item.heal]);
-                                state.add_state(COMBAT_STATS_CHANGE);
+                                gui_state.add_state(COMBAT_STATS_CHANGE);
                             }
                         }
                     }
@@ -249,7 +251,7 @@ impl<'a> System<'a> for UseItemSystem {
             match consumeable {
                 Some(_) => {
                     entities.delete(use_item.item).expect("Delete item failed");
-                    state.add_state(INVENTORY_CHANGE);
+                    gui_state.add_state(INVENTORY_CHANGE);
                 }
                 None => {}
             }
@@ -269,12 +271,12 @@ impl<'a> System<'a> for RemoveItemSystem {
         WriteStorage<'a, WantsToRemoveItem>,
         WriteStorage<'a, Equipped>,
         WriteStorage<'a, InInventory>,
-        WriteExpect<'a, RunState>,
+        WriteExpect<'a, GuiState>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
         let (player, entities, mut gamelog, codes, mut wants_remove, mut equipped,
-             mut inventory, mut state) = data;
+             mut inventory, mut gui_state) = data;
 
         for (entity, to_remove) in (&entities, &wants_remove).join() {
             equipped.remove(to_remove.item);
@@ -283,8 +285,8 @@ impl<'a> System<'a> for RemoveItemSystem {
             if entity == *player {
                 let item_code = codes.get(to_remove.item).unwrap().code;
                 gamelog.add_log(vec![LogType::Remove as i32, 0, item_code]);
-                state.add_state(ARMOUR_CHANGE);
-                state.add_state(INVENTORY_CHANGE);
+                gui_state.add_state(ARMOUR_CHANGE);
+                gui_state.add_state(INVENTORY_CHANGE);
             }
         }
 

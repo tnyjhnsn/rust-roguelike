@@ -10,7 +10,8 @@ use super::{
     InInventory,
     Equipped,
     WantsToRemoveItem,
-    RunState,
+    GuiState,
+    GameState,
     EntityMoved,
     Map,
     Particles,
@@ -40,7 +41,8 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
     let mut players = ecs.write_storage::<Player>();
     let combat_stats = ecs.read_storage::<Attributes>();
     let map = ecs.fetch::<Map>();
-    let mut state = ecs.fetch_mut::<RunState>();
+    let mut gui_state = ecs.fetch_mut::<GuiState>();
+    let mut game_state = ecs.fetch_mut::<GameState>();
     let entities = ecs.entities();
     let mut wants_to_melee = ecs.write_storage::<WantsToMelee>();
     let mut entity_moved = ecs.write_storage::<EntityMoved>();
@@ -69,8 +71,8 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
                 ppos.position.x = pos.x;
                 ppos.position.y = pos.y;
                 entity_moved.insert(entity, EntityMoved {}).expect("Unable to insert move");
-                state.add_state(FOV_CHANGE);
-                state.add_state(CONTENTS_CHANGE);
+                gui_state.add_state(FOV_CHANGE);
+                gui_state.add_state(CONTENTS_CHANGE);
             } else {
                 let t = combat_stats.get(*potential_target);
                 if let Some(_t) = t {
@@ -86,7 +88,7 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
                 door.open = true;
                 blocks_visibility.remove(*potential_target);
                 blocks_tile.remove(*potential_target);
-                state.add_state(FOV_CHANGE);
+                gui_state.add_state(FOV_CHANGE);
             }
         }
 
@@ -98,11 +100,11 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
             ppos.position.y = pos.y;
             entity_moved.insert(entity, EntityMoved {}).expect("Unable to insert move");
             match map.tiles[dest_idx] {
-                TileType::ExitMap => state.add_state(EXIT_MAP),
+                TileType::ExitMap => *game_state = GameState::ExitMap,
                 _ => {},
             }
-            state.add_state(FOV_CHANGE);
-            state.add_state(CONTENTS_CHANGE);
+            gui_state.add_state(FOV_CHANGE);
+            gui_state.add_state(CONTENTS_CHANGE);
         }
     }
 

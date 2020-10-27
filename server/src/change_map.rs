@@ -2,7 +2,6 @@ use specs::prelude::*;
 use super::*;
 
 pub fn exit_map(ecs: &World) -> (Map, bool) {
-    let mut state = ecs.fetch_mut::<RunState>();
     let mut campaign = ecs.fetch_mut::<Campaign>();
     let mut ppos = ecs.fetch_mut::<PlayerPosition>();
     let (map, new_ppos, visited) = campaign.create_map_from_exit(ppos.position);
@@ -17,7 +16,6 @@ pub fn exit_map(ecs: &World) -> (Map, bool) {
         player_pos.y = new_ppos.y;
         ppos.position.y = new_ppos.y;
     }
-    state.remove_state(EXIT_MAP);
     (map, visited)
 }
 

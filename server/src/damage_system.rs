@@ -4,7 +4,8 @@ use super::{
     Player,
     GameLog,
     Code,
-    RunState,
+    GuiState,
+    GameState,
     Pools,
     Equipped,
     InInventory,
@@ -25,12 +26,12 @@ impl<'a> System<'a> for DamageSystem {
         WriteStorage<'a, Pools>,
         WriteStorage<'a, SufferDamage>,
         ReadExpect<'a, PlayerEntity>,
-        WriteExpect<'a, RunState>,
+        WriteExpect<'a, GuiState>,
         ReadStorage<'a, Attributes>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (entities, mut stats, mut damage, player, mut state, attributes) = data;
+        let (entities, mut stats, mut damage, player, mut gui_state, attributes) = data;
         let mut xp_gain = 0;
 
         for (entity, mut stats, damage) in (&entities, &mut stats, &damage).join() {
@@ -41,7 +42,7 @@ impl<'a> System<'a> for DamageSystem {
                 }
             }
             if entity == *player {
-                state.add_state(COMBAT_STATS_CHANGE);
+                gui_state.add_state(COMBAT_STATS_CHANGE);
             }
         }
 
@@ -61,7 +62,7 @@ impl<'a> System<'a> for DamageSystem {
                 );
                 player_stats.mana.current = player_stats.mana.max;
             }
-            state.add_state(XP_CHANGE);
+            gui_state.add_state(XP_CHANGE);
         }
 
         damage.clear();
@@ -76,7 +77,8 @@ pub fn delete_the_dead(ecs : &mut World) {
         let codes = ecs.read_storage::<Code>();
         let entities = ecs.entities();
         let mut log = ecs.fetch_mut::<GameLog>();
-        let mut state = ecs.fetch_mut::<RunState>();
+        let mut gui_state = ecs.fetch_mut::<GuiState>();
+        let mut game_state = ecs.write_resource::<GameState>();
         for (entity, stats) in (&entities, &combat_stats).join() {
             if stats.hp.current < 1 { 
                 let player = players.get(entity);
@@ -91,13 +93,13 @@ pub fn delete_the_dead(ecs : &mut World) {
                                 log.add_log(vec![LogType::Destroyed as i32, victim.code]);
                             }
                             dead.push(entity);
-                            state.add_state(CONTENTS_CHANGE);
+                            gui_state.add_state(CONTENTS_CHANGE);
                         }
                     },
                     Some(_) =>  {
-                        state.add_state(GAME_OVER);
-                        state.add_state(INVENTORY_CHANGE);
-                        state.add_state(ARMOUR_CHANGE);
+                        *game_state = GameState::GameOver;
+                        gui_state.add_state(INVENTORY_CHANGE);
+                        gui_state.add_state(ARMOUR_CHANGE);
                     }
                 }
             }

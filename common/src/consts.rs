@@ -3,6 +3,7 @@ pub const SEEN: i32 = 1;
 pub const VISIBLE: i32 = 2;
 pub const TARGETED: i32 = 4;
 
+// GUI States
 pub const WAITING: i32 = 0;
 pub const FOV_CHANGE: i32 = 1;
 pub const CONTENTS_CHANGE: i32 = 2;
@@ -11,8 +12,6 @@ pub const ARMOUR_CHANGE: i32 = 8;
 pub const COMBAT_STATS_CHANGE: i32 = 16;
 pub const ATTR_STATS_CHANGE: i32 = 32;
 pub const XP_CHANGE: i32 = 64;
-pub const EXIT_MAP: i32 = 128;
-pub const GAME_OVER: i32 = 256;
 
 // key codes
 // sections
