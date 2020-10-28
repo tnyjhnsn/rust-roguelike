@@ -222,11 +222,8 @@ impl GameSocket {
             game_state = *g;
         }
 
-        println!("Inside game_tick with {:?}", game_state);
-
         match game_state {
             GameState::ExitMap => {
-                println!("Inside exit map...");
                 freeze_entities(&mut self.ecs);
                 let (mut map, visited) = exit_map(&mut self.ecs);
                 if visited {
@@ -243,7 +240,6 @@ impl GameSocket {
                 game_state = GameState::Ticking;
             }
             GameState::Ticking => {
-                println!("Inside ticking...");
                 while game_state == GameState::Ticking {
                     self.run_systems();
                     if let Some(p) = self.check_particles() {
@@ -253,23 +249,13 @@ impl GameSocket {
                     if let Some(s) = self.gui_tick() {
                         ctx.text(s);
                     }
-                    match *self.ecs.fetch::<GameState>() {
-                        GameState::Waiting => game_state = GameState::Waiting,
-                        GameState::GameOver => game_state = GameState::GameOver,
-                        _ => game_state = GameState::Ticking,
-                    }
+                    game_state = *self.ecs.fetch::<GameState>();
                 }
-                println!("Finished ticking");
-            }
-            GameState::Waiting => { 
-                println!("Inside waiting...");
-                game_state = GameState::Ticking;
             }
             _ => {}
         }
 
         if game_state == GameState::GameOver {
-            println!("Inside game over...");
             self.game_over();
             ctx.text(self.draw_map());
             self.run_systems();

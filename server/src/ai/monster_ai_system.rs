@@ -50,7 +50,6 @@ impl<'a> System<'a> for MonsterAI {
                 particles.add_particle((PARTICLE_ATTACK, vec![map.xy_idx(mpos.x, mpos.y)]));
                 particles.add_particle((PARTICLE_DEFEND, vec![map.xy_idx(ppos.position.x, ppos.position.y)]));
             } else if fov.visible_tiles.contains(&ppos.position) {
-                println!("chasing...");
                 let mut idx = map.xy_idx(mpos.x, mpos.y);
                 map.blocked[idx] = false;
                 let dijkstra_map = create_dijkstra_map(ppos.position.x, ppos.position.y, &map);
