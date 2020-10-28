@@ -104,7 +104,10 @@ pub fn spawn_from_raws(raws: &Raws, ecs: &mut World, code: &i32,
     if let Some(t) = template {
         entity = entity.with(t.code);
         if let Some(item) = t.item { entity = entity.with(item); }
-        if let Some(monster) = t.monster { entity = entity.with(monster); }
+        if let Some(monster) = t.monster {
+            entity = entity.with(monster);
+            entity = entity.with(Initiative { current: 2 });
+        }
         if let Some(bystander) = t.bystander { entity = entity.with(bystander); }
         if let Some(vendor) = t.vendor { entity = entity.with(vendor); }
         if let Some(blocks_tile) = t.blocks_tile { entity = entity.with(blocks_tile); }

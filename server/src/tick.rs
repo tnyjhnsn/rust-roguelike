@@ -1,5 +1,9 @@
 use std::collections::{HashMap};
 use super::*;
+use crate::ai::{
+    InitiativeSystem,
+    TurnStatusSystem,
+};
 
 use actix::{
     Actor,
@@ -26,9 +30,10 @@ impl GuiState {
     }
 }
 
-#[derive(PartialEq, Copy, Clone)]
+#[derive(Debug, PartialEq, Copy, Clone)]
 pub enum GameState {
     Waiting,
+    Ticking,
     ExitMap,
     GameOver,
 }
@@ -211,30 +216,17 @@ impl GameSocket {
     }
 
     pub fn game_tick(&mut self, ctx: &mut <Self as Actor>::Context) {
-        self.run_systems();
-        if let Some(p) = self.check_particles() {
-            ctx.text(p);
-        }
-        delete_the_dead(&mut self.ecs);
-        if let Some(s) = self.gui_tick() {
-            ctx.text(s);
-        }
-        let game_state;
+        let mut game_state;
         {
-            let s = self.ecs.fetch::<GameState>();
-            game_state = *s;
+            let g = self.ecs.fetch::<GameState>();
+            game_state = *g;
         }
+
+        println!("Inside game_tick with {:?}", game_state);
+
         match game_state {
-            GameState::GameOver => {
-                self.game_over();
-                ctx.text(self.draw_map());
-                self.run_systems();
-                if let Some(s) = self.gui_tick() {
-                    ctx.text(s);
-                }
-                return;
-            }
             GameState::ExitMap => {
+                println!("Inside exit map...");
                 freeze_entities(&mut self.ecs);
                 let (mut map, visited) = exit_map(&mut self.ecs);
                 if visited {
@@ -248,20 +240,48 @@ impl GameSocket {
                 if let Some(s) = self.gui_tick() {
                     ctx.text(s);
                 }
-                let mut game_state = self.ecs.write_resource::<GameState>();
-                *game_state = GameState::Waiting;
-                return;
+                game_state = GameState::Ticking;
+            }
+            GameState::Ticking => {
+                println!("Inside ticking...");
+                while game_state == GameState::Ticking {
+                    self.run_systems();
+                    if let Some(p) = self.check_particles() {
+                        ctx.text(p);
+                    }
+                    delete_the_dead(&mut self.ecs);
+                    if let Some(s) = self.gui_tick() {
+                        ctx.text(s);
+                    }
+                    match *self.ecs.fetch::<GameState>() {
+                        GameState::Waiting => game_state = GameState::Waiting,
+                        GameState::GameOver => game_state = GameState::GameOver,
+                        _ => game_state = GameState::Ticking,
+                    }
+                }
+                println!("Finished ticking");
+            }
+            GameState::Waiting => { 
+                println!("Inside waiting...");
+                game_state = GameState::Ticking;
             }
             _ => {}
         }
-        self.run_systems_ai();
-        self.run_systems();
-        if let Some(p) = self.check_particles() {
-            ctx.text(p);
+
+        if game_state == GameState::GameOver {
+            println!("Inside game over...");
+            self.game_over();
+            ctx.text(self.draw_map());
+            self.run_systems();
+            if let Some(s) = self.gui_tick() {
+                ctx.text(s);
+            }
+            game_state = GameState::Ticking;
         }
-        delete_the_dead(&mut self.ecs);
-        if let Some(s) = self.gui_tick() {
-            ctx.text(s);
+
+        {
+            let mut g = self.ecs.write_resource::<GameState>();
+            *g = game_state;
         }
     }
 
@@ -270,6 +290,12 @@ impl GameSocket {
         mapindex.run_now(&self.ecs);
         let mut vis = VisibilitySystem{};
         vis.run_now(&self.ecs);
+        let mut mob = ai::MonsterAI{};
+        mob.run_now(&self.ecs);
+        let mut initiative = InitiativeSystem{};
+        initiative.run_now(&self.ecs);
+        let mut turn_status = TurnStatusSystem{};
+        turn_status.run_now(&self.ecs);
         let mut melee = MeleeCombatSystem{};
         melee.run_now(&self.ecs);
         let mut pickup_item = PickupItemSystem{};
@@ -284,19 +310,22 @@ impl GameSocket {
         trigger.run_now(&self.ecs);
         let mut damage = DamageSystem{};
         damage.run_now(&self.ecs);
+
         self.ecs.maintain();
     }
     
-    fn run_systems_ai(&mut self) {
-        let mut mob = ai::MonsterAI{};
-        mob.run_now(&self.ecs);
-        self.ecs.maintain();
-    }
+    //fn run_systems_ai(&mut self) {
+        //let mut mob = ai::MonsterAI{};
+        //mob.run_now(&self.ecs);
+        //self.ecs.maintain();
+    //}
 
     pub fn draw_map(&self) -> String {
         let mut state = self.ecs.fetch_mut::<GuiState>();
+        let mut game_state = self.ecs.write_resource::<GameState>();
         state.add_state(FOV_CHANGE);
         state.add_state(CONTENTS_CHANGE);
+        *game_state = GameState::Ticking;
         let map = self.ecs.fetch::<Map>();
         map.draw_map()
     }

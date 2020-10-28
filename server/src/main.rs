@@ -108,6 +108,8 @@ impl GameSocket {
         gs.ecs.register::<BlocksVisibility>(); 
         gs.ecs.register::<Door>(); 
         gs.ecs.register::<LootTable>(); 
+        gs.ecs.register::<Initiative>(); 
+        gs.ecs.register::<MyTurn>(); 
         gs
     }
 }
@@ -122,7 +124,7 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for GameSocket {
         msg: Result<ws::Message, ws::ProtocolError>,
         ctx: &mut Self::Context,
     ) {
-        //println!("MSG {:?}", msg);
+        println!("MSG {:?}", msg);
         match msg {
             Ok(ws::Message::Ping(m)) => ctx.pong(&m),
             Ok(ws::Message::Text(txt)) => {

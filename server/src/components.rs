@@ -84,6 +84,14 @@ pub struct Skills {
 }
 
 #[derive(Component, Debug, Clone, Serialize, Deserialize)]
+pub struct Initiative {
+    pub current: i32,
+}
+
+#[derive(Component, Debug, Clone, Serialize, Deserialize)]
+pub struct MyTurn {}
+
+#[derive(Component, Debug, Clone, Serialize, Deserialize)]
 pub struct FieldOfView {
     pub visible_tiles: Vec<Position>,
     pub range: i32,

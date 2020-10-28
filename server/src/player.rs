@@ -36,13 +36,12 @@ impl PlayerPosition {
     }
 }
 
-pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
+pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> GameState {
     let mut positions = ecs.write_storage::<Position>();
     let mut players = ecs.write_storage::<Player>();
     let combat_stats = ecs.read_storage::<Attributes>();
     let map = ecs.fetch::<Map>();
     let mut gui_state = ecs.fetch_mut::<GuiState>();
-    let mut game_state = ecs.fetch_mut::<GameState>();
     let entities = ecs.entities();
     let mut wants_to_melee = ecs.write_storage::<WantsToMelee>();
     let mut entity_moved = ecs.write_storage::<EntityMoved>();
@@ -53,11 +52,12 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
     let bystanders = ecs.read_storage::<Bystander>();
     let vendors = ecs.read_storage::<Vendor>();
 
+    let mut game_state = GameState::Ticking;
     let mut swap_entities = Vec::new();
 
     for (entity, _player, pos) in (&entities, &mut players, &mut positions).join() {
         if pos.x + delta_x < 0 || pos.x + delta_x > map.width - 1
-            || pos.y + delta_y < 0 || pos.y + delta_y > map.height - 1 { return; }
+            || pos.y + delta_y < 0 || pos.y + delta_y > map.height - 1 { return game_state; }
         let dest_idx = map.xy_idx(pos.x + delta_x, pos.y + delta_y);
 
         for potential_target in &map.contents[dest_idx] {
@@ -80,7 +80,7 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
                         .expect("Add target failed");
                     particles.add_particle((PARTICLE_ATTACK, vec![map.xy_idx(pos.x, pos.y)]));
                     particles.add_particle((PARTICLE_DEFEND, vec![dest_idx]));
-                    return;
+                    return game_state;
                 }
             }
             let door = doors.get_mut(*potential_target);
@@ -100,8 +100,8 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
             ppos.position.y = pos.y;
             entity_moved.insert(entity, EntityMoved {}).expect("Unable to insert move");
             match map.tiles[dest_idx] {
-                TileType::ExitMap => *game_state = GameState::ExitMap,
-                _ => {},
+                TileType::ExitMap => game_state = GameState::ExitMap,
+                _ => {}
             }
             gui_state.add_state(FOV_CHANGE);
             gui_state.add_state(CONTENTS_CHANGE);
@@ -116,10 +116,12 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
         }
         entity_moved.insert(e.0, EntityMoved {}).expect("Unable to insert move");
     }
+
+    game_state
 }
 
 pub fn player_input(txt: String, ecs: &mut World) {
-    match txt.trim() {
+    let result = match txt.trim() {
         "ArrowLeft" => try_move_player(-1, 0, ecs),
         "ArrowRight" => try_move_player(1, 0, ecs),
         "ArrowUp" => try_move_player(0, -1, ecs),
@@ -128,8 +130,10 @@ pub fn player_input(txt: String, ecs: &mut World) {
         "U"|"u" => try_move_player(1, -1, ecs),
         "N"|"n" => try_move_player(1, 1, ecs),
         "B"|"b" => try_move_player(-1, 1, ecs),
-        _ => ()
-    }
+        _ => GameState::Ticking,
+    };
+    let mut game_state = ecs.write_resource::<GameState>();
+    *game_state = result;
 }
 
 pub fn pickup_item(ecs: &mut World) {
@@ -140,6 +144,7 @@ pub fn pickup_item(ecs: &mut World) {
     let items = ecs.read_storage::<Item>();
     let positions = ecs.read_storage::<Position>();
     let mut gamelog = ecs.fetch_mut::<GameLog>();    
+    let mut game_state = ecs.write_resource::<GameState>();
 
     let mut target_item: Option<Entity> = None;
     for (item, _i, pos) in (&entities, &items, &positions).join() {
@@ -157,40 +162,47 @@ pub fn pickup_item(ecs: &mut World) {
         }
         None => gamelog.add_log(vec![LogType::System as i32, 1]),
     }
+    *game_state = GameState::Ticking;
 }
 
 pub fn drop_item(idx: i32, ecs: &mut World) {
     let player = ecs.fetch::<PlayerEntity>();
     let inventory = ecs.read_storage::<InInventory>();
     let entities = ecs.entities();
+    let mut game_state = ecs.write_resource::<GameState>();
 
     for (entity, _i) in (&entities, &inventory).join().filter(|item| item.0.id() as i32 == idx) {
         let mut intent = ecs.write_storage::<WantsToDropItem>();
         intent.insert(*player,
             WantsToDropItem{ item: entity }).expect("Unable to insert wants to drop item");
     }
+    *game_state = GameState::Ticking;
 }
 
 pub fn remove_item(idx: i32, ecs: &mut World) {
     let player = ecs.fetch::<PlayerEntity>();
     let equipped = ecs.read_storage::<Equipped>();
     let entities = ecs.entities();
+    let mut game_state = ecs.write_resource::<GameState>();
 
     for (entity, _i) in (&entities, &equipped).join().filter(|item| item.0.id() as i32 == idx) {
         let mut intent = ecs.write_storage::<WantsToRemoveItem>();
         intent.insert(*player,
             WantsToRemoveItem{ item: entity }).expect("Unable to insert wants to remove item");
     }
+    *game_state = GameState::Ticking;
 }
 
 pub fn use_item(idx: i32, target: Option<usize>, ecs: &mut World) {
     let player = ecs.fetch::<PlayerEntity>();
     let inventory = ecs.read_storage::<InInventory>();
     let entities = ecs.entities();
+    let mut game_state = ecs.write_resource::<GameState>();
 
     for (entity, _i) in (&entities, &inventory).join().filter(|item| item.0.id() as i32 == idx) {
         let mut intent = ecs.write_storage::<WantsToUseItem>();
         intent.insert(*player,
             WantsToUseItem{ item: entity, target  }).expect("Unable to insert wants to use item");
     }
+    *game_state = GameState::Ticking;
 }

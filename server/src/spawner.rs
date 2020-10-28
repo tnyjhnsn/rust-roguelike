@@ -11,6 +11,7 @@ use super::{
     Skill,
     Pools,
     Pool,
+    Initiative,
     raws::*,
 };
 use std::collections::HashMap;
@@ -53,6 +54,7 @@ pub fn player(ecs: &mut World, x: i32, y: i32) -> PlayerEntity {
             xp: 0,
             level: 1,
         })
+        .with(Initiative { current: 0 })
         .build();
 
         spawn_from_raws(&RAWS.lock().unwrap(), ecs, &3001,

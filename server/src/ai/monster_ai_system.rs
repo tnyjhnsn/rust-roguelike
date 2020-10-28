@@ -9,9 +9,9 @@ use crate::{
     Position,
     PlayerEntity,
     WantsToMelee,
-    Confusion,
     EntityMoved,
     Particles,
+    MyTurn,
 };
 
 pub struct MonsterAI {}
@@ -27,46 +27,46 @@ impl<'a> System<'a> for MonsterAI {
         ReadExpect<'a, PlayerEntity>,
         Entities<'a>,
         WriteStorage<'a, WantsToMelee>,
-        WriteStorage<'a, Confusion>,
         WriteStorage<'a, EntityMoved>,
         WriteExpect<'a, Particles>,
+        WriteStorage<'a, MyTurn>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
         let (ppos, fov, mut map, mut gui_state, monster, mut mpos, player_entity,
-             entities, mut wants_to_melee, mut confused,
-             mut entity_moved, mut particles) = data;
+             entities, mut wants_to_melee, mut entity_moved, mut particles,
+             mut turns) = data;
 
-        for (entity, fov, _m, mpos) in (&entities, &fov, &monster, &mut mpos).join() {
-            let mut can_act = true;
-            let is_confused = confused.get_mut(entity);
-            if let Some(i_am_confused) = is_confused {
-                i_am_confused.turns -= 1;
-                if i_am_confused.turns < 1 {
-                    confused.remove(entity);
-                }
-                can_act = false;
+        let mut turn_done = Vec::new();
+
+        for (entity, fov, _m, mpos, _turn) in (&entities, &fov, &monster,
+            &mut mpos, &turns).join() {
+
+            turn_done.push(entity);
+
+            let distance = ppos.position.distance(Position::new(mpos.x, mpos.y));
+            if distance < 1.5 {
+                wants_to_melee.insert(entity, WantsToMelee{ target: *player_entity }).expect("Unable to insert attack");
+                particles.add_particle((PARTICLE_ATTACK, vec![map.xy_idx(mpos.x, mpos.y)]));
+                particles.add_particle((PARTICLE_DEFEND, vec![map.xy_idx(ppos.position.x, ppos.position.y)]));
+            } else if fov.visible_tiles.contains(&ppos.position) {
+                println!("chasing...");
+                let mut idx = map.xy_idx(mpos.x, mpos.y);
+                map.blocked[idx] = false;
+                let dijkstra_map = create_dijkstra_map(ppos.position.x, ppos.position.y, &map);
+                let new_pos = map.populate_dijkstra_values(&dijkstra_map, mpos.x, mpos.y);
+                mpos.x = new_pos.x;
+                mpos.y = new_pos.y;
+                entity_moved.insert(entity, EntityMoved {}).expect("Unable to insert move");
+                idx = map.xy_idx(mpos.x, mpos.y);
+                map.blocked[idx] = true;
+                gui_state.add_state(CONTENTS_CHANGE);
             }
 
-            if can_act {
-                let distance = ppos.position.distance(Position::new(mpos.x, mpos.y));
-                if distance < 1.5 {
-                    wants_to_melee.insert(entity, WantsToMelee{ target: *player_entity }).expect("Unable to insert attack");
-                    particles.add_particle((PARTICLE_ATTACK, vec![map.xy_idx(mpos.x, mpos.y)]));
-                    particles.add_particle((PARTICLE_DEFEND, vec![map.xy_idx(ppos.position.x, ppos.position.y)]));
-                } else if fov.visible_tiles.contains(&ppos.position) {
-                    let mut idx = map.xy_idx(mpos.x, mpos.y);
-                    map.blocked[idx] = false;
-                    let dijkstra_map = create_dijkstra_map(ppos.position.x, ppos.position.y, &map);
-                    let new_pos = map.populate_dijkstra_values(&dijkstra_map, mpos.x, mpos.y);
-                    mpos.x = new_pos.x;
-                    mpos.y = new_pos.y;
-                    entity_moved.insert(entity, EntityMoved {}).expect("Unable to insert move");
-                    idx = map.xy_idx(mpos.x, mpos.y);
-                    map.blocked[idx] = true;
-                    gui_state.add_state(CONTENTS_CHANGE);
-                }
-            }
+        }
+
+        for done in &turn_done {
+            turns.remove(*done);
         }
     }
 }
