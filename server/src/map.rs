@@ -67,7 +67,7 @@ impl Map {
         self.get_area_of_effect(area, radius - 1);
     }
 
-    pub fn populate_dijkstra_values(&mut self, dijkstra_map: &Vec<usize>, x: i32, y: i32) -> Position {
+    fn populate_dijkstra_values(&mut self, dijkstra_map: &Vec<usize>) {
         self.dijkstra_values = vec![DIJKSTRA_MAX; self.get_dim()];
         self.dijkstra_values[dijkstra_map[0]] = 0;
         for i in dijkstra_map.iter() {
@@ -79,18 +79,35 @@ impl Map {
             };
         };
 
+    }
+    
+    pub fn dijkstra_lowest_exit(&mut self, dijkstra_map: &Vec<usize>, x: i32, y: i32) -> Position {
+        self.populate_dijkstra_values(dijkstra_map);
         let idx = self.xy_idx(x, y);
         let dv = self.dijkstra_values[idx];
         let v: Vec<&usize> = self.neighbours[idx].iter()
             .filter(|n| self.blocked[**n] == false && self.dijkstra_values[**n] < dv)
             .collect();
-
         let mut rng = RandomNumberGenerator::new();
         if v.len() > 0 {
             let n = rng.range(0, v.len());
             return Position { x: *v[n] as i32 % self.width, y: *v[n] as i32 / self.width };
         }; 
+        Position { x, y }
+    }
 
+    pub fn dijkstra_highest_exit(&mut self, dijkstra_map: &Vec<usize>, x: i32, y: i32) -> Position {
+        self.populate_dijkstra_values(dijkstra_map);
+        let idx = self.xy_idx(x, y);
+        let dv = self.dijkstra_values[idx];
+        let v: Vec<&usize> = self.neighbours[idx].iter()
+            .filter(|n| self.blocked[**n] == false && self.dijkstra_values[**n] > dv)
+            .collect();
+        let mut rng = RandomNumberGenerator::new();
+        if v.len() > 0 {
+            let n = rng.range(0, v.len());
+            return Position { x: *v[n] as i32 % self.width, y: *v[n] as i32 / self.width };
+        }; 
         Position { x, y }
     }
 

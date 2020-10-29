@@ -53,7 +53,7 @@ impl<'a> System<'a> for MonsterAI {
                 let mut idx = map.xy_idx(mpos.x, mpos.y);
                 map.blocked[idx] = false;
                 let dijkstra_map = create_dijkstra_map(ppos.position.x, ppos.position.y, &map);
-                let new_pos = map.populate_dijkstra_values(&dijkstra_map, mpos.x, mpos.y);
+                let new_pos = map.dijkstra_lowest_exit(&dijkstra_map, mpos.x, mpos.y);
                 mpos.x = new_pos.x;
                 mpos.y = new_pos.y;
                 entity_moved.insert(entity, EntityMoved {}).expect("Unable to insert move");

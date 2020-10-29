@@ -62,7 +62,7 @@ impl<'a> System<'a> for AdjacentAI {
 fn evaluate(idx: usize, map: &Map, factions: &ReadStorage<Faction>, my_faction: &FactionName,
     reactions: &mut Vec<(Entity, Reaction)>) {
 
-    for other_entity in map.contents[idx].iter() {
+    for other_entity in &map.contents[idx] {
         if let Some(faction) = factions.get(*other_entity) {
             reactions.push((
                 *other_entity, 

@@ -5,6 +5,7 @@ use crate::ai::{
     TurnStatusSystem,
     AdjacentAI,
     MonsterAI,
+    VisibleAI,
 };
 
 use actix::{
@@ -280,6 +281,8 @@ impl GameSocket {
         vis.run_now(&self.ecs);
         let mut adjacent = AdjacentAI{};
         adjacent.run_now(&self.ecs);
+        let mut visible = VisibleAI{};
+        visible.run_now(&self.ecs);
         let mut mob = MonsterAI{};
         mob.run_now(&self.ecs);
         let mut initiative = InitiativeSystem{};

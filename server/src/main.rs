@@ -111,6 +111,8 @@ impl GameSocket {
         gs.ecs.register::<Initiative>(); 
         gs.ecs.register::<MyTurn>(); 
         gs.ecs.register::<Faction>(); 
+        gs.ecs.register::<WantsToApproach>(); 
+        gs.ecs.register::<WantsToFlee>(); 
         gs
     }
 }

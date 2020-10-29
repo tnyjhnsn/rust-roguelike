@@ -116,6 +116,16 @@ pub struct Faction {
     pub name: FactionName,
 }
 
+#[derive(Component, Debug)]
+pub struct WantsToApproach {
+    pub idx: i32,
+}
+
+#[derive(Component, Debug)]
+pub struct WantsToFlee {
+    pub indices: Vec<usize>,
+}
+
 #[derive(Component, Debug, Clone, Serialize, Deserialize)]
 pub struct FieldOfView {
     pub visible_tiles: Vec<Position>,
