@@ -1,0 +1,9 @@
+{
+    Player: {},
+    Mindless: { Default: Attack, },
+    Centipede: { Default: Attack, },
+    Ant: { Default: Attack, },
+    Wolf: { Default: Attack, },
+    Kobold: { Default: Attack, },
+    Thief: { Default: Attack, },
+}

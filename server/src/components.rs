@@ -91,6 +91,31 @@ pub struct Initiative {
 #[derive(Component, Debug, Clone, Serialize, Deserialize)]
 pub struct MyTurn {}
 
+#[derive(PartialEq, Eq, Hash, Copy, Clone, Debug, Deserialize)]
+pub enum FactionName {
+    Default,
+    Player,
+    Mindless,
+    Centipede,
+    Ant,
+    Rat,
+    Wolf,
+    Kobold,
+    Thief,
+}
+
+#[derive(Copy, Clone, Debug, Deserialize)]
+pub enum Reaction {
+    Ignore,
+    Attack,
+    Flee,
+}
+
+#[derive(Component, PartialEq, Eq, Hash, Debug, Copy, Clone, Deserialize)]
+pub struct Faction {
+    pub name: FactionName,
+}
+
 #[derive(Component, Debug, Clone, Serialize, Deserialize)]
 pub struct FieldOfView {
     pub visible_tiles: Vec<Position>,

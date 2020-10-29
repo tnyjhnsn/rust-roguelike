@@ -12,6 +12,8 @@ use super::{
     Pools,
     Pool,
     Initiative,
+    Faction,
+    FactionName,
     raws::*,
 };
 use std::collections::HashMap;
@@ -55,6 +57,7 @@ pub fn player(ecs: &mut World, x: i32, y: i32) -> PlayerEntity {
             level: 1,
         })
         .with(Initiative { current: 0 })
+        .with(Faction { name: FactionName::Player })
         .build();
 
         spawn_from_raws(&RAWS.lock().unwrap(), ecs, &3001,

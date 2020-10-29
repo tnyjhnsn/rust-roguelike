@@ -11,10 +11,26 @@ pub enum SpawnType {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+pub struct SpawnTableEntry {
+    pub code: i32,
+    pub weight: i32,
+    pub min_difficulty: i32,
+    pub max_difficulty: i32,
+    pub add_diff_to_weight: Option<bool>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+pub struct LootDrop {
+    pub code: i32,
+    pub weight: i32,
+}
+
+#[derive(Clone, Debug, Deserialize)]
 pub struct Raws {
     pub entities: Vec<RawEntity>,
     pub spawn_table: Vec<SpawnTableEntry>,
     pub loot_table: HashMap<LootTableKey, Vec<LootDrop>>,
+    pub faction_table: HashMap<FactionName, HashMap<FactionName, Reaction>>,
 }
 
 impl Raws {
@@ -23,6 +39,7 @@ impl Raws {
             entities: Vec::new(),
             spawn_table: Vec::new(),
             loot_table: HashMap::new(),
+            faction_table: HashMap::new(),
         }
     }
     pub fn load_entities(&mut self, mut entities: Vec<RawEntity>) {
@@ -33,6 +50,10 @@ impl Raws {
     }
     pub fn load_loot_table(&mut self, loot_table: HashMap<LootTableKey, Vec<LootDrop>>) {
         self.loot_table = loot_table;
+    }
+    pub fn load_faction_table(&mut self, faction_table: HashMap<FactionName,
+        HashMap<FactionName, Reaction>>) {
+        self.faction_table = faction_table;
     }
 }
 
@@ -70,21 +91,7 @@ pub struct RawEntity {
     pub equipped: Option<Vec<i32>>,
     pub natural: Option<NaturalAttackDefense>,
     pub loot_table: Option<LootTable>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-pub struct SpawnTableEntry {
-    pub code: i32,
-    pub weight: i32,
-    pub min_difficulty: i32,
-    pub max_difficulty: i32,
-    pub add_diff_to_weight: Option<bool>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-pub struct LootDrop {
-    pub code: i32,
-    pub weight: i32,
+    pub faction: Option<Faction>,
 }
 
 const ATTR_BASE: i32 = 11;
@@ -193,6 +200,7 @@ pub fn spawn_from_raws(raws: &Raws, ecs: &mut World, code: &i32,
             entity = entity.with(nat);
         }
         if let Some(loot_table) = t.loot_table { entity = entity.with(loot_table); }
+        if let Some(faction) = t.faction { entity = entity.with(faction); }
 
         let mob = entity.build();
 
@@ -246,3 +254,17 @@ fn get_slot_from_code(code: &i32) -> EquipmentSlot {
     }
 }
 
+pub fn get_faction_reaction(raws: &Raws, my_faction: &FactionName, other_faction: &FactionName) -> Reaction {
+    if raws.faction_table.contains_key(my_faction) {
+        let mf = &raws.faction_table[my_faction];
+        if mf.contains_key(other_faction) {
+            mf[other_faction]
+        } else if mf.contains_key(&FactionName::Default) {
+            mf[&FactionName::Default]
+        } else {
+            Reaction::Ignore
+        }
+    } else {
+        Reaction::Ignore
+    }
+}

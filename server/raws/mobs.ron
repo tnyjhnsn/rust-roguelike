@@ -11,6 +11,7 @@
         ])),
         blocks_tile: Some(()),
         field_of_view: Some(8),
+        faction: Some((name: Centipede)),
     ),
     (
         // RED_ANT
@@ -26,6 +27,7 @@
         ])),
         blocks_tile: Some(()),
         field_of_view: Some(8),
+        faction: Some((name: Ant)),
     ),
     (
         // BLACK_RAT
@@ -39,6 +41,7 @@
         ])),
         blocks_tile: Some(()),
         field_of_view: Some(8),
+        faction: Some((name: Rat)),
     ),
     (
         // WOLF
@@ -53,6 +56,7 @@
         blocks_tile: Some(()),
         field_of_view: Some(8),
         loot_table: Some((key: Animal)),
+        faction: Some((name: Wolf)),
     ),
     (
         // KOBOLD
@@ -62,6 +66,7 @@
         skills: Some({}),
         blocks_tile: Some(()),
         field_of_view: Some(6),
+        faction: Some((name: Kobold)),
     ),
     (
         // TODO - THIEF IS TEST !!!!
@@ -77,5 +82,6 @@
                 damage_dice: (1, 4, 0), hit_bonus: 0),
         ])),
         level: Some(2),
+        faction: Some((name: Thief)),
     ),
 ]

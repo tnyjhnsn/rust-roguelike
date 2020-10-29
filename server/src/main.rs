@@ -110,6 +110,7 @@ impl GameSocket {
         gs.ecs.register::<LootTable>(); 
         gs.ecs.register::<Initiative>(); 
         gs.ecs.register::<MyTurn>(); 
+        gs.ecs.register::<Faction>(); 
         gs
     }
 }

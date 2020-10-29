@@ -34,6 +34,10 @@ pub fn load_raws() {
     let loots: HashMap<LootTableKey, Vec<LootDrop>> = from_reader(file).expect("Cannot read from file");
     &RAWS.lock().unwrap().load_loot_table(loots);
 
+    file = File::open("raws/faction_table.ron").expect("Cannot open file");
+    let factions: HashMap<FactionName, HashMap<FactionName, Reaction>> = from_reader(file).expect("Cannot read from file");
+    &RAWS.lock().unwrap().load_faction_table(factions);
+
     // testing
     //println!("{:?}", &RAWS.lock().unwrap().entities);
 }
