@@ -16,6 +16,9 @@ use super::{
     EquipmentSlot,
     HitDesc,
     PlayerEntity,
+    Particles,
+    Position,
+    Map,
     skill_bonus,
 };
 use roguelike_common::*;
@@ -40,12 +43,16 @@ impl<'a> System<'a> for MeleeCombatSystem {
         ReadStorage<'a, Wearable>,
         WriteExpect<'a, RandomNumberGenerator>,
         ReadExpect<'a, PlayerEntity>,
+        WriteExpect<'a, Particles>,
+        ReadStorage<'a, Position>,
+        ReadExpect<'a, Map>, 
     );
 
     fn run(&mut self, data: Self::SystemData) {
         let (entities, mut wants_melee, codes, attributes, skills,
              mut inflict_damage, pools, mut log, equipped_items,
-             melee_weapons, natural, wearables, mut rng, player) = data;
+             melee_weapons, natural, wearables, mut rng,
+             player, mut particles, position, map) = data;
 
         for (entity, wants_melee, code, attacker_attributes, attacker_skills, attacker_pools)
             in (&entities, &wants_melee, &codes, &attributes, &skills, &pools).join() {
@@ -128,7 +135,11 @@ impl<'a> System<'a> for MeleeCombatSystem {
                 } else {
                     log.add_log(vec![LogType::Miss as i32, code.code, target_code.code]);
                 }
-            
+
+                let attacker_pos = position.get(entity).unwrap();
+                let target_pos = position.get(wants_melee.target).unwrap();
+                particles.add_particle((PARTICLE_ATTACK, vec![map.xy_idx(attacker_pos.x, attacker_pos.y)]));
+                particles.add_particle((PARTICLE_DEFEND, vec![map.xy_idx(target_pos.x, target_pos.y)]));
             }
         }
         wants_melee.clear();
