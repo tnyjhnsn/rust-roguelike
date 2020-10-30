@@ -57,6 +57,10 @@ impl Raws {
     }
 }
 
+// Monster is being used as container for mob
+#[derive(Debug, Copy, Clone, Deserialize)]
+pub struct Monster {}
+
 #[derive(PartialEq, Eq, Hash, Clone, Debug, Deserialize)]
 pub enum MobAttributes {
     Might,
@@ -70,8 +74,6 @@ pub struct RawEntity {
     pub code: Code,
     pub item: Option<Item>,
     pub monster: Option<Monster>,
-    pub bystander: Option<Bystander>,
-    pub vendor: Option<Vendor>,
     pub attributes: Option<HashMap<MobAttributes, i32>>,
     pub skills: Option<HashMap<Skill, i32>>,
     pub blocks_tile: Option<BlocksTile>,
@@ -112,12 +114,9 @@ pub fn spawn_from_raws(raws: &Raws, ecs: &mut World, code: &i32,
     if let Some(t) = template {
         entity = entity.with(t.code);
         if let Some(item) = t.item { entity = entity.with(item); }
-        if let Some(monster) = t.monster {
-            entity = entity.with(monster);
+        if let Some(_m) = t.monster {
             entity = entity.with(Initiative { current: 2 });
         }
-        if let Some(bystander) = t.bystander { entity = entity.with(bystander); }
-        if let Some(vendor) = t.vendor { entity = entity.with(vendor); }
         if let Some(blocks_tile) = t.blocks_tile { entity = entity.with(blocks_tile); }
         if let Some(consumeable) = t.consumeable { entity = entity.with(consumeable); }
         if let Some(provides_healing) = t.provides_healing { entity = entity.with(provides_healing); }

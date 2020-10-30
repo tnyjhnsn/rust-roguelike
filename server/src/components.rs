@@ -11,15 +11,6 @@ pub struct BlocksTile {}
 #[derive(Component, Debug, Clone, Serialize, Deserialize)]
 pub struct Player {}
 
-#[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
-pub struct Monster {}
-
-#[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
-pub struct Bystander {}
-
-#[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
-pub struct Vendor {}
-
 #[derive(Debug, Copy, Clone, Serialize, Deserialize)]
 pub struct Pool {
     pub max: i32,
@@ -115,7 +106,7 @@ pub enum FactionName {
     Thief,
 }
 
-#[derive(Copy, Clone, Debug, Deserialize)]
+#[derive(PartialEq, Eq, Copy, Clone, Debug, Deserialize)]
 pub enum Reaction {
     Ignore,
     Attack,

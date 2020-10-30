@@ -13,22 +13,18 @@ impl<'a> System<'a> for VisibilitySystem {
         ReadExpect<'a, Map>,
         WriteStorage<'a, FieldOfView>, 
         ReadStorage<'a, Position>,
-        ReadStorage<'a, Monster>,
+        ReadStorage<'a, Player>,
         Entities<'a>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (map, mut fov, pos, monsters, entities) = data;
+        let (map, mut fov, pos, player, entities) = data;
         for (entity, fov, pos) in (&entities, &mut fov, &pos).join() {
             fov.visible_tiles.clear();
             let mut possible_fov = get_possible_fov(pos.x, pos.y, fov.range);
             possible_fov.retain(|p| p.x >= 0 && p.x < map.width && p.y >= 0 && p.y < map.height);
-            let monster = monsters.get(entity);
-            match monster {
-                Some(_m) => {
-                    fov.visible_tiles = possible_fov;
-                }
-                None => {
+            match player.get(entity) {
+                Some(_p) => {
                     let mut set: HashSet<Position> = HashSet::new();
                     for point in &possible_fov {
                         for (x, y) in Bresenham::new((pos.x, pos.y), (point.x, point.y)) {
@@ -40,6 +36,9 @@ impl<'a> System<'a> for VisibilitySystem {
                         }
                     }
                     fov.visible_tiles = Vec::from_iter(set);
+                }
+                None => {
+                    fov.visible_tiles = possible_fov;
                 }
             }
         }

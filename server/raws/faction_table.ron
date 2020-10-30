@@ -6,5 +6,5 @@
     Rat: { Default: Attack, Rat: Ignore, Wolf: Flee },
     Wolf: { Default: Attack, Wolf: Ignore, Kobold: Flee },
     Kobold: { Default: Attack, Kobold: Ignore },
-    Thief: { Default: Attack, Thief: Ignore },
+    Thief: { Default: Ignore, Thief: Ignore },
 }

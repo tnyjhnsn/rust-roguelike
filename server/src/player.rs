@@ -18,9 +18,11 @@ use super::{
     Door,
     BlocksVisibility,
     BlocksTile,
-    Bystander,
-    Vendor,
+    Faction,
+    FactionName,
     Attributes,
+    Reaction,
+    raws::*,
 };
 use std::cmp::{min, max};
 use roguelike_common::*;
@@ -49,8 +51,7 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> GameState
     let mut doors = ecs.write_storage::<Door>();
     let mut blocks_visibility = ecs.write_storage::<BlocksVisibility>();
     let mut blocks_tile = ecs.write_storage::<BlocksTile>();
-    let bystanders = ecs.read_storage::<Bystander>();
-    let vendors = ecs.read_storage::<Vendor>();
+    let factions = ecs.read_storage::<Faction>();
 
     let mut game_state = GameState::Ticking;
     let mut swap_entities = Vec::new();
@@ -61,23 +62,31 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> GameState
         let dest_idx = map.xy_idx(pos.x + delta_x, pos.y + delta_y);
 
         for potential_target in &map.contents[dest_idx] {
-            let bystander = bystanders.get(*potential_target);
-            let vendor = vendors.get(*potential_target);
-            if bystander.is_some() || vendor.is_some() {
+        let mut hostile = true;
+            if combat_stats.get(*potential_target).is_some() {
+                if let Some(faction) = factions.get(*potential_target) {
+                    let reaction = get_faction_reaction(
+                        &RAWS.lock().unwrap(),
+                        &faction.name,
+                        &FactionName::Player,
+                    );
+                    if reaction != Reaction::Attack { hostile = false; }
+                }
+            }
+            if !hostile {
                 swap_entities.push((*potential_target, pos.x, pos.y));
-                pos.x = min(map.width - 1 , max(0, pos.x + delta_x));
-                pos.y = min(map.height - 1, max(0, pos.y + delta_y));
+                pos.x = min(map.width-1 , max(0, pos.x + delta_x));
+                pos.y = min(map.height-1, max(0, pos.y + delta_y));
                 let mut ppos = ecs.write_resource::<PlayerPosition>();
                 ppos.position.x = pos.x;
                 ppos.position.y = pos.y;
-                entity_moved.insert(entity, EntityMoved {}).expect("Unable to insert move");
+                entity_moved.insert(entity, EntityMoved {}).expect("Unable to insert marker");
                 gui_state.add_state(FOV_CHANGE);
                 gui_state.add_state(CONTENTS_CHANGE);
             } else {
-                let t = combat_stats.get(*potential_target);
-                if let Some(_t) = t {
-                    wants_to_melee.insert(entity, WantsToMelee{ target: *potential_target })
-                        .expect("Add target failed");
+                let target = combat_stats.get(*potential_target);
+                if let Some(_target) = target {
+                    wants_to_melee.insert(entity, WantsToMelee{ target: *potential_target }).expect("Add target failed");
                     particles.add_particle((PARTICLE_ATTACK, vec![map.xy_idx(pos.x, pos.y)]));
                     particles.add_particle((PARTICLE_DEFEND, vec![dest_idx]));
                     return game_state;
