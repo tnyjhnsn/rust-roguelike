@@ -4,7 +4,7 @@ use crate::ai::{
     InitiativeSystem,
     TurnStatusSystem,
     AdjacentAI,
-    MonsterAI,
+    ApproachAI,
     VisibleAI,
 };
 
@@ -283,8 +283,8 @@ impl GameSocket {
         adjacent.run_now(&self.ecs);
         let mut visible = VisibleAI{};
         visible.run_now(&self.ecs);
-        let mut mob = MonsterAI{};
-        mob.run_now(&self.ecs);
+        let mut approach = ApproachAI{};
+        approach.run_now(&self.ecs);
         let mut initiative = InitiativeSystem{};
         initiative.run_now(&self.ecs);
         let mut turn_status = TurnStatusSystem{};
@@ -307,12 +307,6 @@ impl GameSocket {
         self.ecs.maintain();
     }
     
-    //fn run_systems_ai(&mut self) {
-        //let mut mob = ai::MonsterAI{};
-        //mob.run_now(&self.ecs);
-        //self.ecs.maintain();
-    //}
-
     pub fn draw_map(&self) -> String {
         let mut state = self.ecs.fetch_mut::<GuiState>();
         let mut game_state = self.ecs.write_resource::<GameState>();
