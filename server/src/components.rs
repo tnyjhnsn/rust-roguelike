@@ -92,6 +92,17 @@ pub struct Initiative {
 pub struct MyTurn {}
 
 #[derive(PartialEq, Eq, Hash, Copy, Clone, Debug, Deserialize)]
+pub enum Movement {
+    Static,
+    Random,
+}
+
+#[derive(Component, PartialEq, Eq, Hash, Debug, Copy, Clone, Deserialize)]
+pub struct MoveMode {
+    pub mode: Movement,
+}
+
+#[derive(PartialEq, Eq, Hash, Copy, Clone, Debug, Deserialize)]
 pub enum FactionName {
     Default,
     Player,

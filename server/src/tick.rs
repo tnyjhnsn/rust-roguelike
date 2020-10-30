@@ -7,6 +7,7 @@ use crate::ai::{
     AdjacentAI,
     ApproachAI,
     FleeAI,
+    DefaultMoveAI,
 };
 
 use actix::{
@@ -288,6 +289,8 @@ impl GameSocket {
         flee.run_now(&self.ecs);
         let mut approach = ApproachAI{};
         approach.run_now(&self.ecs);
+        let mut defaultmove = DefaultMoveAI{};
+        defaultmove.run_now(&self.ecs);
         let mut initiative = InitiativeSystem{};
         initiative.run_now(&self.ecs);
         let mut turn_status = TurnStatusSystem{};

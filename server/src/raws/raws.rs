@@ -92,6 +92,7 @@ pub struct RawEntity {
     pub natural: Option<NaturalAttackDefense>,
     pub loot_table: Option<LootTable>,
     pub faction: Option<Faction>,
+    pub movement: Option<MoveMode>,
 }
 
 const ATTR_BASE: i32 = 11;
@@ -201,6 +202,7 @@ pub fn spawn_from_raws(raws: &Raws, ecs: &mut World, code: &i32,
         }
         if let Some(loot_table) = t.loot_table { entity = entity.with(loot_table); }
         if let Some(faction) = t.faction { entity = entity.with(faction); }
+        if let Some(movement) = t.movement { entity = entity.with(movement); }
 
         let mob = entity.build();
 
