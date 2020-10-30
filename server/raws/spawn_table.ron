@@ -2,7 +2,7 @@
     (code: 10, weight: 10, min_difficulty: 0, max_difficulty: 100,),
     (code: 11, weight: 5, min_difficulty: 0, max_difficulty: 100,),
     (code: 12, weight: 10, min_difficulty: 0, max_difficulty: 100,),
-    (code: 13, weight: 99, min_difficulty: 0, max_difficulty: 100, add_diff_to_weight: Some(true)),
+    (code: 13, weight: 10, min_difficulty: 0, max_difficulty: 100, add_diff_to_weight: Some(true)),
     (code: 14, weight: 15, min_difficulty: 0, max_difficulty: 100,),
     (code: 15, weight: 5, min_difficulty: 0, max_difficulty: 100,),
     (code: 2000, weight: 8, min_difficulty: 0, max_difficulty: 100,),

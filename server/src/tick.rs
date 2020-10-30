@@ -3,9 +3,10 @@ use super::*;
 use crate::ai::{
     InitiativeSystem,
     TurnStatusSystem,
+    VisibleAI,
     AdjacentAI,
     ApproachAI,
-    VisibleAI,
+    FleeAI,
 };
 
 use actix::{
@@ -283,6 +284,8 @@ impl GameSocket {
         adjacent.run_now(&self.ecs);
         let mut visible = VisibleAI{};
         visible.run_now(&self.ecs);
+        let mut flee = FleeAI{};
+        flee.run_now(&self.ecs);
         let mut approach = ApproachAI{};
         approach.run_now(&self.ecs);
         let mut initiative = InitiativeSystem{};

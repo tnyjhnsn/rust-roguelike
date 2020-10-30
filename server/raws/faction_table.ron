@@ -3,8 +3,8 @@
     Mindless: { Default: Attack, },
     Centipede: { Default: Attack, Centipede: Ignore },
     Ant: { Default: Attack, Ant: Ignore },
-    Rat: { Default: Attack, Rat: Ignore },
-    Wolf: { Default: Attack, Wolf: Ignore },
+    Rat: { Default: Attack, Rat: Ignore, Wolf: Flee },
+    Wolf: { Default: Attack, Wolf: Ignore, Kobold: Flee },
     Kobold: { Default: Attack, Kobold: Ignore },
     Thief: { Default: Attack, Thief: Ignore },
 }
