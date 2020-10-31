@@ -10,15 +10,23 @@ pub struct VisibilitySystem {}
 
 impl<'a> System<'a> for VisibilitySystem {
     type SystemData = (
-        ReadExpect<'a, Map>,
+        WriteExpect<'a, Map>,
         WriteStorage<'a, FieldOfView>, 
         ReadStorage<'a, Position>,
         ReadStorage<'a, Player>,
         Entities<'a>,
+        ReadStorage<'a, BlocksVisibility>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (map, mut fov, pos, player, entities) = data;
+        let (mut map, mut fov, pos, player, entities, blocks_visibility) = data;
+
+        map.view_blocked.clear();
+        for (block_pos, _block) in (&pos, &blocks_visibility).join() {
+            let idx = map.xy_idx(block_pos.x, block_pos.y);
+            map.view_blocked.insert(idx);
+        }
+
         for (entity, fov, pos) in (&entities, &mut fov, &pos).join() {
             fov.visible_tiles.clear();
             let mut possible_fov = get_possible_fov(pos.x, pos.y, fov.range);
