@@ -6,6 +6,7 @@ use crate::{
     Map,
     EntityMoved,
     GuiState,
+    highest_exit,
 };
 use roguelike_common::*;
 
@@ -36,7 +37,7 @@ impl<'a> System<'a> for FleeAI {
             map.blocked[idx] = false;
             let target_pos = map.idx_xy(flee.indices[0] as i32);
             let dijkstra_map = create_dijkstra_map(target_pos.x, target_pos.y, &map);
-            let new_pos = map.dijkstra_highest_exit(&dijkstra_map, pos.x, pos.y);
+            let new_pos = map.dijkstra_exit(&dijkstra_map, pos.x, pos.y, highest_exit);
             pos.x = new_pos.x;
             pos.y = new_pos.y;
             entity_moved.insert(entity, EntityMoved {}).expect("Unable to insert move");

@@ -6,6 +6,7 @@ use crate::{
     Map,
     EntityMoved,
     GuiState,
+    lowest_exit,
 };
 use roguelike_common::*;
 
@@ -36,7 +37,7 @@ impl<'a> System<'a> for ApproachAI {
             map.blocked[idx] = false;
             let target_pos = map.idx_xy(approach.idx);
             let dijkstra_map = create_dijkstra_map(target_pos.x, target_pos.y, &map);
-            let new_pos = map.dijkstra_lowest_exit(&dijkstra_map, pos.x, pos.y);
+            let new_pos = map.dijkstra_exit(&dijkstra_map, pos.x, pos.y, lowest_exit);
             pos.x = new_pos.x;
             pos.y = new_pos.y;
             entity_moved.insert(entity, EntityMoved {}).expect("Unable to insert move");

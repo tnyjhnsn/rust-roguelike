@@ -81,32 +81,18 @@ impl Map {
 
     }
     
-    pub fn dijkstra_lowest_exit(&mut self, dijkstra_map: &Vec<usize>, x: i32, y: i32) -> Position {
+    pub fn dijkstra_exit<F>(&mut self, dijkstra_map: &Vec<usize>,
+        x: i32, y: i32, f: F) -> Position
+    where F: Fn(&Map, usize, i32) -> Vec<usize>
+    {
         self.populate_dijkstra_values(dijkstra_map);
         let idx = self.xy_idx(x, y);
         let dv = self.dijkstra_values[idx];
-        let v: Vec<&usize> = self.neighbours[idx].iter()
-            .filter(|n| self.blocked[**n] == false && self.dijkstra_values[**n] < dv)
-            .collect();
+        let v = f(self, idx, dv);
         let mut rng = RandomNumberGenerator::new();
         if v.len() > 0 {
             let n = rng.range(0, v.len());
-            return Position { x: *v[n] as i32 % self.width, y: *v[n] as i32 / self.width };
-        }; 
-        Position { x, y }
-    }
-
-    pub fn dijkstra_highest_exit(&mut self, dijkstra_map: &Vec<usize>, x: i32, y: i32) -> Position {
-        self.populate_dijkstra_values(dijkstra_map);
-        let idx = self.xy_idx(x, y);
-        let dv = self.dijkstra_values[idx];
-        let v: Vec<&usize> = self.neighbours[idx].iter()
-            .filter(|n| self.blocked[**n] == false && self.dijkstra_values[**n] > dv)
-            .collect();
-        let mut rng = RandomNumberGenerator::new();
-        if v.len() > 0 {
-            let n = rng.range(0, v.len());
-            return Position { x: *v[n] as i32 % self.width, y: *v[n] as i32 / self.width };
+            return Position { x: v[n] as i32 % self.width, y: v[n] as i32 / self.width };
         }; 
         Position { x, y }
     }
@@ -181,3 +167,18 @@ impl Map {
         }
     }
 }
+
+pub fn lowest_exit(map: &Map, idx: usize, dv: i32) -> Vec<usize> {
+    map.neighbours[idx].iter()
+        .filter(|n| !map.blocked[**n] && map.dijkstra_values[**n] < dv)
+        .cloned()
+        .collect()
+}
+
+pub fn highest_exit(map: &Map, idx: usize, dv: i32) -> Vec<usize> {
+    map.neighbours[idx].iter()
+        .filter(|n| !map.blocked[**n] && map.dijkstra_values[**n] > dv)
+        .cloned()
+        .collect()
+}
+
