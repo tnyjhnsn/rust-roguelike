@@ -71,16 +71,11 @@
     (
         // TODO - THIEF IS TEST !!!!
         code: (code: 15),
-        vendor: Some(()),
-        attributes: Some({ Intelligence: 13 }),
-        skills: Some({ Magic: 2 }),
+        attributes: Some({ Might: 3, Fitness: 3, Quickness: 3 }),
+        skills: Some({ Melee: 0, Defense: 0 }),
         blocks_tile: Some(()),
         field_of_view: Some(6),
         equipped: Some([3000, 3300]),
-        natural: Some((armour_class: Some(8), attacks: [
-            (range: 0, hit_desc: Claw, attribute: Might,
-                damage_dice: (1, 4, 0), hit_bonus: 0),
-        ])),
         level: Some(2),
         faction: Some((name: Thief)),
     ),
