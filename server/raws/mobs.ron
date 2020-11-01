@@ -2,7 +2,7 @@
     (
         // WHITE_CENTIPEDE
         code: (code: 10),
-        monster: Some(()),
+        mob: Some(()),
         attributes: Some({ Might: 3, Fitness: 3, Quickness: 3 }),
         skills: Some({ Melee: -1, Defense: -1 }),
         natural: Some((armour_class: Some(11), attacks: [
@@ -16,7 +16,7 @@
     (
         // RED_ANT
         code: (code: 11),
-        monster: Some(()),
+        mob: Some(()),
         attributes: Some({ Might: 3, Fitness: 3, Quickness: 3 }),
         skills: Some({ Melee: -1, Defense: -1 }),
         natural: Some((armour_class: Some(10), attacks: [
@@ -32,7 +32,7 @@
     (
         // BLACK_RAT
         code: (code: 12),
-        monster: Some(()),
+        mob: Some(()),
         attributes: Some({ Might: 3, Fitness: 3, Quickness: 3 }),
         skills: Some({ Melee: -1, Defense: -1 }),
         natural: Some((armour_class: Some(11), attacks: [
@@ -46,7 +46,7 @@
     (
         // WOLF
         code: (code: 13),
-        monster: Some(()),
+        mob: Some(()),
         attributes: Some({ Might: 3, Fitness: 3, Quickness: 3 }),
         skills: Some({ Melee: 0, Defense: 0 }),
         natural: Some((armour_class: Some(12), attacks: [
@@ -61,7 +61,7 @@
     (
         // KOBOLD
         code: (code: 14),
-        monster: Some(()),
+        mob: Some(()),
         attributes: Some({}),
         skills: Some({}),
         blocks_tile: Some(()),
@@ -71,10 +71,11 @@
     (
         // TODO - THIEF IS TEST !!!!
         code: (code: 15),
+        mob: Some(()),
         attributes: Some({ Might: 3, Fitness: 3, Quickness: 3 }),
         skills: Some({ Melee: 0, Defense: 0 }),
         blocks_tile: Some(()),
-        field_of_view: Some(6),
+        field_of_view: Some(4),
         equipped: Some([3000, 3300]),
         level: Some(2),
         faction: Some((name: Thief)),
