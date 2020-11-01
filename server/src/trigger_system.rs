@@ -32,20 +32,20 @@ impl<'a> System<'a> for TriggerSystem {
 
         for (entity, _entity_moved, pos) in (&entities, &entity_moved, &position).join() {
             let idx = map.xy_idx(pos.x, pos.y);
-            for entity_id in map.contents[idx].iter() {
-                if entity != *entity_id {
-                    let trigger = entry_trigger.get(*entity_id);
+            crate::spatial::for_each_tile_content(idx, |entity_id| {
+                if entity != entity_id {
+                    let trigger = entry_trigger.get(entity_id);
                     if let Some(_t) = trigger {
                         let triggerer = codes.get(entity).unwrap().code;
-                        let the_trigger = codes.get(*entity_id).unwrap().code;
-                        let damage = inflict_damage.get(*entity_id);
+                        let the_trigger = codes.get(entity_id).unwrap().code;
+                        let damage = inflict_damage.get(entity_id);
                         if let Some(damage) = damage {
                             SufferDamage::new_damage(&mut suffer_damage, entity, damage.damage, false);
                             gamelog.add_log(vec![LogType::Trap as i32, triggerer, the_trigger, damage.damage]);
                         }
                     }
                 }
-            }
+            });
         }
         entity_moved.clear();
     }

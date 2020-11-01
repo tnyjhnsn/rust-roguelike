@@ -1,4 +1,3 @@
-use specs::prelude::*;
 use roguelike_common::*;
 use serde_json::json;
 use std::collections::{HashMap, HashSet};
@@ -11,10 +10,8 @@ pub struct Map {
     pub width: i32,
     pub height: i32,
     pub tiles: Vec<TileType>,
-    pub blocked: Vec<bool>,
     pub neighbours: Vec<Vec<usize>>,
     pub dijkstra_values: Vec<i32>,
-    pub contents: Vec<Vec<Entity>>,
     pub difficulty: i32,
     pub view_blocked: HashSet<usize>,
 }
@@ -25,15 +22,14 @@ impl Map {
         difficulty: i32) -> Self { 
 
         let dim = (width * height) as usize;
+        crate::spatial::set_size(dim);
         let mut map = Map {
             key,
             width,
             height,
             tiles: Vec::with_capacity(dim),
-            blocked: vec![false; dim],
             neighbours: vec![Vec::new(); dim],
             dijkstra_values: Vec::new(),
-            contents: vec![Vec::new(); dim],
             difficulty,
             view_blocked: HashSet::new(),
         };
@@ -48,9 +44,7 @@ impl Map {
     }
 
     pub fn clear_contents(&mut self) {
-        for content in self.contents.iter_mut() {
-            content.clear();
-        }
+        crate::spatial::clear();
     }
 
     pub fn get_area_of_effect(&self, area: &mut Vec<usize>, radius: i32) {
@@ -67,13 +61,15 @@ impl Map {
         self.get_area_of_effect(area, radius - 1);
     }
 
-    fn populate_dijkstra_values(&mut self, dijkstra_map: &Vec<usize>) {
+    fn populate_dijkstra_values(&mut self, dijkstra_map: &Vec<usize>, target_idx: usize) {
         self.dijkstra_values = vec![DIJKSTRA_MAX; self.get_dim()];
         self.dijkstra_values[dijkstra_map[0]] = 0;
         for i in dijkstra_map.iter() {
             let dv = self.dijkstra_values[*i]; 
             for n in &self.neighbours[*i] {
-                if self.blocked[*n] == false && self.dijkstra_values[*n] >= DIJKSTRA_MAX {
+                let mut blocked = crate::spatial::is_blocked(*n);
+                if *n == target_idx { blocked = false; }
+                if blocked == false && self.dijkstra_values[*n] >= DIJKSTRA_MAX {
                     self.dijkstra_values[*n] = dv + 1;
                 };
             };
@@ -85,8 +81,8 @@ impl Map {
         x: i32, y: i32, f: F) -> Position
     where F: Fn(&Map, usize, i32) -> Vec<usize>
     {
-        self.populate_dijkstra_values(dijkstra_map);
         let idx = self.xy_idx(x, y);
+        self.populate_dijkstra_values(dijkstra_map, idx);
         let dv = self.dijkstra_values[idx];
         let v = f(self, idx, dv);
         let mut rng = RandomNumberGenerator::new();
@@ -115,12 +111,7 @@ impl Map {
     }
 
     pub fn populate_blocked(&mut self) {
-        for (idx, tile) in self.tiles.iter().enumerate() {
-            self.blocked[idx] = match tile {
-                TileType::Wall|TileType::Blocked => true,
-                _ => false,
-            }
-        }
+        crate::spatial::populate_blocked_from_map(self);
     }
 
     pub fn populate_tiles(&mut self, tiles: &[i32]) {
@@ -170,14 +161,20 @@ impl Map {
 
 pub fn lowest_exit(map: &Map, idx: usize, dv: i32) -> Vec<usize> {
     map.neighbours[idx].iter()
-        .filter(|n| !map.blocked[**n] && map.dijkstra_values[**n] < dv)
+        .filter(|n| {
+            let blocked = crate::spatial::is_blocked(**n);
+            !blocked && map.dijkstra_values[**n] < dv 
+        })
         .cloned()
         .collect()
 }
 
 pub fn highest_exit(map: &Map, idx: usize, dv: i32) -> Vec<usize> {
     map.neighbours[idx].iter()
-        .filter(|n| !map.blocked[**n] && map.dijkstra_values[**n] > dv)
+        .filter(|n| {
+            let blocked = crate::spatial::is_blocked(**n);
+            !blocked && map.dijkstra_values[**n] > dv 
+        })
         .cloned()
         .collect()
 }

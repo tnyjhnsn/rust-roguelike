@@ -140,20 +140,18 @@ impl<'a> System<'a> for UseItemSystem {
                             map.get_area_of_effect(&mut aoe, area.radius);
                             let aoe_tiles: HashSet<usize> = HashSet::from_iter(aoe);
                             for tile in &aoe_tiles {
-                                for mob in &map.contents[*tile] {
-                                    let code = codes.get(*mob).unwrap().code;
+                                crate::spatial::for_each_tile_content(*tile, |mob| {
+                                    let code = codes.get(mob).unwrap().code;
                                     if code < 5000 {
-                                        targets.push(*mob);
+                                        targets.push(mob);
                                     }
-                                }
+                                })
                             }
                             particles.add_particle((item_code, aoe_tiles.into_iter().collect()));
                         }
                         None => {
                             let idx = use_item.target.unwrap();
-                            for mob in &map.contents[idx] {
-                                targets.push(*mob);
-                            }
+                            crate::spatial::for_each_tile_content(idx, |mob| targets.push(mob));
                             particles.add_particle((item_code, vec![idx]));
                         }
                     }

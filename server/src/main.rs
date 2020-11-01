@@ -19,6 +19,7 @@ mod maps;
 pub use maps::*;
 
 mod ai;
+pub mod spatial;
 
 mod raws;
 pub use raws::*;

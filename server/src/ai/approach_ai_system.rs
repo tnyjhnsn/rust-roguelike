@@ -33,16 +33,15 @@ impl<'a> System<'a> for ApproachAI {
 
             turn_done.push(entity);
 
-            let mut idx = map.xy_idx(pos.x, pos.y);
-            map.blocked[idx] = false;
+            let idx = map.xy_idx(pos.x, pos.y);
             let target_pos = map.idx_xy(approach.idx);
             let dijkstra_map = create_dijkstra_map(target_pos.x, target_pos.y, &map);
             let new_pos = map.dijkstra_exit(&dijkstra_map, pos.x, pos.y, lowest_exit);
             pos.x = new_pos.x;
             pos.y = new_pos.y;
             entity_moved.insert(entity, EntityMoved {}).expect("Unable to insert move");
-            idx = map.xy_idx(pos.x, pos.y);
-            map.blocked[idx] = true;
+            let new_idx = map.xy_idx(pos.x, pos.y);
+            crate::spatial::move_entity(entity, idx, new_idx);
             gui_state.add_state(CONTENTS_CHANGE);
         }
 
@@ -54,7 +53,7 @@ impl<'a> System<'a> for ApproachAI {
     }
 }
 
-const DIJKSTRA_RANGE: i32 = 8;
+const DIJKSTRA_RANGE: i32 = 10;
 
 fn create_dijkstra_map(x: i32, y: i32, map: &Map) -> Vec<usize> {
     let mut v = Vec::new();
@@ -71,7 +70,7 @@ fn create_dijkstra_map(x: i32, y: i32, map: &Map) -> Vec<usize> {
                         continue;
                     }
                     let idx = map.xy_idx(xp, yp);
-                    if !map.blocked[idx] {
+                    if !crate::spatial::is_blocked(idx) {
                         v.push(idx)
                     }
                 };

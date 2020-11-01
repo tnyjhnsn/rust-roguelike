@@ -3,30 +3,37 @@ use super::{
     Map,
     Position,
     BlocksTile,
+    Pools,
+    spatial,
 };
 
 pub struct MapIndexingSystem {}
 
 impl<'a> System<'a> for MapIndexingSystem {
     type SystemData = (
-        WriteExpect<'a, Map>,
+        ReadExpect<'a, Map>,
         ReadStorage<'a, Position>,
         ReadStorage<'a, BlocksTile>,
+        ReadStorage<'a, Pools>,
         Entities<'a>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (mut map, pos, tile_blockers, entities) = data;
+        let (map, pos, blockers, pools, entities) = data;
 
-        map.populate_blocked();
-        map.clear_contents();
+        spatial::clear();
+        spatial::populate_blocked_from_map(&*map);
         for (entity, pos) in (&entities, &pos).join() {
-            let idx = map.xy_idx(pos.x, pos.y);
-            let _tb: Option<&BlocksTile> = tile_blockers.get(entity);
-            if let Some(_tb) = _tb {
-                map.blocked[idx] = true;
+            let mut alive = true;
+            if let Some(pools) = pools.get(entity) {
+                if pools.hp.current < 1 {
+                    alive = false;
+                }
             }
-            map.contents[idx].push(entity);
+            if alive {
+                let idx = map.xy_idx(pos.x, pos.y);
+                spatial::index_entity(entity, idx, blockers.get(entity).is_some());
+            }
         }
     }
 }

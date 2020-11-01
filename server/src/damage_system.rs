@@ -13,6 +13,7 @@ use super::{
     LootTable,
     PlayerEntity,
     Attributes,
+    Map,
     raws::*,
 };
 use roguelike_common::*;
@@ -28,10 +29,14 @@ impl<'a> System<'a> for DamageSystem {
         ReadExpect<'a, PlayerEntity>,
         WriteExpect<'a, GuiState>,
         ReadStorage<'a, Attributes>,
+        ReadStorage<'a, Position>,
+        ReadExpect<'a, Map>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (entities, mut stats, mut damage, player, mut gui_state, attributes) = data;
+        let (entities, mut stats, mut damage, player, mut gui_state,
+             attributes, positions, map) = data;
+
         let mut xp_gain = 0;
 
         for (entity, mut stats, damage) in (&entities, &mut stats, &damage).join() {
@@ -39,6 +44,11 @@ impl<'a> System<'a> for DamageSystem {
                 stats.hp.current -= dmg.0;
                 if stats.hp.current < 1 && dmg.1 {
                     xp_gain += stats.level * 100;
+                    let pos = positions.get(entity);
+                    if let Some(pos) = pos {
+                        let idx = map.xy_idx(pos.x, pos.y);
+                        crate::spatial::remove_entity(entity, idx);
+                    }
                 }
             }
             if entity == *player {

@@ -61,10 +61,11 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> GameState
             || pos.y + delta_y < 0 || pos.y + delta_y > map.height - 1 { return game_state; }
         let dest_idx = map.xy_idx(pos.x + delta_x, pos.y + delta_y);
 
-        for potential_target in &map.contents[dest_idx] {
-        let mut hostile = true;
-            if combat_stats.get(*potential_target).is_some() {
-                if let Some(faction) = factions.get(*potential_target) {
+        game_state = crate::spatial::for_each_tile_content_with_gamemode(dest_idx, |potential_target| {
+
+            let mut hostile = true;
+            if combat_stats.get(potential_target).is_some() {
+                if let Some(faction) = factions.get(potential_target) {
                     let reaction = get_faction_reaction(
                         &RAWS.lock().unwrap(),
                         &faction.name,
@@ -74,40 +75,48 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> GameState
                 }
             }
             if !hostile {
-                swap_entities.push((*potential_target, pos.x, pos.y));
-                pos.x = min(map.width-1 , max(0, pos.x + delta_x));
-                pos.y = min(map.height-1, max(0, pos.y + delta_y));
+                swap_entities.push((potential_target, pos.x, pos.y));
+                pos.x = min(map.width - 1 , max(0, pos.x + delta_x));
+                pos.y = min(map.height - 1, max(0, pos.y + delta_y));
                 let mut ppos = ecs.write_resource::<PlayerPosition>();
                 ppos.position.x = pos.x;
                 ppos.position.y = pos.y;
                 entity_moved.insert(entity, EntityMoved {}).expect("Unable to insert marker");
                 gui_state.add_state(FOV_CHANGE);
                 gui_state.add_state(CONTENTS_CHANGE);
+                return Some(game_state);
             } else {
-                let target = combat_stats.get(*potential_target);
+                let target = combat_stats.get(potential_target);
                 if let Some(_target) = target {
-                    wants_to_melee.insert(entity, WantsToMelee{ target: *potential_target }).expect("Add target failed");
+                    wants_to_melee.insert(entity, WantsToMelee{ target: potential_target }).expect("Add target failed");
                     particles.add_particle((PARTICLE_ATTACK, vec![map.xy_idx(pos.x, pos.y)]));
                     particles.add_particle((PARTICLE_DEFEND, vec![dest_idx]));
-                    return game_state;
+                    return Some(game_state);
                 }
             }
-            let door = doors.get_mut(*potential_target);
+            let door = doors.get_mut(potential_target);
             if let Some(door) = door {
                 door.open = true;
-                blocks_visibility.remove(*potential_target);
-                blocks_tile.remove(*potential_target);
+                blocks_visibility.remove(potential_target);
+                blocks_tile.remove(potential_target);
                 gui_state.add_state(FOV_CHANGE);
+                return Some(game_state);
             }
-        }
+            None
+        });
 
-        if !map.blocked[dest_idx] {
+        if !crate::spatial::is_blocked(dest_idx) {
+            let old_idx = map.xy_idx(pos.x, pos.y);
             pos.x = min(map.width - 1 , max(0, pos.x + delta_x));
             pos.y = min(map.height - 1, max(0, pos.y + delta_y));
+            let new_idx = map.xy_idx(pos.x, pos.y);
+            entity_moved.insert(entity, EntityMoved {}).expect("Unable to insert move");
+            crate::spatial::move_entity(entity, old_idx, new_idx);
+
             let mut ppos = ecs.write_resource::<PlayerPosition>();
             ppos.position.x = pos.x;
             ppos.position.y = pos.y;
-            entity_moved.insert(entity, EntityMoved {}).expect("Unable to insert move");
+            game_state = GameState::Ticking;
             match map.tiles[dest_idx] {
                 TileType::ExitMap => game_state = GameState::ExitMap,
                 _ => {}
@@ -120,10 +129,13 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> GameState
     for e in swap_entities {
         let their_pos = positions.get_mut(e.0);
         if let Some(their_pos) = their_pos {
+            let old_idx = map.xy_idx(their_pos.x, their_pos.y);
             their_pos.x = e.1;
             their_pos.y = e.2;
+            let new_idx = map.xy_idx(their_pos.x, their_pos.y);
+            crate::spatial::move_entity(e.0, old_idx, new_idx);
+            game_state = GameState::Ticking;
         }
-        entity_moved.insert(e.0, EntityMoved {}).expect("Unable to insert move");
     }
 
     game_state

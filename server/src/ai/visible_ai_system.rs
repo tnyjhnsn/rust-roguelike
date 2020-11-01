@@ -42,7 +42,7 @@ impl<'a> System<'a> for VisibleAI {
                 for visible_tile in &fov.visible_tiles {
                     let idx = map.xy_idx(visible_tile.x, visible_tile.y);
                     if my_idx != idx {
-                        evaluate(idx, &map, &factions, &my_faction.name, &mut reactions);
+                        evaluate(idx, &factions, &my_faction.name, &mut reactions);
                     }
                 }
 
@@ -72,16 +72,17 @@ impl<'a> System<'a> for VisibleAI {
     }
 }
 
-fn evaluate(idx: usize, map: &Map, factions: &ReadStorage<Faction>, my_faction: &FactionName,
-    reactions: &mut Vec<(usize, Reaction)>) {
+fn evaluate(idx: usize, factions: &ReadStorage<Faction>, my_faction: &FactionName,
+    reactions: &mut Vec<(usize, Reaction, Entity)>) {
 
-    for other_entity in &map.contents[idx] {
-        if let Some(faction) = factions.get(*other_entity) {
+    crate::spatial::for_each_tile_content(idx, |other_entity| {
+        if let Some(faction) = factions.get(other_entity) {
             reactions.push((
-                idx, 
-                get_faction_reaction(&RAWS.lock().unwrap(), my_faction, &faction.name)
+                idx,
+                get_faction_reaction(&RAWS.lock().unwrap(), my_faction, &faction.name),
+                other_entity
             ));
         }
-    }
+    });
 }
 

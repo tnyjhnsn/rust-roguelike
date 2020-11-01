@@ -36,7 +36,7 @@ impl<'a> System<'a> for AdjacentAI {
                 let mut reactions = Vec::new();
                 let idx = map.xy_idx(pos.x, pos.y);
                 for n in &map.neighbours[idx] {
-                    evaluate(*n, &map, &factions, &my_faction.name, &mut reactions);
+                    evaluate(*n, &factions, &my_faction.name, &mut reactions);
                 }
 
                 let mut done = false;
@@ -59,15 +59,15 @@ impl<'a> System<'a> for AdjacentAI {
     }
 }
 
-fn evaluate(idx: usize, map: &Map, factions: &ReadStorage<Faction>, my_faction: &FactionName,
+fn evaluate(idx: usize, factions: &ReadStorage<Faction>, my_faction: &FactionName,
     reactions: &mut Vec<(Entity, Reaction)>) {
 
-    for other_entity in &map.contents[idx] {
-        if let Some(faction) = factions.get(*other_entity) {
+    crate::spatial::for_each_tile_content(idx, |other_entity| {
+        if let Some(faction) = factions.get(other_entity) {
             reactions.push((
-                *other_entity, 
+                other_entity,
                 get_faction_reaction(&RAWS.lock().unwrap(), my_faction, &faction.name)
             ));
         }
-    }
+    });
 }

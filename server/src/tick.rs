@@ -281,22 +281,26 @@ impl GameSocket {
         mapindex.run_now(&self.ecs);
         let mut vis = VisibilitySystem{};
         vis.run_now(&self.ecs);
-        let mut adjacent = AdjacentAI{};
-        adjacent.run_now(&self.ecs);
-        let mut visible = VisibleAI{};
-        visible.run_now(&self.ecs);
-        let mut flee = FleeAI{};
-        flee.run_now(&self.ecs);
-        let mut approach = ApproachAI{};
-        approach.run_now(&self.ecs);
-        let mut defaultmove = DefaultMoveAI{};
-        defaultmove.run_now(&self.ecs);
         let mut initiative = InitiativeSystem{};
         initiative.run_now(&self.ecs);
         let mut turn_status = TurnStatusSystem{};
         turn_status.run_now(&self.ecs);
+        let mut adjacent = AdjacentAI{};
+        adjacent.run_now(&self.ecs);
+        let mut visible = VisibleAI{};
+        visible.run_now(&self.ecs);
+        let mut approach = ApproachAI{};
+        approach.run_now(&self.ecs);
+        let mut flee = FleeAI{};
+        flee.run_now(&self.ecs);
+        let mut defaultmove = DefaultMoveAI{};
+        defaultmove.run_now(&self.ecs);
+        let mut trigger = TriggerSystem{};
+        trigger.run_now(&self.ecs);
         let mut melee = MeleeCombatSystem{};
         melee.run_now(&self.ecs);
+        let mut damage = DamageSystem{};
+        damage.run_now(&self.ecs);
         let mut pickup_item = PickupItemSystem{};
         pickup_item.run_now(&self.ecs);
         let mut use_item = UseItemSystem{};
@@ -305,10 +309,6 @@ impl GameSocket {
         drop_item.run_now(&self.ecs);
         let mut remove_item = RemoveItemSystem{};
         remove_item.run_now(&self.ecs);
-        let mut trigger = TriggerSystem{};
-        trigger.run_now(&self.ecs);
-        let mut damage = DamageSystem{};
-        damage.run_now(&self.ecs);
 
         self.ecs.maintain();
     }
