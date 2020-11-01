@@ -3,6 +3,8 @@
         // DAGGER
         code: (code: 3000),
         item: Some(()),
+        weight_lbs: Some(1.0),
+        base_value: Some(2.0),
         weapon: Some((range: 0, hit_desc: CutStab, attribute: Quickness,
                       damage_dice: (1, 4, 0), hit_bonus: 0)),
     ),
@@ -10,6 +12,9 @@
         // RUSTY_SWORD
         code: (code: 3001),
         item: Some(()),
+        initiative_penalty: Some(2.0),
+        weight_lbs: Some(1.0),
+        base_value: Some(2.0),
         weapon: Some((range: 0, hit_desc: CutStab, attribute: Might,
                       damage_dice: (1, 8, -1), hit_bonus: -1)),
     ),
@@ -17,6 +22,9 @@
         // LONG_SWORD
         code: (code: 3002),
         item: Some(()),
+        initiative_penalty: Some(2.0),
+        weight_lbs: Some(1.0),
+        base_value: Some(2.0),
         weapon: Some((range: 0, hit_desc: CutStab, attribute: Might,
                       damage_dice: (1, 8, 0), hit_bonus: 0)),
     ),
@@ -24,24 +32,33 @@
         // SHIELD
         code: (code: 3100),
         item: Some(()),
+        initiative_penalty: Some(0.5),
+        weight_lbs: Some(1.0),
+        base_value: Some(2.0),
         wearable: Some((slot: Shield, armour_class: 1.0)),
     ),
     (
         // TUNIC
         code: (code: 3300),
         item: Some(()),
+        weight_lbs: Some(1.0),
+        base_value: Some(2.0),
         wearable: Some((slot: Body, armour_class: 0.1)),
     ),
     (
         // PANTS
         code: (code: 3400),
         item: Some(()),
+        weight_lbs: Some(1.0),
+        base_value: Some(2.0),
         wearable: Some((slot: Legs, armour_class: 0.1)),
     ),
     (
         // OLD_BOOTS
         code: (code: 3500),
         item: Some(()),
+        weight_lbs: Some(1.0),
+        base_value: Some(2.0),
         wearable: Some((slot: Feet, armour_class: 0.1)),
     ),
 ]

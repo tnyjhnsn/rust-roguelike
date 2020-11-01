@@ -10,6 +10,8 @@
         // HEALTH_POTION
         code: (code: 2000),
         item: Some(()),
+        weight_lbs: Some(0.5),
+        base_value: Some(20.0),
         consumeable: Some(()),
         provides_healing: Some((heal: 8)),
     ),
@@ -17,6 +19,8 @@
         // MAGIC_MISSILE
         code: (code: 2100),
         item: Some(()),
+        weight_lbs: Some(0.5),
+        base_value: Some(20.0),
         consumeable: Some(()),
         ranged: Some((range: 6)),
         inflicts_damage: Some((damage: 8)),
@@ -25,6 +29,8 @@
         // DRAGON_BREATH
         code: (code: 2101),
         item: Some(()),
+        weight_lbs: Some(0.5),
+        base_value: Some(20.0),
         consumeable: Some(()),
         ranged: Some((range: 6)),
         inflicts_damage: Some((damage: 10)),
@@ -34,6 +40,8 @@
         // ACID_RAIN
         code: (code: 2102),
         item: Some(()),
+        weight_lbs: Some(0.5),
+        base_value: Some(20.0),
         consumeable: Some(()),
         ranged: Some((range: 6)),
         inflicts_damage: Some((damage: 8)),
@@ -43,6 +51,8 @@
         // CONFUSION_SCROLL
         code: (code: 2103),
         item: Some(()),
+        weight_lbs: Some(0.5),
+        base_value: Some(20.0),
         consumeable: Some(()),
         ranged: Some((range: 6)),
         confusion: Some((turns: 3)),

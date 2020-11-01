@@ -157,7 +157,11 @@ impl SufferDamage {
 }
 
 #[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
-pub struct Item {}
+pub struct Item {
+    pub initiative_penalty: f32,
+    pub weight_lbs: f32,
+    pub base_value: f32,
+}
 
 #[derive(Component, Debug, Copy, Clone, Serialize, Deserialize)]
 pub struct ProvidesHealing {

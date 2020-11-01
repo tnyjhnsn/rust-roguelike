@@ -61,6 +61,10 @@ impl Raws {
 #[derive(Debug, Copy, Clone, Deserialize)]
 pub struct Mob {}
 
+// ItemC is being used as container for item
+#[derive(Debug, Copy, Clone, Deserialize)]
+pub struct ItemC {}
+
 #[derive(PartialEq, Eq, Hash, Clone, Debug, Deserialize)]
 pub enum MobAttributes {
     Might,
@@ -72,7 +76,10 @@ pub enum MobAttributes {
 #[derive(Clone, Debug, Deserialize)]
 pub struct RawEntity {
     pub code: Code,
-    pub item: Option<Item>,
+    pub item: Option<ItemC>,
+    pub initiative_penalty: Option<f32>,
+    pub weight_lbs: Option<f32>,
+    pub base_value: Option<f32>,
     pub mob: Option<Mob>,
     pub attributes: Option<HashMap<MobAttributes, i32>>,
     pub skills: Option<HashMap<Skill, i32>>,
@@ -113,7 +120,13 @@ pub fn spawn_from_raws(raws: &Raws, ecs: &mut World, code: &i32,
     let template = &raws.entities.iter().find(|e| e.code.code == *code);
     if let Some(t) = template {
         entity = entity.with(t.code);
-        if let Some(item) = t.item { entity = entity.with(item); }
+        if let Some(_i) = t.item {
+            entity = entity.with(Item {
+                initiative_penalty: t.initiative_penalty.unwrap_or(0.0),
+                weight_lbs: t.weight_lbs.unwrap_or(0.0),
+                base_value: t.base_value.unwrap_or(0.0),
+            });
+        }
         if let Some(_m) = t.mob {
             entity = entity.with(Initiative { current: 2 });
         }
