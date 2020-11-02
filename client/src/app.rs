@@ -129,6 +129,9 @@ impl Component for Game {
                         "LEVEL_STATS" => {
                             self.game.stats.set_level_xp(d);
                         }
+                        "ENCUMBRANCE" => {
+                            self.game.stats.set_encumbrance(d);
+                        }
                         _ => {
                             //ConsoleService::info(&format!("{:?}", gm.d));
                             return false;

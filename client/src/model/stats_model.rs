@@ -10,6 +10,7 @@ pub struct MStats {
     pub intelligence: (i32, i32, i32),
     pub level: i32,
     pub xp: i32,
+    pub encumbrance: (f32, f32, f32),
 }
 
 impl MStats {
@@ -23,6 +24,7 @@ impl MStats {
             intelligence: (0, 0, 0),
             level: 1,
             xp: 0,
+            encumbrance: (0.0, 0.0, 0.0),
         }
     }
 
@@ -44,6 +46,10 @@ impl MStats {
         let (level, xp): (i32, i32) = serde_json::from_value(data).unwrap();
         self.level = level;
         self.xp = xp;
+    }
+
+    pub fn set_encumbrance(&mut self, data: Value) {
+        self.encumbrance = serde_json::from_value(data).unwrap();
     }
 }
 

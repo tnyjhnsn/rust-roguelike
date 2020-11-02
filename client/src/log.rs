@@ -11,6 +11,7 @@ impl Log {
             0 => format!("Hello Rogue!"),
             1 => format!("There is nothing to pick up here"),
             2 => format!("There is no way down from here"),
+            3 => format!("You are overburdened, and suffering an initiative penalty"),
             _ => format!("Unknown System Message"),
         }
     }

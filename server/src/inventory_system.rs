@@ -20,6 +20,7 @@ use super::{
     Pools,
     GuiState,
     Particles,
+    EquipmentChanged,
 };
 use roguelike_common::*;
 use std::collections::HashSet;
@@ -36,16 +37,20 @@ impl<'a> System<'a> for PickupItemSystem {
         ReadStorage<'a, Code>,
         WriteStorage<'a, InInventory>,
         WriteExpect<'a, GuiState>,
+        WriteStorage<'a, EquipmentChanged>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
         let (player, mut gamelog, mut wants_pickup, mut positions, codes,
-             mut inventory, mut gui_state) = data;
+             mut inventory, mut gui_state, mut dirty) = data;
 
         for pickup in wants_pickup.join() {
             positions.remove(pickup.item);
             inventory.insert(pickup.item,
-                InInventory { owner: pickup.collected_by }).expect("Unable to insert Inventory entry");
+                InInventory { owner: pickup.collected_by })
+                .expect("Unable to insert Inventory entry");
+            dirty.insert(pickup.collected_by, EquipmentChanged {})
+                .expect("Unable to insert equipment change");
 
             if pickup.collected_by == *player {
                 let item_code = codes.get(pickup.item).unwrap().code;
@@ -69,11 +74,12 @@ impl<'a> System<'a> for DropItemSystem {
         WriteStorage<'a, Position>,
         WriteStorage<'a, InInventory>,
         WriteExpect<'a, GuiState>,
+        WriteStorage<'a, EquipmentChanged>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
         let (player, mut gamelog, entities, mut wants_drop, codes, mut positions,
-             mut inventory, mut gui_state) = data;
+             mut inventory, mut gui_state, mut dirty) = data;
 
         for (entity, to_drop) in (&entities, &wants_drop).join() {
             let mut dropper_pos: Position = Position{ x: 0, y: 0 };
@@ -84,6 +90,8 @@ impl<'a> System<'a> for DropItemSystem {
             }
             positions.insert(to_drop.item, Position{ x: dropper_pos.x, y: dropper_pos.y }).expect("Unable to insert position");
             inventory.remove(to_drop.item);
+            dirty.insert(entity, EquipmentChanged {})
+                .expect("Unable to insert equipment change");
 
             if entity == *player {
                 let item_code = codes.get(to_drop.item).unwrap().code;
@@ -117,15 +125,19 @@ impl<'a> System<'a> for UseItemSystem {
         WriteStorage<'a, InInventory>,
         WriteExpect<'a, GuiState>,
         WriteExpect<'a, Particles>,
+        WriteStorage<'a, EquipmentChanged>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
         let (player, mut gamelog, map, entities, mut wants_use, codes, consumeables,
              healing, inflict_damage, mut suffer_damage, mut combat_stats, aoe,
              mut confused, equippable, mut equipped, mut inventory,
-             mut gui_state, mut particles) = data;
+             mut gui_state, mut particles, mut dirty) = data;
 
         for (entity, use_item) in (&entities, &wants_use).join() {
+
+            dirty.insert(entity, EquipmentChanged {})
+                .expect("Unable to insert equipment change");
 
             let item_code = codes.get(use_item.item).unwrap().code;
 

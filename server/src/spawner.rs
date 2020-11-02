@@ -14,6 +14,7 @@ use super::{
     Initiative,
     Faction,
     FactionName,
+    EquipmentChanged,
     raws::*,
 };
 use std::collections::HashMap;
@@ -55,9 +56,13 @@ pub fn player(ecs: &mut World, x: i32, y: i32) -> PlayerEntity {
             mana,
             xp: 0,
             level: 1,
+            tot_weight: 0.0,
+            carry_capacity: 0.0,
+            tot_initiative_penalty: 0.0,
         })
         .with(Initiative { current: 0 })
         .with(Faction { name: FactionName::Player })
+        .with(EquipmentChanged {})
         .build();
 
         spawn_from_raws(&RAWS.lock().unwrap(), ecs, &3001,

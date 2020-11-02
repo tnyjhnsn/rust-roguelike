@@ -2,6 +2,7 @@ use std::collections::{HashMap};
 use super::*;
 use crate::ai::{
     InitiativeSystem,
+    EncumbranceSystem,
     TurnStatusSystem,
     VisibleAI,
     AdjacentAI,
@@ -145,6 +146,13 @@ impl GameSocket {
                     pack.push((code.code, entity.id()));
                 }
             hm.entry(String::from("INVENTORY")).or_insert(json!(pack));
+            let pools = self.ecs.read_storage::<Pools>();
+            let player_pools = pools.get(*player_entity).unwrap();
+            let weight = player_pools.tot_weight;
+            let capacity = player_pools.carry_capacity;
+            let penalty = player_pools.tot_initiative_penalty;
+            let encumbrance = vec![weight, capacity, penalty];
+            hm.entry(String::from("ENCUMBRANCE")).or_insert(json!(encumbrance));
             state.remove_state(INVENTORY_CHANGE);
         }
 
@@ -311,6 +319,9 @@ impl GameSocket {
         remove_item.run_now(&self.ecs);
 
         self.ecs.maintain();
+
+        let mut encumbrance = EncumbranceSystem{};
+        encumbrance.run_now(&self.ecs);
     }
     
     pub fn draw_map(&self) -> String {

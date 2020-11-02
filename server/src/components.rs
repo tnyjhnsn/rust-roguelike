@@ -29,6 +29,9 @@ pub struct Pools {
     pub mana: Pool,
     pub xp: i32,
     pub level: i32,
+    pub tot_weight: f32,
+    pub carry_capacity: f32,
+    pub tot_initiative_penalty: f32,
 }
 
 #[derive(Debug, Copy, Clone, Serialize, Deserialize)]
@@ -220,6 +223,9 @@ pub struct Equipped {
     pub owner: Entity,
     pub slot: EquipmentSlot,
 }
+
+#[derive(Component, Debug, Clone)]
+pub struct EquipmentChanged {}
 
 #[derive(PartialEq, Debug, Copy, Clone, Serialize, Deserialize)]
 pub enum WeaponAttribute {

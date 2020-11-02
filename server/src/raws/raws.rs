@@ -129,6 +129,7 @@ pub fn spawn_from_raws(raws: &Raws, ecs: &mut World, code: &i32,
         }
         if let Some(_m) = t.mob {
             entity = entity.with(Initiative { current: 2 });
+            entity = entity.with(EquipmentChanged {});
         }
         if let Some(blocks_tile) = t.blocks_tile { entity = entity.with(blocks_tile); }
         if let Some(consumeable) = t.consumeable { entity = entity.with(consumeable); }
@@ -199,6 +200,9 @@ pub fn spawn_from_raws(raws: &Raws, ecs: &mut World, code: &i32,
                 xp: 0,
                 hp: Pool { current: mob_hp, max: mob_hp },
                 mana: Pool { current: mob_mana, max: mob_mana },
+                tot_weight: 0.0,
+                carry_capacity: 0.0,
+                tot_initiative_penalty: 0.0,
             };
             entity = entity.with(pools);
         }

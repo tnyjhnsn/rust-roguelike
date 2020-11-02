@@ -12,3 +12,5 @@ mod flee_ai_system;
 pub use flee_ai_system::FleeAI;
 mod default_move_system;
 pub use default_move_system::DefaultMoveAI;
+mod encumbrance_system;
+pub use encumbrance_system::EncumbranceSystem;
