@@ -57,13 +57,9 @@ impl Raws {
     }
 }
 
-// Monster is being used as container for mob
+// Generic container struct
 #[derive(Debug, Copy, Clone, Deserialize)]
-pub struct Mob {}
-
-// ItemC is being used as container for item
-#[derive(Debug, Copy, Clone, Deserialize)]
-pub struct ItemC {}
+pub struct Container {}
 
 #[derive(PartialEq, Eq, Hash, Clone, Debug, Deserialize)]
 pub enum MobAttributes {
@@ -76,11 +72,11 @@ pub enum MobAttributes {
 #[derive(Clone, Debug, Deserialize)]
 pub struct RawEntity {
     pub code: Code,
-    pub item: Option<ItemC>,
+    pub item: Option<Container>,
     pub initiative_penalty: Option<f32>,
     pub weight_lbs: Option<f32>,
     pub base_value: Option<f32>,
-    pub mob: Option<Mob>,
+    pub mob: Option<Container>,
     pub attributes: Option<HashMap<MobAttributes, i32>>,
     pub skills: Option<HashMap<Skill, i32>>,
     pub blocks_tile: Option<BlocksTile>,
