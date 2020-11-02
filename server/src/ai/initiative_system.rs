@@ -8,6 +8,7 @@ use crate:: {
     RandomNumberGenerator,
     PlayerEntity,
     PlayerPosition,
+    Pools,
 };
 
 pub struct InitiativeSystem {}
@@ -22,12 +23,13 @@ impl<'a> System<'a> for InitiativeSystem {
         ReadStorage<'a, Attributes>,
         WriteExpect<'a, GameState>,
         ReadExpect<'a, PlayerEntity>,
-        ReadExpect<'a, PlayerPosition>
+        ReadExpect<'a, PlayerPosition>,
+        ReadStorage<'a, Pools>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
         let (mut initiatives, positions, mut turns, entities, mut rng,
-             attributes, mut game_state, player_entity, ppos) = data;
+             attributes, mut game_state, player_entity, ppos, pools) = data;
 
         if *game_state != GameState::Ticking { return; }
 
@@ -40,6 +42,9 @@ impl<'a> System<'a> for InitiativeSystem {
                 initiative.current = rng.roll_dice(1, 6, 6);
                 if let Some(attr) = attributes.get(entity) {
                     initiative.current -= attr.quickness.bonus;
+                }
+                if let Some(pools) = pools.get(entity) {
+                    initiative.current += f32::floor(pools.tot_initiative_penalty) as i32;
                 }
                 if entity == *player_entity {
                     *game_state = GameState::Waiting;
