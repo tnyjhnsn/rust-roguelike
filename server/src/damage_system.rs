@@ -107,7 +107,6 @@ pub fn delete_the_dead(ecs : &mut World) {
                         }
                     },
                     Some(_) =>  {
-                        println!("Inside DTD");
                         *game_state = GameState::GameOver;
                         gui_state.add_state(INVENTORY_CHANGE);
                         gui_state.add_state(ARMOUR_CHANGE);

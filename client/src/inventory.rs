@@ -6,6 +6,7 @@ use web_sys::{HtmlElement, HtmlCollection};
 use yew::utils::document;
 use wasm_bindgen::JsCast;
 use std::cmp::{max};
+ use yew::services::ConsoleService;
 
 pub struct Inventory {
     link: ComponentLink<Self>,
@@ -35,9 +36,9 @@ impl Inventory {
             Some(items) => {
                 let length = items.length() as i32;
                 if length == 0 { return; }
-                self.set_selected_item(self.selected_item, "");
+                self.highlight_selected_item(self.selected_item, "");
                 let selected_idx = ((self.selected_item + direction) % length + length) % length;
-                self.set_selected_item(selected_idx, "li-selected");
+                self.highlight_selected_item(selected_idx, "li-selected");
                 self.selected_item = selected_idx;
             }
             None => (),
@@ -54,7 +55,7 @@ impl Inventory {
             .children()
     }
 
-    fn set_selected_item(&self, idx: i32, s: &str) {
+    fn highlight_selected_item(&self, idx: i32, s: &str) {
         match &self.list_items {
             Some(items) => {
                 items.get_with_index(idx as u32).unwrap().set_class_name(s);
@@ -95,11 +96,14 @@ impl Component for Inventory {
                         KEY_ESC => {
                             //TODO targeter cleanup
                             self.targeting = false;
+                            self.highlight_selected_item(self.selected_item, "");
                         }
                         KEY_ENTER => {
                             let idx = self.props.inventory.items[self.selected_item as usize].1;
                             self.props.target_indicator_signal.emit((Some(e), Some(idx as i32)));
                             self.targeting = false;
+                            self.selected_item = max(0, self.selected_item - 1);
+                            self.highlight_selected_item(self.selected_item, "li-selected");
                         }
                         KEY_LEFT|KEY_RIGHT|KEY_UP|KEY_DOWN
                         |KEY_Y|KEY_U|KEY_B|KEY_N => {
@@ -117,6 +121,7 @@ impl Component for Inventory {
                     match e.key_code() {
                         KEY_ESC|KEY_A => {
                             self.props.change_panel_signal.emit(e);
+                            self.highlight_selected_item(self.selected_item, "");
                         }
                         KEY_DOWN =>  self.cycle_list(1),
                         KEY_UP => self.cycle_list(-1),
@@ -144,8 +149,6 @@ impl Component for Inventory {
                                         self.targeting = true;
                                         self.props.target_indicator_signal.emit((None, Some(0)));
                                     }
-                                    // TODO Ugly fix - needs better
-                                    self.selected_item = max(0, self.selected_item - 1);
                                     if items.length() - 1 == 0 {
                                         self.list_items = None;
                                     }
@@ -162,7 +165,7 @@ impl Component for Inventory {
                         _ => {
                             self.list_items = Some(self.get_list_items());
                             self.selected_item = 0;
-                            self.set_selected_item(0, "li-selected");
+                            self.highlight_selected_item(0, "li-selected");
                         }
                     }
                 }
