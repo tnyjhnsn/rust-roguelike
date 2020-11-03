@@ -2,15 +2,11 @@ use yew::prelude::*;
 use super::model::armour_model::*;
 use super::model::dictionary::*;
 use roguelike_common::*;
-use web_sys::{HtmlElement, HtmlCollection};
-use yew::utils::document;
-use wasm_bindgen::JsCast;
 use std::cmp::{max};
 
 pub struct Armour {
     link: ComponentLink<Self>,
-    list_items: Option<HtmlCollection>,
-    selected_item: i32,
+    selected_idx: i32,
     props: Props,
 }
 
@@ -29,35 +25,12 @@ pub enum Msg {
 
 impl Armour {
     fn cycle_list(&mut self, direction: i32) {
-        match &self.list_items {
-            Some(items) => {
-                let length = items.length() as i32;
-                if length == 0 { return; }
-                self.set_selected_item(self.selected_item, "");
-                let selected_idx = ((self.selected_item + direction) % length + length) % length;
-                self.set_selected_item(selected_idx, "li-selected");
-                self.selected_item = selected_idx;
+        let len = self.props.armour.items.len() as i32;
+        match len {
+            0 => (),
+            _ => {
+                self.selected_idx = ((self.selected_idx + direction) % len + len) % len;
             }
-            None => (),
-        }
-    }
-
-    fn get_list_items(&self) -> HtmlCollection {
-        document()
-            .get_elements_by_class_name("armour-list")
-            .get_with_index(0)
-            .unwrap()
-            .dyn_into::<HtmlElement>()
-            .unwrap()
-            .children()
-    }
-
-    fn set_selected_item(&self, idx: i32, s: &str) {
-        match &self.list_items {
-            Some(items) => {
-                items.get_with_index(idx as u32).unwrap().set_class_name(s);
-            }
-            None => ()
         }
     }
 }
@@ -69,8 +42,7 @@ impl Component for Armour {
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
         Self {
             link,
-            list_items: None,
-            selected_item: 0,
+            selected_idx: -1,
             props,
         }
     }
@@ -85,52 +57,49 @@ impl Component for Armour {
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
+        let len = self.props.armour.items.len();
         match msg {
             Msg::Pressed(e) => {
                 match e.key_code() {
                     KEY_ESC|KEY_I => {
                         self.props.change_panel_signal.emit(e);
+                        self.selected_idx = -1;
                     },
                     KEY_DOWN =>  self.cycle_list(1),
                     KEY_UP => self.cycle_list(-1),
                     KEY_R => {
-                        match &self.list_items {
-                            Some(items) => {
-                                let idx = self.props.armour.items[self.selected_item as usize].1;
+                        match len {
+                            0 => (),
+                            _ => {
+                                let idx = self.props.armour.items[self.selected_idx as usize].1;
                                 self.props.item_action_signal.emit((e, idx, -1));
-                                // TODO Ugly fix - needs better
-                                self.selected_item = max(0, self.selected_item - 1);
-                                if items.length() - 1 == 0 {
-                                    self.list_items = None;
-                                }
+                                self.selected_idx = max(0, self.selected_idx - 1);
                             }
-                            None => (),
                         }
                     }
                     _ => (),
                 }
             }
             Msg::GotFocus(_e) => {
-                match self.props.armour.items.len() {
+                match len {
                     0 => (),
                     _ => {
-                        self.list_items = Some(self.get_list_items());
-                        self.selected_item = 0;
-                        self.set_selected_item(0, "li-selected");
+                        self.selected_idx = 0;
                     }
                 }
             }
         }
-        false
+        true
     }
 
     fn view(&self) -> Html {
-        let render_items = |item: &(i32, i32)| {
+        let render_items = |idx: usize, item: &(i32, i32)| {
             let name = self.props.dict.get_name(item.0);
             let css = self.props.dict.get_css(item.0);
+            let selected = if idx == self.selected_idx as usize { "li-selected" } else { "" };
             html! {
                 <li>
-                    <div class="flex-wrap">
+                    <div class=("flex-wrap", selected)>
                         <div class="tile-box">
                             <div class=("tile", css)></div>
                         </div>
@@ -150,7 +119,8 @@ impl Component for Armour {
                 <ul class="armour-list">
                 { for self.props.armour.items
                     .iter()
-                    .map(render_items) }
+                    .enumerate()
+                    .map(|(idx, item)| render_items(idx, item)) }
                 </ul>
             </div>
         }

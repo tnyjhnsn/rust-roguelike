@@ -2,15 +2,11 @@ use yew::prelude::*;
 use super::model::inventory_model::*;
 use super::model::dictionary::*;
 use roguelike_common::*;
-use web_sys::{HtmlElement, HtmlCollection};
-use yew::utils::document;
-use wasm_bindgen::JsCast;
 use std::cmp::{max};
 
 pub struct Inventory {
     link: ComponentLink<Self>,
-    list_items: Option<HtmlCollection>,
-    selected_item: i32,
+    selected_idx: i32,
     targeting: bool,
     props: Props,
 }
@@ -31,35 +27,12 @@ pub enum Msg {
 
 impl Inventory {
     fn cycle_list(&mut self, direction: i32) {
-        match &self.list_items {
-            Some(items) => {
-                let length = items.length() as i32;
-                if length == 0 { return; }
-                self.highlight_selected_item(self.selected_item, "");
-                let selected_idx = ((self.selected_item + direction) % length + length) % length;
-                self.highlight_selected_item(selected_idx, "li-selected");
-                self.selected_item = selected_idx;
+        let len = self.props.inventory.items.len() as i32;
+        match len {
+            0 => (),
+            _ => {
+                self.selected_idx = ((self.selected_idx + direction) % len + len) % len;
             }
-            None => (),
-        }
-    }
-
-    fn get_list_items(&self) -> HtmlCollection {
-        document()
-            .get_elements_by_class_name("inventory-list")
-            .get_with_index(0)
-            .unwrap()
-            .dyn_into::<HtmlElement>()
-            .unwrap()
-            .children()
-    }
-
-    fn highlight_selected_item(&self, idx: i32, s: &str) {
-        match &self.list_items {
-            Some(items) => {
-                items.get_with_index(idx as u32).unwrap().set_class_name(s);
-            }
-            None => ()
         }
     }
 }
@@ -71,8 +44,7 @@ impl Component for Inventory {
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
         Self {
             link,
-            list_items: None,
-            selected_item: 0,
+            selected_idx: -1,
             targeting: false,
             props,
         }
@@ -95,14 +67,13 @@ impl Component for Inventory {
                         KEY_ESC => {
                             //TODO targeter cleanup
                             self.targeting = false;
-                            self.highlight_selected_item(self.selected_item, "");
+                            self.selected_idx = -1;
                         }
                         KEY_ENTER => {
-                            let idx = self.props.inventory.items[self.selected_item as usize].1;
+                            let idx = self.props.inventory.items[self.selected_idx as usize].1;
                             self.props.target_indicator_signal.emit((Some(e), Some(idx as i32)));
                             self.targeting = false;
-                            self.selected_item = max(0, self.selected_item - 1);
-                            self.highlight_selected_item(self.selected_item, "li-selected");
+                            self.selected_idx = max(0, self.selected_idx - 1);
                         }
                         KEY_LEFT|KEY_RIGHT|KEY_UP|KEY_DOWN
                         |KEY_Y|KEY_U|KEY_B|KEY_N => {
@@ -115,71 +86,64 @@ impl Component for Inventory {
             }
             false
         } else {
+            let len = self.props.inventory.items.len();
             match msg {
                 Msg::Pressed(e) => {
                     match e.key_code() {
                         KEY_ESC|KEY_A => {
                             self.props.change_panel_signal.emit(e);
-                            self.highlight_selected_item(self.selected_item, "");
+                            self.selected_idx = -1;
                         }
                         KEY_DOWN =>  self.cycle_list(1),
                         KEY_UP => self.cycle_list(-1),
                         KEY_D => {
-                            match &self.list_items {
-                                Some(items) => {
-                                    let idx = self.props.inventory.items[self.selected_item as usize].1;
+                            match len {
+                                0 => (),
+                                _ => {
+                                    let idx = self.props.inventory.items[self.selected_idx as usize].1;
                                     self.props.item_action_signal.emit((e, idx, -1));
-                                    // TODO Ugly fix - needs better
-                                    self.selected_item = max(0, self.selected_item - 1);
-                                    if items.length() - 1 == 0 {
-                                        self.list_items = None;
-                                    }
+                                    self.selected_idx = max(0, self.selected_idx - 1);
                                 }
-                                None => ()
                             }
                         }
                         KEY_U => {
-                            match &self.list_items {
-                                Some(items) => {
-                                    let (item, idx) = self.props.inventory.items[self.selected_item as usize];
+                            match len {
+                                0 => (),
+                                _ => {
+                                    let (item, idx) = self.props.inventory.items[self.selected_idx as usize];
                                     if item < 2100 || item >= 3000 {
                                         self.props.item_action_signal.emit((e, idx, -1));
                                     } else {
                                         self.targeting = true;
                                         self.props.target_indicator_signal.emit((None, Some(0)));
                                     }
-                                    if items.length() - 1 == 0 {
-                                        self.list_items = None;
-                                    }
                                 }
-                                None => ()
                             }
                         }
                         _ => ()
                     }
                 }
                 Msg::GotFocus(_e) => {
-                    match self.props.inventory.items.len() {
+                    match len {
                         0 => (),
                         _ => {
-                            self.list_items = Some(self.get_list_items());
-                            self.selected_item = 0;
-                            self.highlight_selected_item(0, "li-selected");
+                            self.selected_idx = 0;
                         }
                     }
                 }
             }
-            false
+            true
         }
     }
 
     fn view(&self) -> Html {
-        let render_items = |item: &(i32, i32)| {
+        let render_items = |idx: usize, item: &(i32, i32)| {
             let name = self.props.dict.get_name(item.0);
             let css = self.props.dict.get_css(item.0);
+            let selected = if idx == self.selected_idx as usize { "li-selected" } else { "" };
             html! {
                 <li>
-                    <div class="flex-wrap">
+                    <div class=("flex-wrap", selected)>
                         <div class="tile-box">
                             <div class=("tile", css)></div>
                         </div>
@@ -199,7 +163,8 @@ impl Component for Inventory {
                 <ul class="inventory-list">
                 { for self.props.inventory.items
                     .iter()
-                    .map(render_items) }
+                    .enumerate()
+                    .map(|(idx, item)| render_items(idx, item)) }
                 </ul>
             </div>
         }
