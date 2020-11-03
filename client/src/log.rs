@@ -1,6 +1,5 @@
 use yew::prelude::*;
 use super::model::dictionary::*;
-use yew::services::ConsoleService;
 
 pub struct Log {
     props: Props,
