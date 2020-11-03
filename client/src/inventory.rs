@@ -30,9 +30,7 @@ impl Inventory {
         let len = self.props.inventory.items.len() as i32;
         match len {
             0 => (),
-            _ => {
-                self.selected_idx = ((self.selected_idx + direction) % len + len) % len;
-            }
+            _ => self.selected_idx = ((self.selected_idx + direction) % len + len) % len,
         }
     }
 }
@@ -126,9 +124,7 @@ impl Component for Inventory {
                 Msg::GotFocus(_e) => {
                     match len {
                         0 => (),
-                        _ => {
-                            self.selected_idx = 0;
-                        }
+                        _ => self.selected_idx = 0,
                     }
                 }
             }
