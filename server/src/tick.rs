@@ -189,7 +189,7 @@ impl GameSocket {
         if state.check_state(XP_CHANGE) {
             let pools = self.ecs.read_storage::<Pools>();
             let player_pools = pools.get(*player_entity).unwrap();
-            let stats = (player_pools.level, player_pools.xp);
+            let stats = (player_pools.level, player_pools.xp, player_pools.gold);
             hm.entry(String::from("LEVEL_STATS")).or_insert(json!(stats));
             state.remove_state(XP_CHANGE);
         }

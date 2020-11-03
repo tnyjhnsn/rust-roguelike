@@ -32,6 +32,7 @@ pub struct Pools {
     pub tot_weight: f32,
     pub carry_capacity: f32,
     pub tot_initiative_penalty: f32,
+    pub gold: f32,
 }
 
 #[derive(Debug, Copy, Clone, Serialize, Deserialize)]

@@ -37,6 +37,7 @@ impl Component for Stats {
     fn view(&self) -> Html {
         let level_xp = (self.props.stats.level, self.props.stats.xp);
         let (weight, capacity, penalty) = &self.props.stats.encumbrance;
+        let gold = &self.props.stats.gold;
         html! {
             <div class="stats">
                 <h3>{ "Stats" }</h3>
@@ -51,6 +52,7 @@ impl Component for Stats {
                 </div>
                 <div>{ format!("Weight: {} (Capacity: {})", weight, capacity) }</div>
                 <div>{ format!("Initiative Penalty: {}", penalty) }</div>
+                <div>{ format!("Gold: {}", gold) }</div>
             </div>
         }
     }

@@ -59,6 +59,7 @@ pub fn player(ecs: &mut World, x: i32, y: i32) -> PlayerEntity {
             tot_weight: 0.0,
             carry_capacity: 0.0,
             tot_initiative_penalty: 0.0,
+            gold: 0.0,
         })
         .with(Initiative { current: 0 })
         .with(Faction { name: FactionName::Player })

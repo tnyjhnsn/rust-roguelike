@@ -67,6 +67,7 @@
         blocks_tile: Some(()),
         field_of_view: Some(6),
         faction: Some((name: Kobold)),
+        gold: Some((1, 4, 1)),
     ),
     (
         // TODO - THIEF IS TEST !!!!

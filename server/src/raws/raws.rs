@@ -98,6 +98,7 @@ pub struct RawEntity {
     pub loot_table: Option<LootTable>,
     pub faction: Option<Faction>,
     pub movement: Option<MoveMode>,
+    pub gold: Option<(i32, i32, i32)>,
 }
 
 const ATTR_BASE: i32 = 11;
@@ -199,6 +200,12 @@ pub fn spawn_from_raws(raws: &Raws, ecs: &mut World, code: &i32,
                 tot_weight: 0.0,
                 carry_capacity: 0.0,
                 tot_initiative_penalty: 0.0,
+                gold: if let Some(gold) = t.gold {
+                    let mut rng = RandomNumberGenerator::new();
+                    rng.roll_dice(gold.0, gold.1, gold.2) as f32
+                } else {
+                    0.0
+                }
             };
             entity = entity.with(pools);
         }
