@@ -36,7 +36,7 @@ impl Component for Map {
     }
 
     fn change(&mut self, props: Self::Properties) -> bool {
-        if self.props != props {
+        if self.props.map != props.map {
             self.props = props;
             true
         } else {

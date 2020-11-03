@@ -6,6 +6,7 @@ use web_sys::{HtmlElement, HtmlCollection};
 use yew::utils::document;
 use wasm_bindgen::JsCast;
 use std::cmp::{max};
+use yew::services::ConsoleService;
 
 pub struct Armour {
     link: ComponentLink<Self>,
@@ -76,7 +77,7 @@ impl Component for Armour {
     }
 
     fn change(&mut self, props: Self::Properties) -> bool {
-        if self.props != props {
+        if self.props.armour != props.armour {
             self.props = props;
             true
         } else {
