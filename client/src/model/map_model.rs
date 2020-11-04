@@ -134,10 +134,14 @@ impl MMap {
         self.target = self.ppos;
     }
 
-    pub fn set_single_target(&mut self, target: usize) {
+    pub fn clear_targeter(&mut self) {
         for (idx, _) in &self.fov {
             self.status[*idx] &= !TARGETED;
         }
+    }
+
+    pub fn set_single_target(&mut self, target: usize) {
+        self.clear_targeter();
         self.status[target] |= TARGETED;
     }
 

@@ -112,7 +112,7 @@ impl Component for Armour {
                 onfocus= self.link.callback(Msg::GotFocus)
             >
                 <h3>{ "Armour" }</h3>
-                <ul class="armour-list">
+                <ul>
                 { for self.props.armour.items
                     .iter()
                     .enumerate()

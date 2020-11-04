@@ -156,7 +156,7 @@ impl Component for Inventory {
                 onfocus= self.link.callback(Msg::GotFocus)
             >
                 <h3>{ "Inventory" }</h3>
-                <ul class="inventory-list">
+                <ul>
                 { for self.props.inventory.items
                     .iter()
                     .enumerate()
