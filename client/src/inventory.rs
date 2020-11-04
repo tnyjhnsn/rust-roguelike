@@ -69,9 +69,9 @@ impl Component for Inventory {
                         }
                         KEY_ENTER => {
                             let idx = self.props.inventory.items[self.selected_idx as usize].1;
-                            self.props.target_indicator_signal.emit((Some(e), Some(idx as i32)));
                             self.targeting = false;
                             self.selected_idx = max(0, self.selected_idx - 1);
+                            self.props.target_indicator_signal.emit((Some(e), Some(idx as i32)));
                         }
                         KEY_LEFT|KEY_RIGHT|KEY_UP|KEY_DOWN
                         |KEY_Y|KEY_U|KEY_B|KEY_N => {
@@ -133,9 +133,9 @@ impl Component for Inventory {
     }
 
     fn view(&self) -> Html {
-        let render_items = |idx: usize, item: &(i32, i32)| {
-            let name = self.props.dict.get_name(item.0);
-            let css = self.props.dict.get_css(item.0);
+        let render_items = |idx: usize, item: i32| {
+            let name = self.props.dict.get_name(item);
+            let css = self.props.dict.get_css(item);
             let selected = if idx == self.selected_idx as usize { "li-selected" } else { "" };
             html! {
                 <li>
@@ -160,7 +160,7 @@ impl Component for Inventory {
                 { for self.props.inventory.items
                     .iter()
                     .enumerate()
-                    .map(|(idx, item)| render_items(idx, item)) }
+                    .map(|(idx, item)| render_items(idx, item.0)) }
                 </ul>
             </div>
         }

@@ -60,8 +60,8 @@ impl Component for Armour {
             Msg::Pressed(e) => {
                 match e.key_code() {
                     KEY_ESC|KEY_I => {
-                        self.props.change_panel_signal.emit(e);
                         self.selected_idx = -1;
+                        self.props.change_panel_signal.emit(e);
                     },
                     KEY_DOWN =>  self.cycle_list(1),
                     KEY_UP => self.cycle_list(-1),
@@ -70,8 +70,8 @@ impl Component for Armour {
                             0 => (),
                             _ => {
                                 let idx = self.props.armour.items[self.selected_idx as usize].1;
-                                self.props.item_action_signal.emit((e, idx, -1));
                                 self.selected_idx = max(0, self.selected_idx - 1);
+                                self.props.item_action_signal.emit((e, idx, -1));
                             }
                         }
                     }
@@ -89,9 +89,9 @@ impl Component for Armour {
     }
 
     fn view(&self) -> Html {
-        let render_items = |idx: usize, item: &(i32, i32)| {
-            let name = self.props.dict.get_name(item.0);
-            let css = self.props.dict.get_css(item.0);
+        let render_items = |idx: usize, item: i32| {
+            let name = self.props.dict.get_name(item);
+            let css = self.props.dict.get_css(item);
             let selected = if idx == self.selected_idx as usize { "li-selected" } else { "" };
             html! {
                 <li>
@@ -116,7 +116,7 @@ impl Component for Armour {
                 { for self.props.armour.items
                     .iter()
                     .enumerate()
-                    .map(|(idx, item)| render_items(idx, item)) }
+                    .map(|(idx, item)| render_items(idx, item.0)) }
                 </ul>
             </div>
         }
