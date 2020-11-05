@@ -29,6 +29,8 @@ mod attr_stats;
 pub use attr_stats::*;
 mod level_stats;
 pub use level_stats::*;
+mod dialog;
+pub use dialog::*;
 
 #[cfg(feature = "wee_alloc")]
 #[global_allocator]

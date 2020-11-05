@@ -3,7 +3,7 @@ use yew::prelude::*;
 use yew::utils::document;
 use web_sys::{HtmlElement};
 
-pub struct InventoryDialog {
+pub struct Dialog {
     link: ComponentLink<Self>,
     props: Props,
 }
@@ -11,14 +11,14 @@ pub struct InventoryDialog {
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
     pub show: bool,
-    pub onkeydown_signal: Callback<KeyboardEvent>,
+    pub change_panel_signal: Callback<KeyboardEvent>,
 }
 
 pub enum Msg {
     Pressed(KeyboardEvent),
 }
 
-impl Component for InventoryDialog {
+impl Component for Dialog {
     type Message = Msg;
     type Properties = Props;
 
@@ -41,7 +41,7 @@ impl Component for InventoryDialog {
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
             Msg::Pressed(e) => {
-                self.props.onkeydown_signal.emit(e);
+                self.props.change_panel_signal.emit(e);
             }
         }
         true

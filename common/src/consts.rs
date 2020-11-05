@@ -35,6 +35,8 @@ pub const KEY_ENTER: u32 = 13;
 // stairs
 pub const KEY_GT: u32 = 190;
 pub const KEY_LT: u32 = 188;
+// temp close dialog
+pub const KEY_X: u32 = 88;
 
 // MONSTERS 10 - 999
 pub const MOB_WHITE_CENTIPEDE: i32 = 10;

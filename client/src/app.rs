@@ -17,12 +17,14 @@ use super::inventory::*;
 use super::map::*;
 use super::logs::*;
 use super::stats::*;
+use super::dialog::*;
 
 pub struct Game {
     ws: Option<WebSocketTask>,
     link: ComponentLink<Self>,
     #[allow(dead_code)]
     game: MGame,
+    show_dialog: bool,
 }
 
 pub enum Msg {
@@ -34,7 +36,8 @@ pub enum Msg {
     ChangePanel(KeyboardEvent),
     MapAction(KeyboardEvent),
     ItemAction((KeyboardEvent, i32, i32)),
-    TargetIndicator((Option<KeyboardEvent>, Option<i32>))
+    TargetIndicator((Option<KeyboardEvent>, Option<i32>)),
+    ShowDialog,
 }
 
 #[derive(Serialize)]
@@ -51,6 +54,7 @@ impl Component for Game {
             ws: None,
             link: link,
             game: MGame::new(),
+            show_dialog: false,
     	}
     }
 
@@ -150,6 +154,7 @@ impl Component for Game {
                     KEY_ESC => { set_focus("map"); false },
                     KEY_I => { set_focus("inventory"); false },
                     KEY_A => { set_focus("armour"); false },
+                    KEY_X => { self.show_dialog = false; true },
                     _ => false,
                 }
             }
@@ -212,6 +217,10 @@ impl Component for Game {
                 }
                 true
             }
+            Msg::ShowDialog => {
+                self.show_dialog = true;
+                true
+            }
         }
     }
 
@@ -222,6 +231,10 @@ impl Component for Game {
     fn view(&self) -> Html {
         html! { 
             <div class="game">
+                <Dialog
+                    show=self.show_dialog
+                    change_panel_signal=self.link.callback(Msg::ChangePanel)
+                />
                 <div class="holding left-panel">
                     <Stats
                         stats=&self.game.stats
@@ -253,6 +266,7 @@ impl Component for Game {
                     <button onclick=self.link.callback(|_| Msg::Connect)>{ "Connect" }</button>
                     <span style="color: white">{ " Connected: " } { !self.ws.is_none() }</span>
                     <button onclick=self.link.callback(|_| Msg::GetCampaign)>{ "Get Campaign" }</button>
+                    <button onclick=self.link.callback(|_| Msg::ShowDialog)>{ "Show Dialog" }</button>
                     <Logs
                         logs=&self.game.log
                         dict=&self.game.dict
