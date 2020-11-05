@@ -63,7 +63,6 @@ impl Component for Inventory {
                 Msg::Pressed(e) => {
                     match e.key_code() {
                         KEY_ESC => {
-                            //TODO targeter cleanup
                             self.targeting = false;
                             self.selected_idx = -1;
                         }

@@ -206,8 +206,9 @@ impl Component for Game {
                             }
                             None => ()
                         }
+                        self.game.map.clear_targeter();
                     }
-                    (_, _) => ()
+                    (_, _) => {}
                 }
                 true
             }
