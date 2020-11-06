@@ -18,6 +18,8 @@ use super::map::*;
 use super::logs::*;
 use super::stats::*;
 use super::dialog::*;
+use super::list::*;
+use super::list_item::*;
 
 pub struct Game {
     ws: Option<WebSocketTask>,
@@ -252,6 +254,7 @@ impl Component for Game {
                         item_action_signal=self.link.callback(Msg::ItemAction)
                         target_indicator_signal=self.link.callback(Msg::TargetIndicator)
                     />
+                    <List list=&self.game.inventory.items />
                 </div>
                 <div class="holding top-panel">
                     <h1 class="title">{ &self.game.title }</h1>

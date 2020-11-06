@@ -1,5 +1,5 @@
 use yew::prelude::*;
-use yew::services::ConsoleService;
+use super::list_item::*;
 
 pub struct List {
     props: Props,
@@ -7,7 +7,7 @@ pub struct List {
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
-    pub children: Children,
+    pub list: Vec<(i32, i32)>,
 }
 
 impl Component for List {
@@ -20,8 +20,13 @@ impl Component for List {
         }
     }
 
-    fn change(&mut self, _: Self::Properties) -> bool {
-        true
+    fn change(&mut self, props: Self::Properties) -> bool {
+        if self.props != props {
+            self.props = props;
+            true
+        } else {
+            false
+        }
     }
 
     fn update(&mut self, _: Self::Message) -> ShouldRender {
@@ -29,14 +34,16 @@ impl Component for List {
     }
 
     fn view(&self) -> Html {
-        ConsoleService::info(&format!("children {:?}", self.props.children));
         html! {
             <div>
                 <h3>{ "My List" }</h3>
                 <ul>
-                { self.props.children.clone() }
+                    {
+                        for self.props.list.iter().map(|_| {
+                            html! { <ListItem /> }
+                        })
+                    }
                 </ul>
-                <div>{ self.props.children.len() }</div>
             </div>
         }
     }
