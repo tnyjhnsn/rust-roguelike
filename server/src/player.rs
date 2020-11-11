@@ -22,6 +22,7 @@ use super::{
     FactionName,
     Attributes,
     Reaction,
+    Vendor,
     raws::*,
 };
 use std::cmp::{min, max};
@@ -52,6 +53,7 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> GameState
     let mut blocks_visibility = ecs.write_storage::<BlocksVisibility>();
     let mut blocks_tile = ecs.write_storage::<BlocksTile>();
     let factions = ecs.read_storage::<Faction>();
+    let vendors = ecs.read_storage::<Vendor>();
 
     let mut game_state = GameState::Ticking;
     let mut swap_entities = Vec::new();
@@ -62,6 +64,11 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> GameState
         let dest_idx = map.xy_idx(pos.x + delta_x, pos.y + delta_y);
 
         game_state = crate::spatial::for_each_tile_content_with_gamemode(dest_idx, |potential_target| {
+
+            if let Some(_v) = vendors.get(potential_target) {
+                println!("Vendor dialog to go here...");
+                return Some(game_state);
+            }
 
             let mut hostile = true;
             if combat_stats.get(potential_target).is_some() {

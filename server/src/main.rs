@@ -113,6 +113,7 @@ impl GameSocket {
         gs.ecs.register::<WantsToFlee>(); 
         gs.ecs.register::<MoveMode>(); 
         gs.ecs.register::<EquipmentChanged>(); 
+        gs.ecs.register::<Vendor>(); 
         gs
     }
 }

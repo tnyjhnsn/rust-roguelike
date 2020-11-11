@@ -80,5 +80,6 @@
         equipped: Some([3000, 3300]),
         level: Some(2),
         faction: Some((name: Thief)),
+        vendor: Some((categories: [Food, Weapons])),
     ),
 ]

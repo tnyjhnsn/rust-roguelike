@@ -296,6 +296,17 @@ pub struct Door {
     pub open: bool,
 }
 
+#[derive(PartialEq, Eq, Hash, Copy, Clone, Debug, Serialize, Deserialize)]
+pub enum VendorCategory {
+    Food,
+    Weapons,
+}
+
+#[derive(Component, Debug, Clone, Serialize, Deserialize)]
+pub struct Vendor {
+    pub categories: Vec<VendorCategory>,
+}
+
 // Component for each intent
 
 #[derive(Component, Debug, Clone)]

@@ -99,6 +99,7 @@ pub struct RawEntity {
     pub faction: Option<Faction>,
     pub movement: Option<MoveMode>,
     pub gold: Option<(i32, i32, i32)>,
+    pub vendor: Option<Vendor>,
 }
 
 const ATTR_BASE: i32 = 11;
@@ -127,6 +128,7 @@ pub fn spawn_from_raws(raws: &Raws, ecs: &mut World, code: &i32,
         if let Some(_m) = t.mob {
             entity = entity.with(Initiative { current: 2 });
             entity = entity.with(EquipmentChanged {});
+            if let Some(vendor) = &t.vendor { entity = entity.with(vendor.clone()); }
         }
         if let Some(blocks_tile) = t.blocks_tile { entity = entity.with(blocks_tile); }
         if let Some(consumeable) = t.consumeable { entity = entity.with(consumeable); }
