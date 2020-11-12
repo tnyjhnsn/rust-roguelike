@@ -100,6 +100,7 @@ pub struct RawEntity {
     pub movement: Option<MoveMode>,
     pub gold: Option<(i32, i32, i32)>,
     pub vendor: Option<Vendor>,
+    pub vendor_category: Option<VendorCategory>,
 }
 
 const ATTR_BASE: i32 = 11;
@@ -290,4 +291,16 @@ pub fn get_faction_reaction(raws: &Raws, my_faction: &FactionName, other_faction
     } else {
         Reaction::Ignore
     }
+}
+
+pub fn get_vendor_items(raws: &Raws, categories: &[VendorCategory]) -> Vec<(i32, f32)> {
+    let mut result = Vec::new();
+    for item in &raws.entities {
+        if let Some(cat) = &item.vendor_category {
+            if categories.contains(cat) && item.base_value.is_some() {
+                result.push((item.code.code, item.base_value.unwrap()));
+            }
+        }
+    }
+    result
 }

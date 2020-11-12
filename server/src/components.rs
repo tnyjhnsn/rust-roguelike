@@ -298,6 +298,7 @@ pub struct Door {
 
 #[derive(PartialEq, Eq, Hash, Copy, Clone, Debug, Serialize, Deserialize)]
 pub enum VendorCategory {
+    NoSale,
     Food,
     Weapons,
 }

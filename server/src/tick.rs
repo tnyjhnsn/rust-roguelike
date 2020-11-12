@@ -74,6 +74,7 @@ impl GameSocket {
         self.ecs.insert(GameState::Waiting);
         self.ecs.insert(GameLog::new());
         self.ecs.insert(Particles::new());
+        self.ecs.insert(VendorDialog::new());
     }
 
     fn game_over(&mut self) {
@@ -197,6 +198,11 @@ impl GameSocket {
         let mut gl = self.ecs.write_resource::<GameLog>();
         if let Some(logs) = gl.get_logs() {
             hm.entry(String::from("LOG")).or_insert(logs);
+        }
+
+        let mut d = self.ecs.write_resource::<VendorDialog>();
+        if let Some(dialog) = d.get_dialog() {
+            hm.entry(String::from("DIALOG")).or_insert(dialog);
         }
 
         if hm.len() > 0 {

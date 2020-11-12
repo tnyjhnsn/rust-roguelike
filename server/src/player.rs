@@ -23,6 +23,7 @@ use super::{
     Attributes,
     Reaction,
     Vendor,
+    VendorDialog,
     raws::*,
 };
 use std::cmp::{min, max};
@@ -54,6 +55,7 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> GameState
     let mut blocks_tile = ecs.write_storage::<BlocksTile>();
     let factions = ecs.read_storage::<Faction>();
     let vendors = ecs.read_storage::<Vendor>();
+    let mut dialog = ecs.fetch_mut::<VendorDialog>();
 
     let mut game_state = GameState::Ticking;
     let mut swap_entities = Vec::new();
@@ -65,8 +67,13 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> GameState
 
         game_state = crate::spatial::for_each_tile_content_with_gamemode(dest_idx, |potential_target| {
 
-            if let Some(_v) = vendors.get(potential_target) {
-                println!("Vendor dialog to go here...");
+            if let Some(vendor) = vendors.get(potential_target) {
+                let categories = get_vendor_items(
+                    &RAWS.lock().unwrap(),
+                    &vendor.categories,
+                );
+                // TODO Testing - need to use proper entity code
+                dialog.add_dialog(999, categories);
                 return Some(game_state);
             }
 

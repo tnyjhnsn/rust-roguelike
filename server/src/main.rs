@@ -58,6 +58,8 @@ mod particles;
 pub use particles::*;
 mod gamestats;
 pub use gamestats::*;
+mod dialog;
+pub use dialog::*;
 
 #[macro_use]
 extern crate lazy_static;
