@@ -156,7 +156,11 @@ impl Component for Game {
                     KEY_ESC => { set_focus("map"); false },
                     KEY_I => { set_focus("inventory"); false },
                     KEY_A => { set_focus("armour"); false },
-                    KEY_X => { self.show_dialog = false; true },
+                    KEY_X => {
+                        self.show_dialog = false;
+                        set_focus("map");
+                        true
+                    },
                     _ => false,
                 }
             }
