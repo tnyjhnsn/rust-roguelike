@@ -3,6 +3,7 @@ use super::log_model::*;
 use super::inventory_model::*;
 use super::armour_model::*;
 use super::stats_model::*;
+use super::dialog_model::*;
 use super::dictionary::*;
 
 #[derive(Debug, PartialEq, Clone)]
@@ -14,6 +15,7 @@ pub struct MGame {
     pub minimap: String,
     pub log: MLog,
     pub map: MMap,
+    pub dialog: MDialog,
     pub dict: Dictionary,
 }
 
@@ -27,6 +29,7 @@ impl MGame {
             minimap: String::from("Mini Map"),
             log: MLog::new(),
             map: MMap::new(),
+            dialog: MDialog::new(),
             dict: Dictionary::new(),
         }
     }

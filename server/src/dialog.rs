@@ -3,28 +3,24 @@ use serde_json::Value;
 type Items = Vec<(i32, f32)>;
 
 pub struct VendorDialog {
-    pub vendor: i32,
-    pub items: Items,
+    pub dialog: (i32, Items),
 }
 
 impl VendorDialog {
     pub fn new() -> Self {
         Self {
-            vendor: -1,
-            items: Vec::new(),
+            dialog: (-1, Vec::new()),
         }
     }
 
-    pub fn add_dialog(&mut self, vendor: i32, items: Items) {
-        self.vendor = vendor;
-        self.items = items;
+    pub fn add_dialog(&mut self, dialog: (i32, Items)) {
+        self.dialog = dialog;
     }
 
     pub fn get_dialog(&mut self) -> Option<Value> {
-        if self.vendor != -1 {
-            let dialog = serde_json::to_value((self.vendor, &self.items)).unwrap();
-            self.vendor = -1;
-            self.items.clear();
+        if self.dialog.0 != -1 {
+            let dialog = serde_json::to_value(&self.dialog).unwrap();
+            self.dialog = (-1, Vec::new());
             Some(dialog)
         } else {
             None

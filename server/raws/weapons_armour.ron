@@ -28,6 +28,7 @@
         base_value: Some(2.0),
         weapon: Some((range: 0, hit_desc: CutStab, attribute: Might,
                       damage_dice: (1, 8, 0), hit_bonus: 0)),
+        vendor_category: Some(Weapons),
     ),
     (
         // SHIELD
@@ -37,6 +38,7 @@
         weight_lbs: Some(1.0),
         base_value: Some(2.0),
         wearable: Some((slot: Shield, armour_class: 1.0)),
+        vendor_category: Some(Weapons),
     ),
     (
         // TUNIC
@@ -45,6 +47,7 @@
         weight_lbs: Some(1.0),
         base_value: Some(2.0),
         wearable: Some((slot: Body, armour_class: 0.1)),
+        vendor_category: Some(Weapons),
     ),
     (
         // PANTS

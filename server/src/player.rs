@@ -73,7 +73,7 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> GameState
                     &vendor.categories,
                 );
                 // TODO Testing - need to use proper entity code
-                dialog.add_dialog(999, categories);
+                dialog.add_dialog((999, categories));
                 return Some(game_state);
             }
 

@@ -19,7 +19,6 @@ use super::logs::*;
 use super::stats::*;
 use super::dialog::*;
 use super::list::*;
-use super::list_item::*;
 
 pub struct Game {
     ws: Option<WebSocketTask>,
@@ -52,57 +51,57 @@ impl Component for Game {
     type Properties = ();
 
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
-    	Self {
+        Self {
             ws: None,
             link: link,
             game: MGame::new(),
             show_dialog: false,
-    	}
+        }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
-    	match msg {
-    		Msg::Connect => {
-    			let cbout = self.link.callback(|Json(data)| Msg::Received(data));
-    			let cbnot = self.link.callback(|input| {
-    				match input {
-    					WebSocketStatus::Closed | WebSocketStatus::Error => {
-    						Msg::Disconnected
-    					}
-    					_ => Msg::Ignore,
-    				}
-    			});
-    			if self.ws.is_none() {
-    				let task = WebSocketService::connect("ws://127.0.0.1:9001/ws/",
+        match msg {
+            Msg::Connect => {
+                let cbout = self.link.callback(|Json(data)| Msg::Received(data));
+                let cbnot = self.link.callback(|input| {
+                    match input {
+                        WebSocketStatus::Closed | WebSocketStatus::Error => {
+                            Msg::Disconnected
+                        }
+                        _ => Msg::Ignore,
+                    }
+                });
+                if self.ws.is_none() {
+                    let task = WebSocketService::connect("ws://127.0.0.1:9001/ws/",
                                                          cbout, cbnot.into());
-    				self.ws = Some(task.unwrap());
-    			}
-    			true
-    		}
-    		Msg::Disconnected => {
-    			self.ws = None;
-    			false
-    		}
-    		Msg::Ignore => {
-    			false
-    		}
-    		Msg::GetCampaign => {
-    			match self.ws {
-    				Some(ref mut task) => {
-    					task.send(Ok(String::from("/campaign")));
-    					false
-    				}
-    				None => {
-    					false
-    				}
-    			}
-    		}
-    		Msg::Received(Ok(v)) => {
+                    self.ws = Some(task.unwrap());
+                }
+                true
+            }
+            Msg::Disconnected => {
+                self.ws = None;
+                false
+            }
+            Msg::Ignore => {
+                false
+            }
+            Msg::GetCampaign => {
+                match self.ws {
+                    Some(ref mut task) => {
+                        task.send(Ok(String::from("/campaign")));
+                        false
+                    }
+                    None => {
+                        false
+                    }
+                }
+            }
+            Msg::Received(Ok(v)) => {
                 let gm: GameMsg = serde_json::from_value(v).unwrap();
                 let data: HashMap<String, Value> = serde_json::from_value(gm.data).unwrap();
                 //ConsoleService::info(&format!("{:?}", data));
                 for (msg, v) in &data {
-                    let d = serde_json::from_value(v.clone()).unwrap(); 
+                    let d = serde_json::from_value(v.clone()).unwrap();
                     match msg.trim() {
                         "MAP" => {
                             self.game.map.set_map(d);
@@ -138,6 +137,9 @@ impl Component for Game {
                         "ENCUMBRANCE" => {
                             self.game.stats.set_encumbrance(d);
                         }
+                        "DIALOG" => {
+                            self.game.dialog.set_dialog(d);
+                        }
                         _ => {
                             //ConsoleService::info(&format!("{:?}", gm.d));
                             return false;
@@ -145,7 +147,7 @@ impl Component for Game {
                     }
                 }
                 true
-    		}
+            }
             Msg::Received(Err(s)) => {
                 let msg = format!("Error when reading data from server: {}\n", &s.to_string());
                 ConsoleService::info(&format!("{}", msg));
@@ -168,7 +170,7 @@ impl Component for Game {
                 match e.key_code() {
                     KEY_LEFT|KEY_UP|KEY_RIGHT|KEY_DOWN
                     |KEY_Y|KEY_U|KEY_B|KEY_N
-                    |KEY_G|KEY_GT|KEY_LT => { 
+                    |KEY_G|KEY_GT|KEY_LT => {
                         match self.ws {
                             Some(ref mut task) => {
                                 task.send(Ok(e.key()));
@@ -207,7 +209,7 @@ impl Component for Game {
                             Some(n) => self.game.map.set_single_target(n as usize),
                             None => ()
                         }
-                    } 
+                    }
                     (Some(_e), Some(n)) if n >= 0 => {
                         let idx = self.game.map.target;
                         let action = format!("/use {} {}", n.to_string(), idx.to_string());
@@ -235,7 +237,7 @@ impl Component for Game {
     }
 
     fn view(&self) -> Html {
-        html! { 
+        html! {
             <div class="game">
                 <Dialog
                     show=self.show_dialog
