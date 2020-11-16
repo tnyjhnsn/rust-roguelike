@@ -1,5 +1,4 @@
 use serde_json::Value;
-use yew::services::ConsoleService;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct MDialog {

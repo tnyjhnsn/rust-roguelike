@@ -38,7 +38,6 @@ pub enum Msg {
     MapAction(KeyboardEvent),
     ItemAction((KeyboardEvent, i32, i32)),
     TargetIndicator((Option<KeyboardEvent>, Option<i32>)),
-    ShowDialog,
 }
 
 #[derive(Serialize)]
@@ -139,6 +138,7 @@ impl Component for Game {
                         }
                         "DIALOG" => {
                             self.game.dialog.set_dialog(d);
+                            self.show_dialog = true;
                         }
                         _ => {
                             //ConsoleService::info(&format!("{:?}", gm.d));
@@ -225,10 +225,6 @@ impl Component for Game {
                 }
                 true
             }
-            Msg::ShowDialog => {
-                self.show_dialog = true;
-                true
-            }
         }
     }
 
@@ -275,7 +271,6 @@ impl Component for Game {
                     <button onclick=self.link.callback(|_| Msg::Connect)>{ "Connect" }</button>
                     <span style="color: white">{ " Connected: " } { !self.ws.is_none() }</span>
                     <button onclick=self.link.callback(|_| Msg::GetCampaign)>{ "Get Campaign" }</button>
-                    <button onclick=self.link.callback(|_| Msg::ShowDialog)>{ "Show Dialog" }</button>
                     <Logs
                         logs=&self.game.log
                         dict=&self.game.dict

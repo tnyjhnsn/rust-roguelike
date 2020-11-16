@@ -30,7 +30,7 @@ impl Component for Dialog {
     }
 
     fn change(&mut self, props: Self::Properties) -> bool {
-        if self.props != props {
+        if self.props.show != props.show {
             self.props = props;
             true
         } else {
