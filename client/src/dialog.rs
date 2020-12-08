@@ -2,6 +2,7 @@ use wasm_bindgen::JsCast;
 use yew::prelude::*;
 use yew::utils::document;
 use web_sys::{HtmlElement};
+use super::model::dialog_model::*;
 
 pub struct Dialog {
     link: ComponentLink<Self>,
@@ -11,6 +12,7 @@ pub struct Dialog {
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
     pub show: bool,
+    pub dialog: MDialog,
     pub change_panel_signal: Callback<KeyboardEvent>,
 }
 

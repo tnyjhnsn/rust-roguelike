@@ -237,6 +237,7 @@ impl Component for Game {
             <div class="game">
                 <Dialog
                     show=self.show_dialog
+                    dialog=&self.game.dialog
                     change_panel_signal=self.link.callback(Msg::ChangePanel)
                 />
                 <div class="holding left-panel">
